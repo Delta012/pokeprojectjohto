@@ -1,0 +1,292 @@
+# Object files
+*.nds
+
+# Compilers (downloaded by `make skrew` into tools/metroskrew)
+tools/metroskrew/**
+
+# The vendored CodeWarrior install and the NitroSDK host binaries are not distributed here
+tools/mwccarm/**
+tools/bin/**
+
+# Build folder
+build/**
+sub/build/**
+
+# CLion folders
+.idea/
+cmake-build-debug/
+
+# VSCode folder
+.vscode/
+
+# "cmake.buildDirectory": "${workspaceFolder}/build-cmake-${buildType}"
+build-cmake-*
+
+# ROM
+*.srl
+
+# Tool executables
+*.exe
+
+# Generated files
+*.4bpp
+*.lz
+*.gbapal
+
+# For asmdiff
+*/baserom.*
+*.dump
+
+# For decomp.me
+ctx.c
+
+*.lcf.template
+!specfiles/*.lcf.template
+*.lcf
+*.response.template
+*.response
+
+# Working files
+overlays/*/module_*.s
+overlays/*/module_*.sbin
+overlays/*/module_*.cfg
+
+*.sbin
+*.bnr
+*.nbfp
+*.nbfc
+
+# Dism scripts
+dism.sh
+asmdiff.sh
+
+# Symbols CSV
+symbols.csv
+
+# NARCs
+*.narc
+*.arc
+files/**/*.c
+*.o
+*.naix
+*.a
+
+# Utilities
+ntruncompbw
+*.elf
+cmake-build-*
+*.sbin_LZ
+*.diff
+
+*.dSYM
+
+# MacOS garbage
+.DS_Store
+
+# Depfiles
+*.d
+
+diff.txt
+
+.vscode/
+
+# Save files
+*.dsv
+*.sav
+
+# Savestate files
+*.ds[0-9]
+*.dst
+*.ml[0-9]
+*.mln
+
+# clangd
+.cache
+compile_commands.json
+
+# python
+/pyscripts/
+__pycache__
+.local-tools/
+.venv/
+*.pyc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/application/custom_ball/edit/gs_cb_data.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/arc/safari_enc.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/arealight.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/demo_climax.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/field_cutin.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/fldtanime.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/guru2.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/kowaza.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/slot.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/tradelist.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/trapmark.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/ug_anim.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/ug_fossil.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/ug_parts.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/ug_radar.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/ug_trap.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/ugeffect_obj_graphic.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/underg_radar.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/weather_sys.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/wifinote.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/data/wifip2pmatch.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/fielddata/build_model/bm_field.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/fielddata/build_model/bm_room.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/fielddata/sodateya/kowaza_list.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/msgdata/scenario/scr_msg.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/b_plist_gra.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/bag_gra.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/batt_bg.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/batt_obj.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/dp_height.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/dp_height_o.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/font.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/growtbl.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/item_data.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/msg.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/otherpoke.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/personal.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/plist_gra.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/poke_anm.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/poke_icon.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/pokeanm.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/pokegra.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/poketch.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/pokezukan.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/pst_gra.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/waza_tbl.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/winframe.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/pbr/zukan.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/johtozukan.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/personal/performance.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/personal/pms.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/personal/wotbl.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/pokegra/height.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/pokegra/height_o.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/trmsg/trtbl.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/trmsg/trtblofs.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/poketool/waza/waza_tbl.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/files/system/touch_subwindow.narc
+
+# build input, no rule can rebuild it
+!/heartgold.us/rom_header_template.sbin
+
+# build input, no rule can rebuild it
+!/soulsilver.us/rom_header_template.sbin

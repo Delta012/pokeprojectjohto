@@ -1,0 +1,1636 @@
+a/0/0/0
+a/0/0/1
+a/0/0/2
+a/0/0/3
+a/0/0/4
+a/0/0/5
+a/0/1/1
+a/0/1/2
+a/0/1/6
+a/0/1/7
+a/0/1/8
+a/0/2/0
+a/0/2/1
+a/0/2/7
+a/0/3/0
+a/0/3/1
+a/0/3/2
+a/0/3/3
+a/0/3/4
+a/0/3/7
+a/0/4/1
+a/0/4/6
+a/0/5/5
+a/0/5/6
+a/0/5/7
+a/0/6/8
+a/0/6/9
+a/0/7/4
+a/0/7/5
+a/0/8/1
+a/0/8/2
+a/0/8/4
+a/0/9/3
+a/1/1/4
+a/1/1/7
+a/1/2/0
+a/1/2/5
+a/1/3/1
+a/1/3/3
+a/1/3/6
+a/1/3/8
+a/1/4/1
+a/1/4/3
+a/1/4/4
+a/1/4/5
+a/1/4/6
+a/1/4/7
+a/1/5/0
+a/1/5/2
+a/1/6/3
+a/1/6/5
+a/1/6/9
+a/1/7/2
+a/1/7/4
+a/1/7/5
+a/1/8/5
+a/1/9/4
+a/1/9/5
+a/2/1/2
+a/2/1/4
+a/2/2/9
+a/2/3/0
+a/2/5/2
+a/2/5/4
+a/2/6/0
+a/2/6/1
+a/2/6/2
+a/2/6/4
+msgdata/msg.narc
+fielddata/eventdata/zone_event.narc
+fielddata/encountdata/g_enc_data.narc
+fielddata/encountdata/s_enc_data.narc
+data/gs_areawindow.narc
+itemtool/itemdata/item_icon.narc
+itemtool/itemdata/item_data.narc
+poketool/personal/personal.narc
+poketool/personal/evo.narc
+poketool/personal/growtbl.narc
+resource/eng/pms_aikotoba/pms_aikotoba.narc
+data/mmodel/mmodel.narc
+data/mushi/mushi_*.bin
+fielddata/tsurepoke/tp_param.narc
+data/resdat.narc
+application/zukanlist/zkn_data/zukan_enc_gold.narc
+application/zukanlist/zkn_data/zukan_enc_silver.narc
+application/zukanlist/zkn_data/zukan_hw_data_gold.narc
+application/zukanlist/zkn_data/zukan_hw_data_silver.narc
+application/zukanlist/zkn_data/zukan_data.narc
+application/zukanlist/zkn_data/zukan_data_gira.narc
+application/annon/puzzle_gra.narc
+demo/opening/gs_opening.narc
+demo/legend.narc
+data/photo_data.narc
+graphic/camera_viewfinder.narc
+application/guinness.narc
+demo/intro/intro.narc
+data/namein.narc
+data/sbox_gra.narc
+*.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/zukanlist/zkn_data/zukan_hw_data_silver.narc
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_main_res/08_window.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_main_res/09_bgl5.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_main_res/12_bgl2.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_main_res/15_bgl6.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_sub_res/choose_starter_sub_res_00000002.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_sub_res/choose_starter_sub_res_00000005.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_sub_res/choose_starter_sub_res_00000006.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_sub_res/choose_starter_sub_res_00000007.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/choose_starter/choose_starter_sub_res/choose_starter_sub_res_00000008.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/guinness/guinness_00000000.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/guinness/guinness_00000001.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/guinness/guinness_00000006.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/voltorb_flip/voltorb_flip_00000000.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/voltorb_flip/voltorb_flip_00000001.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/voltorb_flip/voltorb_flip_00000010.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/voltorb_flip/voltorb_flip_00000014.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/namein/namein_00000000.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/namein/namein_00000001.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000001.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000002.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000011.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000016.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000021.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000030.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000031.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000033.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000059.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/intro/intro/intro_00000063.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/legend/legend_00000012.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/legend/legend_00000015.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/legend/legend_00000054.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000000.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000001.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000002.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000003.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000023.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000027.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000031.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000032.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000039.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000053.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000065.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000069.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000073.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000077.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000081.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000085.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000089.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/opening/gs_opening/gs_opening_00000093.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000002.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000004.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000009.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000010.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000013.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000014.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/demo/title/titledemo/titledemo_00000016.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000002.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000015.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000018.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000032.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000035.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000056.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000075.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000108.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000110.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000118.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/zukan_gra/zukan_gra_00000122.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/poketool/pokegra/pokegra/0000/4_0004.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/poketool/pokegra/pokegra/0000/4_0005.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/record/record/record_00000000.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/record/record/record_00000004.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/record/record/record_00000007.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/application/record/record/record_00000011.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/cell0.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/dp_areawindow.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/ground0.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/nfont.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/smptm_koori.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/smptm_nemuri.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/ug_boygirl.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/plist_gra/plist_gra_00000004.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/plist_gra/plist_gra_00000008.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/plist_gra/plist_gra_00000013.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/plist_gra/plist_gra_00000016.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/plist_gra/plist_gra_00000021.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/graphic/plist_gra/plist_gra_00000023.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_003.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_005.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_007.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_009.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_011.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_013.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_015.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_017.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_019.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_022.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_025.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_027.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_028.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_029.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_031.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_032.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_034.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_035.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_036.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_037.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_039.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_042.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_044.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_046.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_048.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_050.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_052.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_054.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_055.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_057.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_059.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_060.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_061.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_062.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_064.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_066.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_067.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_068.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_069.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_070.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_072.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_074.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_075.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_077.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_079.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_080.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_081.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_082.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_084.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_086.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_087.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_088.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_089.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_091.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_093.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_094.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_096.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_097.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_098.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_099.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_101.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_102.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_103.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_104.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_106.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_108.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_110.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_111.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_113.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_114.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_116.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_118.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_120.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_122.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_124.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_126.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_129.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_131.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_134.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_137.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_139.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_141.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_143.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_145.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_147.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_149.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_151.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_153.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_155.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_157.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_159.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_161.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_163.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_165.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_167.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_169.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_171.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_173.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_175.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_177.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_179.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_181.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_183.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_185.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_187.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_189.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_191.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_193.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_195.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_197.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_199.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_201.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_203.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_205.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_207.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_209.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_211.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_213.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_215.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_217.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_219.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_221.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_223.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_225.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_227.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_229.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_231.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_233.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_235.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_237.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_239.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_241.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_243.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_245.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_247.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_249.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_251.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_253.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_255.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_257.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_259.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_261.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_262.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_264.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_266.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_268.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_270.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_272.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_274.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_276.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_278.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_280.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_282.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_284.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_286.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_288.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_290.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_292.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_294.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_296.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_298.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_300.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_302.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_304.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_307.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_309.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_311.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_313.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_315.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_317.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_319.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_321.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_323.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_325.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_327.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_330.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_332.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_334.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_336.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_338.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_340.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_342.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_343.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_344.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_345.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_346.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_348.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_350.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_352.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_354.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_356.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_358.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_360.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_362.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_364.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_366.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_368.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_370.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_372.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_374.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_377.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_379.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_380.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_382.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_384.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_386.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_393.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_396.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_398.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_399.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_400.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_401.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_402.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_403.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_404.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_405.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_406.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_407.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_408.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_409.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_410.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_411.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_412.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_413.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_416.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_418.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_420.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_422.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_424.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_426.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_428.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_430.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_432.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_434.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_436.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_438.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_440.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_442.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_444.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_446.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_448.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_450.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_452.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_454.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_456.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_458.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_460.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_462.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_463.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_465.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_467.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_469.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_471.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_473.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_475.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_477.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_479.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_481.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_483.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_485.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_487.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_489.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_491.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_493.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_495.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_497.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_499.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_501.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_503.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_505.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_507.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_509.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_511.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_513.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_515.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_517.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_519.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_521.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_523.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_525.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_527.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_529.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_531.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_533.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_535.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_537.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_539.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_541.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_543.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_545.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_547.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_549.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_551.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_553.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_555.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_557.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_559.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_561.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_563.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_565.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_567.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_569.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_571.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_573.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_575.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_577.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_579.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_581.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_583.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_585.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_587.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_589.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_591.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_593.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_595.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_597.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_599.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_601.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_603.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_605.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_607.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_609.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_610.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_612.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_614.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_616.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_618.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_620.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_621.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_622.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_623.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_624.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_625.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_626.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_627.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_628.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_629.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_630.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_631.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_632.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_633.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_634.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_635.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_637.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_639.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_641.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_643.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_645.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_647.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_649.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_651.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_653.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_655.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_657.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_658.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_660.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_662.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_664.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_666.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_668.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_670.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_672.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_674.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_676.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_678.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_680.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_682.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_684.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_686.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_688.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_690.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_692.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_694.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_696.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_698.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_700.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_702.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_704.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_706.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_708.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_710.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_712.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_714.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_716.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_718.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_720.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_722.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_724.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_726.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_728.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_730.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_732.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_734.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_736.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_738.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_740.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_742.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_744.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_746.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_748.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_750.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_752.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_754.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_756.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_758.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_760.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_762.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_764.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_766.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_768.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_770.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_772.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_774.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_776.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_778.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_780.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_782.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_784.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_786.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_788.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_790.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_792.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_794.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/itemtool/itemdata/item_icon/item_icon_796.NCLR
+
+# needed to build; see tools/devtools/shipped_inputs.txt
+!/data/pl_wm.nclr
+!/data/wm.nclr
