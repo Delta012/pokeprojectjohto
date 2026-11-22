@@ -40,13 +40,7 @@ SKREWDIR      := $(TOOLSDIR)/metroskrew
 SKREW_BIN     := $(SKREWDIR)/bin
 SKREW_SDK     := $(SKREWDIR)/lib/metroskrew/sdk/ds
 
-# Optional compile cache, inert when ccache is not installed (or CCACHE_DISABLE=1).
-# Cache hits are byte-identical by construction: the toolchain payload binaries are
-# sha256-pinned by the producer profiles and -wrap:sdk $(MWCCVER) is part of the
-# cached compile args, so each compiler build keys its own cache entries. ccache
-# hashes the compile directory too, so cached objects carry this tree's paths.
-CCACHE ?= $(shell command -v ccache 2>/dev/null)
-MWCC          = $(CCACHE) $(SKREW_BIN)/mwccarm$(EXE)
+MWCC          = $(SKREW_BIN)/mwccarm$(EXE)
 MWAS          = $(SKREW_BIN)/mwasmarm$(EXE)
 MWLD          = $(SKREW_BIN)/mwldarm$(EXE)
 # Recursive on purpose: the per-object `MWCCVER :=` pins in the Makefiles must reach the wrapper
