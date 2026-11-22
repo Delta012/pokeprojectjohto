@@ -16,6 +16,19 @@ Makefile text eol=lf
 *.md text eol=lf
 *.lsf text eol=lf
 *.yml text eol=lf
+*.py text eol=lf
+*.csv text eol=lf
+*.svg text eol=lf
+*.rsf text eol=lf
+*.ini text eol=lf
+*.template text eol=lf
+Dockerfile text eol=lf
+CMakeLists.txt text eol=lf
+.editorconfig text eol=lf
+.clang-format text eol=lf
+.clang-format-ignore text eol=lf
+.clangd text eol=lf
+.githooks/pre-commit text eol=lf
 
 *.bin binary
 
