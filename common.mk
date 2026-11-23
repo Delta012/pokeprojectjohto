@@ -324,7 +324,11 @@ endif
 # The response lists objects both bare (`Objects lib/…/x.o`) and section-qualified
 # (`Object lib/…/x.o (.itcm)`); the qualifier only says which section to place, the object still
 # has to be loaded, so the first token of every line is the input list, in order, without repeats.
-LSF_OBJECTS      := $(shell sed -n 's/^[[:space:]]*[Oo][Bb][Jj][Ee][Cc][Tt][sS]*[[:space:]]\{1,\}\([^[:space:]]\{1,\}\).*/\1/p' $(LSF) | awk '!seen[$$0]++')
+# Empty $(LSF) would leave sed with no file argument: it would inherit make's stdin
+# and block forever wherever that stdin never reaches EOF (interactive pts, open
+# supervisor pipes). Guard the expansion instead; hosts where stdin was /dev/null
+# happened to see an empty list, which is exactly the guarded result.
+LSF_OBJECTS      := $(if $(LSF),$(shell sed -n 's/^[[:space:]]*[Oo][Bb][Jj][Ee][Cc][Tt][sS]*[[:space:]]\{1,\}\([^[:space:]]\{1,\}\).*/\1/p' $(LSF) | awk '!seen[$$0]++'))
 RESPONSE_OBJECTS  = $(filter-out $(CRT0_OBJ),$(LSF_OBJECTS))
 
 $(RESPONSE): $(LSF) $(MAKEFILE_LIST)
