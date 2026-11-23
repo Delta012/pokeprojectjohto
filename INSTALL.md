@@ -23,6 +23,20 @@ ROMs and build intermediates are ignored by Git.
 The commands above perform matching builds and generate progress reports.
 For Linux and Windows, follow the manual setup below.
 
+## WSL quick start
+
+Clone this repository into the WSL-native filesystem — not under `/mnt/<drive>`, which makes every
+build syscall cross the OS boundary (see *Speed and hygiene in WSL*) — then install the same
+dependency set as upstream pret/pokeheartgold and build:
+
+```sh
+sudo dpkg --add-architecture i386 && sudo apt update
+sudo apt install bison flex g++ gcc-arm-none-eabi git make ninja-build pkg-config wget python3 xz-utils nasm libc6:i386 libpng-dev
+make -j$(nproc)
+```
+
+`make skrew` downloads the native Linux CodeWarrior payload; no Wine, no manual compiler install.
+
 ## Manual setup
 
 ### 0. Clone the repository
@@ -112,19 +126,27 @@ exactly as inherited, since its source is absent and its header pins no longer m
 
 #### Linux
 
-Building the ROM requires the following packages. If you cannot find one or more of these using your package distribution, it may be under a different name.
+The dependency set matches upstream pret/pokeheartgold. On Debian and derivatives (Ubuntu, Mint,
+and WSL2's default Ubuntu), enable the 32-bit runtime first and install:
 
-* make
-* git
-* build-essentials (build-essential on Ubuntu)
-* binutils-arm-none-eabi (`arm-none-eabi-objcopy`, used by the asset rules)
-* python3
-* libpng-devel (libpng-dev on Ubuntu)
-* pkg-config
-* flex and bison (to build `tools/makelcf`)
+```bash
+sudo dpkg --add-architecture i386 && sudo apt update
+sudo apt install bison flex g++ gcc-arm-none-eabi git make ninja-build pkg-config wget python3 xz-utils nasm libc6:i386 libpng-dev
+```
+
+What each is for in this build stack: `bison`/`flex` build `tools/makelcf`; `gcc`/`g++` (pulled in
+by `g++`) build the host tools under `tools/`; `gcc-arm-none-eabi` provides `arm-none-eabi-objcopy`
+for the asset rules; `libpng-dev` (with zlib) links `tools/nitrogfx` and `tools/nitrorom`;
+`python3` runs the producers and generators; `wget` and `xz-utils` fetch and unpack the Linux
+metroskrew archive in `make skrew`; `libc6:i386` is required because the Linux CodeWarrior payload
+is 32-bit x86 ELF. `ninja-build` and `nasm` carry over from upstream's tooling and are not used by
+the makefile flow; keep them for upstream parity.
 
 No Wine is needed: `make skrew` fetches the Linux metroskrew payload. `tools/msgenc` vendors its own
-pugixml sources, so no system pugixml is required.
+pugixml sources, so no system pugixml is required. On other distributions the package names vary;
+the i386 runtime is the one that is easy to miss there (e.g. `glibc-i686`/`lib32-glibc` on Arch) —
+without it every `mwccarm` invocation dies with a loader error like
+`sh: .../bin/mwccarm: cannot execute: required file not found`.
 
 #### Windows
 
@@ -285,6 +307,42 @@ bytes); the source-directory dialect the Linux compiler binaries record in DWARF
 backslashes with no drive), which the C++ producers pin; `WINPATH`, the depfile path converter
 (needed only under Wine — and its selection had a shell precedence bug); and one wrong-case object
 path in `main.lsf` (`lib/MSL_c/…`), which a case-sensitive filesystem rejects at link time.
+
+#### Speed and hygiene in WSL
+
+WSL2 reaches `/mnt/<drive>` through a 9P bridge: every `open`/`stat` is a cross-OS round trip, so a
+tree that lives on NTFS makes this build I/O-bound no matter how big `-j` gets — the compile of a
+single 400-line file costs milliseconds of CPU and milliseconds-per-syscall of everything else.
+Measured on one 32-core WSL2 host with the same checkout in both places, `make -j32` throughout,
+both runs ending in `pokeheartgold.us.nds: OK`:
+
+    git status (16.5k files)                          /mnt/e: > 300 s    ext4: ~2 s
+    touch src/battle/*.c (31 files), recompile,
+      link, repack, sha1 check                        /mnt/e: 20 min     ext4: 23.5 s
+    full clean build (build/ and sub/build/ removed)   ext4: ~31 min
+
+Build from the WSL-native filesystem (`cp -a /mnt/e/<repo> ~/<repo>`, or clone there): commits,
+shipped inputs, and downloaded toolchain payloads carry over unchanged; `build/` and `sub/build/`
+are scratch and need not follow. Use `-j$(nproc)`, too: WSL2 exposes every host core (32 on the
+measured box); `-j8` leaves 75 % idle.
+
+There is deliberately no compile-cache story: ccache cannot wrap the CodeWarrior tools. Its
+preprocessor-based hashing re-feeds `mwccarm`'s own `-E` output (the `#LinEdit` dialect, source
+paths printed backslash-separated) into the real compile, which reproducibly corrupts the
+translation unit — `function has no prototype` and `undefined identifier` on files that compile
+clean unwrapped. Incremental `make` on ext4 (seconds for a handful of touched sources) is the
+supported rebuild path.
+
+Line endings: Git for Windows sets `core.autocrlf=true` in its *system* config, so text types not
+listed with `eol=lf` in `.gitattributes` check out CRLF on the Windows side — and the shared tree
+then fails in WSL at the first script it execs (`env: python3\r: No such file or directory`, exit
+127) or at parsers reading `filesystem.csv`/`rom.ini`. The attribute list covers the build-input
+types as of this writing; if CRLF still creeps into the worktree, the offenders are exactly:
+
+    git ls-files --eol | awk '$1=="i/lf" && $2=="w/crlf"' | sed 's/.*\t//'
+
+Rewrite them to LF (`perl -pi -e 's/\r\n/\n/g'`), *except* types pinned `eol=crlf` on purpose
+(`charmap.txt`): convert those back with `rm` + `git checkout --`.
 
 ### Shipped arc payloads
 
