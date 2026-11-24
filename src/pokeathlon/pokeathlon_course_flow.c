@@ -1127,7 +1127,8 @@ static void PokeathlonCourse_SaveCourseRecord(PokeathlonCourseData *course, Poke
         record->mons[i].form = mon[i].form;
         record->mons[i].gender = mon[i].gender;
         record->mons[i].isShiny = mon[i].isShiny;
-        record->mons[i].personality = mon[i].personality;
+        // the same seed rule as PokeathlonCourse_GetMonInfo above
+        record->mons[i].pictureSeed = mon[i].encryption_constant != 0 ? mon[i].encryption_constant : mon[i].personality;
     }
 }
 

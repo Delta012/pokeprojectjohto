@@ -415,15 +415,17 @@ struct PokeathlonCourseData {
 #define POKEATHLON_STATISTIC_MAX 9999999 // the cap of the play counts and statistics
 
 // A Pokemon of a course record, written whenever a course gets a new best total
-// (PokeathlonCourse_SaveCourseRecord).  Nothing reads these back - the screens and the ceremony only ever
-// read totalPoints - and unk08 is never written at all.
+// (PokeathlonCourse_SaveCourseRecord).  The Course Records screen reads these back through the aliasing
+// layout PokeathlonCourseRecordEntry and draws each one as a full picture (pokeathlon_course_record.c:1027),
+// so pictureSeed - which lands on PokeathlonMonInfo.spotSeed - holds the seed rule's value, and unk08 is
+// never written nor read.
 typedef struct PokeathlonCourseSavedMon {
     u32 species : 9;
     u32 form : 5;
     u32 gender : 2;
     u32 isShiny : 1;
     u32 unused : 15;
-    u32 personality;
+    u32 pictureSeed;
     u32 unk08;
 } PokeathlonCourseSavedMon;
 
