@@ -290,3 +290,4 @@ __pycache__
 
 # build input, no rule can rebuild it
 !/soulsilver.us/rom_header_template.sbin
+tools/nitrorom/nitrorom
