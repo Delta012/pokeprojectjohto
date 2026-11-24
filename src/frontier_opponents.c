@@ -268,15 +268,23 @@ static u32 FrontierFieldSystem_GenerateFrontierMon(FrontierFieldSystem *frontier
     frontierMon->otId = otId;
     u32 pidGen;
     if (pid == 0) {
+        /* See BattleTower_GenerateFrontierMon: the personality is a shininess
+         * gate only, the nature has its own byte. */
         do {
             pidGen = FrontierFieldSystem_NextRandom(frontierFsys) | FrontierFieldSystem_NextRandom(frontierFsys) << 16;
-        } while (frontierMonNarcData.nature != GetNatureFromPersonality(pidGen)
-            || CalcShininessByOtIdAndPersonality(otId, pidGen) == TRUE);
+        } while (CalcShininessByOtIdAndPersonality(otId, pidGen) == TRUE);
         frontierMon->pid = pidGen;
     } else {
         frontierMon->pid = pid;
         pidGen = pid;
     }
+    frontierMon->nature = frontierMonNarcData.nature;
+    /* Same identity fields as FrontierMon_Generate: gender and the encryption
+     * constant belong to the record, not to whatever the rebuilder feels like
+     * drawing. */
+    frontierMon->gender = GetGenderBySpeciesAndPersonality(frontierMon->species, pidGen);
+    frontierMon->encryption_constant = (u32)(FrontierFieldSystem_NextRandom(frontierFsys)
+        | (FrontierFieldSystem_NextRandom(frontierFsys) << 16));
     frontierMon->hpIv = iv;
     frontierMon->atkIv = iv;
     frontierMon->defIv = iv;
@@ -301,12 +309,8 @@ static u32 FrontierFieldSystem_GenerateFrontierMon(FrontierFieldSystem *frontier
     frontierMon->ppUp = 0;
     frontierMon->language = gGameLanguage;
     u32 ability = GetMonBaseStat(frontierMon->species, BASE_ABILITY_2);
-    if (ability != ABILITY_NONE) {
-        if (frontierMon->pid % 2) {
-            frontierMon->ability = ability;
-        } else {
-            frontierMon->ability = GetMonBaseStat(frontierMon->species, BASE_ABILITY_1);
-        }
+    if (ability != ABILITY_NONE && (FrontierFieldSystem_NextRandom(frontierFsys) & 1)) { // the slot is its own draw
+        frontierMon->ability = ability;
     } else {
         frontierMon->ability = GetMonBaseStat(frontierMon->species, BASE_ABILITY_1);
     }

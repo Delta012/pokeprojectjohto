@@ -23,8 +23,8 @@
 
 static BOOL PokewalkerApp_AddStrollExp(BoxPokemon *boxMon, Pokemon *mon, int exp);
 static void PokewalkerApp_AddStrollFriendship(BoxPokemon *boxMon, int steps);
-static void PokewalkerApp_CreateWalkerMon(Pokemon *mon, u32 otId, const PokewalkerMon *walkerMon, u32 nature, BOOL genMode);
-static void PokewalkerApp_CreateWalkerMonWithOT(Pokemon *mon, PlayerProfile *profile, const PokewalkerMon *walkerMon, u32 nature, BOOL genMode);
+static void PokewalkerApp_CreateWalkerMon(Pokemon *mon, u32 otId, const PokewalkerMon *walkerMon, BOOL genMode);
+static void PokewalkerApp_CreateWalkerMonWithOT(Pokemon *mon, PlayerProfile *profile, const PokewalkerMon *walkerMon, BOOL genMode);
 static void PokewalkerApp_ReceiveGifts(PokewalkerApp *app);
 
 enum StartStrollState {
@@ -157,9 +157,7 @@ void PokewalkerApp_ReturnStrollMon(PokewalkerApp *app) {
         app->strollSteps = 0;
         Pokewalker_ClearBoxMon(app->pokewalker);
     } else {
-        PokewalkerMon *walkerMon = &app->walkerMon;
-        u32 nature = MTRandom() % 24;
-        PokewalkerApp_CreateWalkerMonWithOT(mon, app->profile, walkerMon, nature, FALSE);
+        PokewalkerApp_CreateWalkerMonWithOT(mon, app->profile, &app->walkerMon, FALSE);
         BoxMonSetTrainerMemo(Mon_GetBoxMon(mon), app->profile, 0, 233, HEAP_ID_154);
         received = TRUE;
     }
@@ -225,31 +223,42 @@ static void PokewalkerApp_AddStrollFriendship(BoxPokemon *boxMon, int steps) {
     }
 }
 
-static void PokewalkerApp_CreateWalkerMonWithOT(Pokemon *mon, PlayerProfile *profile, const PokewalkerMon *walkerMon, u32 nature, BOOL genMode) {
+static void PokewalkerApp_CreateWalkerMonWithOT(Pokemon *mon, PlayerProfile *profile, const PokewalkerMon *walkerMon, BOOL genMode) {
     String *name = PlayerProfile_GetPlayerName_NewString(profile, HEAP_ID_154);
     u32 otId = PlayerProfile_GetTrainerID(profile);
-    PokewalkerApp_CreateWalkerMon(mon, otId, walkerMon, nature, genMode);
+    PokewalkerApp_CreateWalkerMon(mon, otId, walkerMon, genMode);
     SetMonData(mon, MON_DATA_OT_NAME_STRING, name);
     String_Delete(name);
 }
 
-static void PokewalkerApp_CreateWalkerMon(Pokemon *mon, u32 otId, const PokewalkerMon *walkerMon, u32 nature, BOOL genMode) {
+// Rebuilds a Pokemon from the Pokewalker's 0x10-byte record, which carries no identity at all: the mon is
+// created the normal way, and only what the record really holds goes on top - its gender, and for a gift the
+// ability the caller writes after this returns.  That record layout is a firmware contract, untouched.
+static void PokewalkerApp_CreateWalkerMon(Pokemon *mon, u32 otId, const PokewalkerMon *walkerMon, BOOL genMode) {
     u8 form = walkerMon->form;
-    u8 gender = MON_RATIO_MALE;
+    u8 gender;
+    u32 personality;
 
-    if (walkerMon->gender == 1) {
-        gender = MON_RATIO_FEMALE;
+    if (walkerMon->gender == MON_MALE || walkerMon->gender == MON_FEMALE) {
+        gender = walkerMon->gender;
+    } else {
+        gender = MonRollGender(walkerMon->species);
     }
-    {
-        u32 personality = ChangePersonalityToNatureGenderAndAbility(otId, walkerMon->species, nature, gender, nature & 1, genMode);
-        CreateMon(mon, walkerMon->species, walkerMon->level, 32, TRUE, personality, OT_ID_PRESET, otId);
+    if (genMode) {
+        personality = GenerateShinyPersonality(otId);
+    } else {
+        personality = GenerateNonShinyPersonality(otId);
     }
+    CreateMon(mon, walkerMon->species, walkerMon->level, 32, TRUE, (int)personality, OT_ID_PRESET, otId);
+    SetMonData(mon, MON_DATA_FORM, &form);
+    UpdateBoxMonAbility(&mon->box); // the ability CreateMon rolled is re-resolved for this form
+    SetMonData(mon, MON_DATA_GENDER, &gender);
+    CalcMonLevelAndStats(mon);
     SetMonData(mon, MON_DATA_HELD_ITEM, &walkerMon->heldItem);
     SetMonData(mon, MON_DATA_MOVE1, &walkerMon->moves[0]);
     SetMonData(mon, MON_DATA_MOVE2, &walkerMon->moves[1]);
     SetMonData(mon, MON_DATA_MOVE3, &walkerMon->moves[2]);
     SetMonData(mon, MON_DATA_MOVE4, &walkerMon->moves[3]);
-    SetMonData(mon, MON_DATA_FORM, &form);
 }
 
 // Puts the items the Pokewalker found and its gift item into the bag.
@@ -303,7 +312,7 @@ void PokewalkerApp_ReceiveMons(PokewalkerApp *app, BOOL useWalkerBox) {
     caughtMon = app->irStatus.caughtMons;
     for (i = 0; i < 3; i++, caughtMon++) {
         if (caughtMon->species != SPECIES_NONE) {
-            PokewalkerApp_CreateWalkerMonWithOT(mon, app->profile, caughtMon, MTRandom() % 24, FALSE);
+            PokewalkerApp_CreateWalkerMonWithOT(mon, app->profile, caughtMon, FALSE);
             BoxMonSetTrainerMemo(Mon_GetBoxMon(mon), app->profile, 0, 233, HEAP_ID_154);
             boxMon = Mon_GetBoxMon(mon);
             PCStorage_FindFirstEmptySlot(pcStorage, &box, &slot);
@@ -319,7 +328,7 @@ void PokewalkerApp_ReceiveMons(PokewalkerApp *app, BOOL useWalkerBox) {
             CopyU16ArrayToString(otName, app->irBlocks.giftMon.otName);
             ZeroMonData(mon);
             giftBoxMon = Mon_GetBoxMon(mon);
-            PokewalkerApp_CreateWalkerMon(mon, app->irBlocks.giftMon.otId, &giftMon->mon, MTRandom() % 24, giftMon->mon.isShiny);
+            PokewalkerApp_CreateWalkerMon(mon, app->irBlocks.giftMon.otId, &giftMon->mon, giftMon->mon.isShiny);
             otGender = app->irBlocks.giftMon.otGender;
             SetBoxMonData(giftBoxMon, MON_DATA_OT_GENDER, &otGender);
             SetBoxMonData(giftBoxMon, MON_DATA_OT_NAME_STRING, otName);

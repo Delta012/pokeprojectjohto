@@ -103,6 +103,14 @@ int GetRoamerData(Roamer *roamer, int attr) {
         return roamer->status;
     case ROAMER_DATA_ACTIVE:
         return roamer->active;
+    case ROAMER_DATA_ENCRYPTION_CONSTANT:
+        return roamer->encryption_constant;
+    case ROAMER_DATA_NATURE:
+        return roamer->nature;
+    case ROAMER_DATA_GENDER:
+        return roamer->gender;
+    case ROAMER_DATA_ABILITY:
+        return roamer->ability;
     default:
         GF_ASSERT(FALSE);
         return 0;
@@ -134,6 +142,18 @@ void SetRoamerData(Roamer *roamer, int attr, int val) {
         break;
     case ROAMER_DATA_ACTIVE:
         roamer->active = val;
+        break;
+    case ROAMER_DATA_ENCRYPTION_CONSTANT:
+        roamer->encryption_constant = val;
+        break;
+    case ROAMER_DATA_NATURE:
+        roamer->nature = val;
+        break;
+    case ROAMER_DATA_GENDER:
+        roamer->gender = val;
+        break;
+    case ROAMER_DATA_ABILITY:
+        roamer->ability = val;
         break;
     default:
         GF_ASSERT(FALSE);

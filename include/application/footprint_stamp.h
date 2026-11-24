@@ -75,7 +75,7 @@ typedef struct FootprintStampMon {
     u8 form;
     u8 x; // touch position of the stamp
     u8 y;
-    u8 padding;
+    u8 nature; // gFootprintStampNatureEffects index; 0 (Hardy) for records that carry none
 } FootprintStampMon;
 
 // Board-space bounding box of a stamp (FootprintStamp_GetBounds).

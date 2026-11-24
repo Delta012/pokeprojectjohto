@@ -275,7 +275,7 @@ BOOL FootprintStamp_SetEffect(FootprintStampObj *stamp, int effect) {
 }
 
 static u8 FootprintStamp_GetNatureEffect(FootprintStampObj *stamp) {
-    return gFootprintStampNatureEffects[GetNatureFromPersonality(stamp->mon.personality)];
+    return gFootprintStampNatureEffects[stamp->mon.nature];
 }
 
 // A new stamp appears after two frames and starts its nature's effect after 40.

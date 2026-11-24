@@ -76,6 +76,7 @@ typedef struct GlobalTerminalNetLogin {
 typedef struct GlobalTerminalNetDressUpForm {
     u32 magic;
     u32 personality;
+    u32 encryption_constant; // the owner's constant; it seeds the picture, as in SaveFashionDataSub
     u32 otId;
     u16 species;
     u16 secondText[8];
@@ -83,7 +84,8 @@ typedef struct GlobalTerminalNetDressUpForm {
     u8 x;
     u8 y;
     u8 form;
-    u8 unk_22[2];
+    u8 secondTextGender;
+    u8 gender; // the dressed-up Pokemon's own gender byte
     u32 itemMask;
     u16 mailMsgBank;
     u16 mailMsgNo;
@@ -92,9 +94,9 @@ typedef struct GlobalTerminalNetDressUpForm {
     u8 items[10][4];
     u8 backdrop;
     u8 language;
-    u16 unk_5A;
-    u16 crc;
     u16 unk_5E;
+    u16 crc;
+    u16 unk_62;
 } GlobalTerminalNetDressUpForm;
 
 // box as sent to the server
@@ -102,14 +104,16 @@ typedef struct GlobalTerminalNetBoxForm {
     u16 name[20];
     u16 species[30];
     u32 personality[30];
+    u32 encryption_constant[30]; // each owner's constant; it seeds that mon's picture
     u32 otIds[30];
     u32 eggFlags; // bit per slot
     u8 forms[30];
     u8 wallpaper;
     u8 category;
-    u8 unk_178[0x198 - 0x178];
+    u8 genders[30]; // each owner's stored gender: the personality no longer encodes it
+    u8 unk_20E[2];
     u16 crc;
-    u8 unk_19A[2];
+    u8 unk_212[2];
 } GlobalTerminalNetBoxForm;
 
 typedef struct GlobalTerminalNetPair {

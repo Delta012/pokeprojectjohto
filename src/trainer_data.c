@@ -268,6 +268,34 @@ TrainerGender TrainerClass_GetGenderOrTrainerCount(int trainerClass) {
 void TrMon_OverridePidGender(int species, int form, int overrideParam, u32 *pid);
 void TrMon_FrustrationCheckAndSetFriendship(Pokemon *mon);
 
+// NEW: the trpoke data carries gender and ability slot in its pidGender byte, which used to be folded into
+// the personality's low byte.  Read that byte and store it, using the same ratio comparison the old low
+// byte was tested against.
+static void TrMon_SetStoredGenderAndAbility(Pokemon *mon, int species, int form, u32 pidGender) {
+    int ratio = GetMonBaseStat_HandleAlternateForm(species, form, BASE_GENDER_RATIO);
+    u8 gender;
+    switch (ratio) {
+    case MON_RATIO_MALE:
+        gender = MON_MALE;
+        break;
+    case MON_RATIO_FEMALE:
+        gender = MON_FEMALE;
+        break;
+    case MON_RATIO_UNKNOWN:
+        gender = MON_GENDERLESS;
+        break;
+    default:
+        if ((u8)ratio > (u8)pidGender) {
+            gender = MON_FEMALE;
+        } else {
+            gender = MON_MALE;
+        }
+        break;
+    }
+    SetMonData(mon, MON_DATA_GENDER, &gender);
+    Mon_SetAbilitySlot(&mon->box, (u8)(pidGender & 1));
+}
+
 void CreateNPCTrainerParty(BattleSetup *enemies, int partyIndex, enum HeapID heapID) {
     TRPOKE *data; // sp74
     int i;
@@ -343,6 +371,7 @@ void CreateNPCTrainerParty(BattleSetup *enemies, int partyIndex, enum HeapID hea
             SetMonData(mon, MON_DATA_FORM, &form);
             // Starting in HGSS, an AI Pokemon with Frustration
             // will have minimum friendship.
+            TrMon_SetStoredGenderAndAbility(mon, species, form, pidGender);
             TrMon_FrustrationCheckAndSetFriendship(mon);
             Party_AddMon(enemies->party[partyIndex], mon);
         }
@@ -370,6 +399,7 @@ void CreateNPCTrainerParty(BattleSetup *enemies, int partyIndex, enum HeapID hea
             }
             SetTrMonCapsule(monSpeciesMoves[i].capsule, mon, heapID);
             SetMonData(mon, MON_DATA_FORM, &form);
+            TrMon_SetStoredGenderAndAbility(mon, species, form, pidGender);
             TrMon_FrustrationCheckAndSetFriendship(mon);
             Party_AddMon(enemies->party[partyIndex], mon);
         }
@@ -395,6 +425,7 @@ void CreateNPCTrainerParty(BattleSetup *enemies, int partyIndex, enum HeapID hea
             SetMonData(mon, MON_DATA_HELD_ITEM, &monSpeciesItem[i].item);
             SetTrMonCapsule(monSpeciesItem[i].capsule, mon, heapID);
             SetMonData(mon, MON_DATA_FORM, &form);
+            TrMon_SetStoredGenderAndAbility(mon, species, form, pidGender);
             TrMon_FrustrationCheckAndSetFriendship(mon);
             Party_AddMon(enemies->party[partyIndex], mon);
         }
@@ -423,6 +454,7 @@ void CreateNPCTrainerParty(BattleSetup *enemies, int partyIndex, enum HeapID hea
             }
             SetTrMonCapsule(monSpeciesItemMoves[i].capsule, mon, heapID);
             SetMonData(mon, MON_DATA_FORM, &form);
+            TrMon_SetStoredGenderAndAbility(mon, species, form, pidGender);
             TrMon_FrustrationCheckAndSetFriendship(mon);
             Party_AddMon(enemies->party[partyIndex], mon);
         }

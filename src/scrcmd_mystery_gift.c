@@ -227,8 +227,9 @@ static void MGGive_Mon(FieldSystem *fieldSys, MysteryGiftData *unused) {
     }
     SetMonPersonality(pokemon, rand);
 
-    int gender = GetMonGender(pokemon);
-    SetMonData(pokemon, MON_DATA_GENDER, &gender);
+    // The gift's own gender byte travels with the mon now, so it is not
+    // re-derived from the personality any more.
+    int gender;
 
     gender = GetMonData(pokemon, MON_DATA_HP_IV, NULL) + GetMonData(pokemon, MON_DATA_ATK_IV, NULL) + GetMonData(pokemon, MON_DATA_DEF_IV, NULL) + GetMonData(pokemon, MON_DATA_SPEED_IV, NULL) + GetMonData(pokemon, MON_DATA_SPATK_IV, NULL) + GetMonData(pokemon, MON_DATA_SPDEF_IV, NULL);
     if (gender == 0) {

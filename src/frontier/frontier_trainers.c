@@ -115,14 +115,22 @@ static u32 FrontierMon_Generate(FrontierMon *mon, u32 setId, u32 otId, u32 pid, 
     }
     mon->otId = otId;
     if (pid == 0) {
+        /* The personality is only a shininess gate now; the set's nature goes
+         * into its own byte (see FrontierMon_ToPokemon). */
         do {
             u32 low = LCRandom();
             pid = low | (LCRandom() << 16);
-        } while (GetNatureFromPersonality(pid) != set.nature || CalcShininessByOtIdAndPersonality(otId, pid) == TRUE);
+        } while (CalcShininessByOtIdAndPersonality(otId, pid) == TRUE);
         mon->pid = pid;
     } else {
         mon->pid = pid;
     }
+    mon->nature = set.nature;
+    /* The record keeps a full identity: gender comes from the species ratio and
+     * the personality that was just picked, and the encryption constant is its
+     * own draw, so FrontierMon_ToPokemon never has to invent either. */
+    mon->gender = GetGenderBySpeciesAndPersonality(mon->species, mon->pid);
+    mon->encryption_constant = (u32)(LCRandom() | (LCRandom() << 16));
     mon->hpIv = iv;
     mon->atkIv = iv;
     mon->defIv = iv;
@@ -149,12 +157,8 @@ static u32 FrontierMon_Generate(FrontierMon *mon, u32 setId, u32 otId, u32 pid, 
     mon->ppUp = 0;
     mon->language = gGameLanguage;
     u32 ability = GetMonBaseStat(mon->species, BASE_ABILITY_2);
-    if (ability) {
-        if (mon->pid & 1) {
-            mon->ability = ability;
-        } else {
-            mon->ability = GetMonBaseStat(mon->species, BASE_ABILITY_1);
-        }
+    if (ability && (LCRandom() & 1)) { // the slot is its own draw
+        mon->ability = ability;
     } else {
         mon->ability = GetMonBaseStat(mon->species, BASE_ABILITY_1);
     }
@@ -166,6 +170,7 @@ static u32 FrontierMon_Generate(FrontierMon *mon, u32 setId, u32 otId, u32 pid, 
 void FrontierMon_ToPokemon(FrontierMon *frontierMon, Pokemon *mon, int level) {
     u32 ivs;
     u32 otId;
+    u8 nature;
     FrontierMonParam param;
     FrontierMon *iter;
 
@@ -177,6 +182,24 @@ void FrontierMon_ToPokemon(FrontierMon *frontierMon, Pokemon *mon, int level) {
     }
     ivs = frontierMon->ivsWord & 0x3FFFFFFF;
     CreateMon(mon, frontierMon->species, level, ivs, TRUE, frontierMon->pid, OT_ID_RANDOM_NO_SHINY, 0);
+    // The nature travels in its own byte (FrontierMon_Generate, and the static mon table in
+    // asm/frontier_script_commands_data.s), so it is stored here like any other mon's.
+    nature = frontierMon->nature;
+    SetMonData(mon, MON_DATA_NATURE, &nature);
+    /* Gender and the encryption constant travel in the record now, so a Frontier
+     * set fields the same Pokemon every single time it is used: same gender icon,
+     * same Spinda spots, same data-block order. */
+    u8 gender = frontierMon->gender;
+    u32 ec = frontierMon->encryption_constant;
+    if (ec == 0) {
+        /* A record that carries no identity (the static mon tables in
+         * asm/frontier_script_commands_data.s): fall back to what the old code
+         * derived from the personality, which is at least stable. */
+        gender = GetGenderBySpeciesAndPersonality(frontierMon->species, frontierMon->pid);
+        ec = frontierMon->pid;
+    }
+    SetMonData(mon, MON_DATA_GENDER, &gender);
+    SetMonEncryptionConstant(mon, ec);
     SetMonData(mon, MON_DATA_COMBINED_IVS, &ivs);
     CalcMonLevelAndStats(mon);
     param.value = frontierMon->form;

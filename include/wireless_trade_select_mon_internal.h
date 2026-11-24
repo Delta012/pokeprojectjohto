@@ -29,8 +29,8 @@
 #define WIRELESS_TRADE_SLOT_CANCEL 12 // the cursor position of the "Quit" button
 #define WIRELESS_TRADE_NUM_WINDOWS 34
 
-// Party data travels in chunks of this size.
-#define WIRELESS_TRADE_PARTY_CHUNK_SIZE 0x590
+// Party data travels whole, in one chunk holding a PartyCore.
+#define WIRELESS_TRADE_PARTY_CHUNK_SIZE sizeof(PartyCore)
 #define WIRELESS_TRADE_MON_PIC_SIZE     0xC80
 
 // What the screen shows of one party slot.

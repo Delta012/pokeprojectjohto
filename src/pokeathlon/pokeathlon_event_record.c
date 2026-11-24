@@ -644,6 +644,7 @@ static void PokeathlonEventRecord_CopyRecords(PokeathlonEventRecord *work, const
     int event;
     int rank;
     int i;
+    int j;
     PokeathlonEventRecordTeam team;
     PokeathlonEventRecordTeam defaultTeam;
 
@@ -664,6 +665,10 @@ static void PokeathlonEventRecord_CopyRecords(PokeathlonEventRecord *work, const
                 team = defaultTeam;
                 MI_CpuCopy8(&team, &dst[event].entries[i].team, sizeof(PokeathlonEventRecordTeam));
                 dst[event].entries[i].score = ((u16(*)(u16, u32))PokeathlonUtil_GetEventThreshold)(event, 0);
+                // the trophy target is no Pokemon of the player's, so it draws from no identity
+                for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
+                    dst[event].entries[i].encryption_constant[j] = 0;
+                }
             } else if (i > rank) {
                 dst[event].entries[i] = src[event].entries[i - 1];
             }
@@ -711,6 +716,7 @@ static void PokeathlonEventRecord_GetRecordMon(PokeathlonEventRecordData *data, 
     value = entry->team.mons[slot];
     mon->species = value & 0x3FF;
     mon->form = value >> 10;
+    mon->spotSeed = entry->encryption_constant[slot];
 }
 
 static u16 PokeathlonEventRecord_GetRecordScore(PokeathlonEventRecordData *data, int event, u8 rank, BOOL link) {
@@ -729,13 +735,11 @@ static PlayerProfile *PokeathlonEventRecord_GetProfile(PokeathlonEventRecordData
 }
 
 static String *PokeathlonEventRecord_GetLinkPlayerName(PokeathlonEventRecordData *data, int event, int rank) {
-    u8 *records;
     String *string;
 
     GF_ASSERT(data != NULL);
-    records = (u8 *)&data->args->recordsLink[event];
     string = data->string;
     // the player name of each rank in the link records
-    CopyU16ArrayToString(string, (const u16 *)(records + 0x30 + rank * 0x18));
+    CopyU16ArrayToString(string, data->args->recordsLink[event].trainers[rank].name);
     return data->string;
 }

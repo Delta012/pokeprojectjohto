@@ -23,7 +23,8 @@ typedef struct Pokedex {
     u32 caughtSpecies[NUM_DEX_FLAG_WORDS];
     u32 seenSpecies[NUM_DEX_FLAG_WORDS];
     u32 seenGenders[2][NUM_DEX_FLAG_WORDS];
-    u32 spindaPersonality;
+    u32 spindaEncryptionConstant; // the encryption constant of the first Spinda seen; it seeds
+                                  // the Pokedex picture's spots (Pokedex_GetSeenSpindaPersonality)
     u8 shellosFormOrder;
     u8 gastrodonFormOrder;
     u8 burmyFormOrder;

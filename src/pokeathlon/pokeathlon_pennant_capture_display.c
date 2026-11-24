@@ -237,8 +237,8 @@ void PokeathlonPennantCaptureDisplay_LoadMonPics(PokeathlonPennantCaptureDisplay
     int i = 0;
 
     for (; i < POKEATHLON_TEAM_SIZE; i++) {
-        GetMonSpriteCharAndPlttNarcIdsEx(&template, mons[i].species, mons[i].gender, 2, mons[i].shiny, mons[i].form, mons[i].personality);
-        display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)template.narcID, template.charDataID, display->heapId, mons[i].personality, FALSE, 2, mons[i].species);
+        GetMonSpriteCharAndPlttNarcIdsEx(&template, mons[i].species, mons[i].gender, 2, mons[i].shiny, mons[i].form, mons[i].spotSeed);
+        display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)template.narcID, template.charDataID, display->heapId, mons[i].spotSeed, FALSE, 2, mons[i].species);
         display->monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId)template.narcID, template.palDataID, display->heapId);
     }
 }

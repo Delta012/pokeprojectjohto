@@ -199,8 +199,8 @@ static void PokeathlonSnowThrowDisplay_LoadMonPics(PokeathlonSnowThrowDisplay *d
     PokepicTemplate template;
 
     for (i = 0; i < POKEATHLON_TEAM_SIZE; mons++, i++) {
-        GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, mons->form, mons->personality);
-        display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->personality, FALSE, 0, mons->species);
+        GetMonSpriteCharAndPlttNarcIdsEx(&template, mons->species, mons->gender, 0, mons->isShiny, mons->form, mons->spotSeed);
+        display->monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, display->heapId, mons->spotSeed, FALSE, 0, mons->species);
         display->monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, display->heapId);
     }
 }
@@ -223,7 +223,7 @@ static void PokeathlonSnowThrowDisplay_CreatePicSprites(PokeathlonCourseSpritePo
         display->picSprites[i] = PokeathlonCourseSpritePool_Take(pool, 101, 2);
         position.z = 0;
         position.x = x << FX32_SHIFT;
-        position.y = (GetMonPicHeightBySpeciesGenderForm(mon->species, mon->gender, 0, mon->form, mon->personality) + 376) << FX32_SHIFT;
+        position.y = (GetMonPicHeightBySpeciesGenderForm(mon->species, mon->gender, 0, mon->form, mon->spotSeed) + 376) << FX32_SHIFT;
         PokeathlonCourseSpritePoolSprite_SetPosition(display->picSprites[i], &position);
         PokeathlonCourseSpritePoolSprite_SetAnim(display->picSprites[i], i + 1);
         PokeathlonCourseSpritePoolSprite_Show(display->picSprites[i], TRUE, TRUE);

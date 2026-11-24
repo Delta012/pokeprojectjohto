@@ -558,7 +558,7 @@ static void PCBox_LoadMonPic(PCBoxView *view, PCBoxMonInfo *monInfo, u32 index) 
     } else {
         species = monInfo->species;
     }
-    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pic.narcID, pic.charDataID, HEAP_ID_10, &dims, buf, monInfo->personality, FALSE, 2, species);
+    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pic.narcID, pic.charDataID, HEAP_ID_10, &dims, buf, monInfo->encryption_constant, FALSE, 2, species);
     location = NNS_G2dGetImageLocation(Sprite_GetImageProxy(view->sprites[index]->sprite), NNS_G2D_VRAM_TYPE_2DSUB);
     DC_FlushRange(buf, 0xc80);
     GXS_LoadOBJ(buf, location, 0xc80);

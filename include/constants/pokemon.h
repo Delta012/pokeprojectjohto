@@ -114,6 +114,9 @@
 
 #define NATURE_NUM 25
 
+// The Trainer Memo characteristic byte holds characteristic * 5 + variant.
+#define MON_CHARACTERISTIC_NUM 30
+
 #define FLAVOR_SPICY  0
 #define FLAVOR_DRY    1
 #define FLAVOR_SWEET  2
@@ -274,14 +277,14 @@
 #define MON_DATA_GENDER                     111
 #define MON_DATA_FORM                       112
 #define MON_DATA_UNUSED_113                 113
-#define MON_DATA_UNUSED_114                 114
+#define MON_DATA_NATURE                     114
 #define MON_DATA_EGG_LOCATION_PTHGSS        115
 #define MON_DATA_MET_LOCATION_PTHGSS        116
 #define MON_DATA_NICKNAME                   117
 #define MON_DATA_NICKNAME_FLAT_COMPARE      118
 #define MON_DATA_NICKNAME_STRING            119
 #define MON_DATA_NICKNAME_STRING_AND_FLAG   120
-#define MON_DATA_UNUSED_121                 121
+#define MON_DATA_CHARACTERISTIC             121
 #define MON_DATA_MET_GAME                   122
 #define MON_DATA_SUPER_COOL_RIBBON          123
 #define MON_DATA_SUPER_COOL_RIBBON_GREAT    124
@@ -348,6 +351,7 @@
 #define MON_DATA_SHINY_LEAF_E               185
 #define MON_DATA_SHINY_LEAF_CROWN           186
 #define MON_DATA_MOOD                       187
+#define MON_DATA_ENCRYPTION_CONSTANT        188
 
 #define OT_ID_PLAYER_ID       0
 #define OT_ID_PRESET          1
@@ -573,8 +577,8 @@ typedef enum EvoMethod {
     EVO_LEVEL_ATK_GT_DEF,
     EVO_LEVEL_ATK_EQ_DEF,
     EVO_LEVEL_ATK_LT_DEF,
-    EVO_LEVEL_PID_LO,
-    EVO_LEVEL_PID_HI,
+    EVO_LEVEL_EC_LO,
+    EVO_LEVEL_EC_HI,
     EVO_LEVEL_NINJASK,
     EVO_LEVEL_SHEDINJA,
     EVO_BEAUTY,

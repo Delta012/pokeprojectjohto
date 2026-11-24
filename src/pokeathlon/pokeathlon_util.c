@@ -151,10 +151,10 @@ void PokeathlonUtil_LoadMonPicSprite(ManagedSprite *sprite, const PokeathlonMonI
         return;
     }
 
-    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, mon->species, mon->gender, MON_PIC_FACING_FRONT, mon->shiny, mon->form, mon->personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, mon->species, mon->gender, MON_PIC_FACING_FRONT, mon->shiny, mon->form, mon->spotSeed);
     rect = sPokeathlonMonPicRect;
     charBuf = Heap_AllocAtEnd(heapId, MON_PIC_BUFFER_SIZE);
-    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, heapId, &rect, charBuf, mon->personality, FALSE, MON_PIC_FACING_FRONT, mon->species);
+    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, heapId, &rect, charBuf, mon->spotSeed, FALSE, MON_PIC_FACING_FRONT, mon->species);
     PokeathlonUtil_LoadSpriteChars(sprite, charBuf, MON_PIC_BUFFER_SIZE);
     PokeathlonUtil_LoadSpritePalette(sprite, (NarcId)pokepic.narcID, pokepic.palDataID, isMain, grayscale, heapId);
     ManagedSprite_SetDrawFlag(sprite, TRUE);

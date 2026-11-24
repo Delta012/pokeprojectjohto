@@ -20,10 +20,6 @@
 #include "pokemon_summary.h"
 #include "yes_no_prompt.h"
 
-// A deposited Pokemon as the server stores it (the payload of post.asp, the answers of get.asp/result.asp,
-// search.asp returns a list of them).
-#define GTS_RECORD_SIZE 0x124
-
 // GtsApp.offeredBox of a Pokemon offered from the party.
 #define GTS_BOX_PARTY 18
 
@@ -48,7 +44,7 @@ typedef struct GtsRecord {
     GtsMonSummary summary;
     GtsWantedMon wanted;
     u8 trainerGender;
-    u8 unk_0F7[0x11];
+    u8 unk_0FB[0x11];
     u32 exchangeId; // exchange.asp is sent it after the offered record to pick this one
     u16 trainerName[PLAYER_NAME_LENGTH + 1];
     u16 trainerId;
@@ -59,6 +55,10 @@ typedef struct GtsRecord {
     u8 version;
     u8 language;
 } GtsRecord;
+
+// A deposited Pokemon as the server stores it (the payload of post.asp, the answers of get.asp/result.asp,
+// search.asp returns a list of them).
+#define GTS_RECORD_SIZE ((int)sizeof(GtsRecord))
 
 typedef enum GtsServerState {
     GTS_SERVER_STATE_NONE,

@@ -27,7 +27,7 @@ static const u16 sBigMonSizeTable[][3] = {
 };
 
 static u32 GetMonSizeHash(Pokemon *mon) {
-    u16 pid_lo;
+    u16 ec_lo;
     u16 hpIv_lo;
     u16 atkIv_lo;
     u16 defIv_lo;
@@ -36,7 +36,9 @@ static u32 GetMonSizeHash(Pokemon *mon) {
     u16 spDefIv_lo;
     u16 ret, ret2;
 
-    pid_lo = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    // No modern equivalent for the size game's random value: keep the vanilla IV-based mix, but seed it from
+    // the encryption constant - the personality is a shiny serial and a trade identifier, nothing cosmetic.
+    ec_lo = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     hpIv_lo = GetMonData(mon, MON_DATA_HP_IV, NULL) & 0xF;
     atkIv_lo = GetMonData(mon, MON_DATA_ATK_IV, NULL) & 0xF;
     defIv_lo = GetMonData(mon, MON_DATA_DEF_IV, NULL) & 0xF;
@@ -44,8 +46,8 @@ static u32 GetMonSizeHash(Pokemon *mon) {
     spAtkIv_lo = GetMonData(mon, MON_DATA_SPATK_IV, NULL) & 0xF;
     spDefIv_lo = GetMonData(mon, MON_DATA_SPDEF_IV, NULL) & 0xF;
 
-    ret = ((spDefIv_lo ^ spAtkIv_lo) * spdIv_lo) ^ (pid_lo >> 8);
-    ret2 = ((atkIv_lo ^ defIv_lo) * hpIv_lo) ^ ((u8)pid_lo);
+    ret = ((spDefIv_lo ^ spAtkIv_lo) * spdIv_lo) ^ (ec_lo >> 8);
+    ret2 = ((atkIv_lo ^ defIv_lo) * hpIv_lo) ^ ((u8)ec_lo);
     return ret + (ret2 << 8);
 }
 

@@ -15,7 +15,9 @@ typedef struct HOFMon {
     /* 0x0C */ u16 nickname[POKEMON_NAME_LENGTH + 1];
     /* 0x22 */ u16 otname[PLAYER_NAME_LENGTH + 1];
     /* 0x32 */ u16 moves[4];
-    /* 0x3A */ u8 padding[2];
+    /* 0x3A */ u8 gender; // MON_MALE / MON_FEMALE / MON_GENDERLESS, for the showcase sprites
+    /* 0x3B */ u8 padding_3B;
+    /* 0x3C */ u32 encryption_constant; // seeds cosmetic patterns (Spinda spots) on this record's picture
 } HOFMON;
 
 typedef struct HOFParty {
@@ -35,10 +37,12 @@ typedef struct HofDisplayMon {
     String *nickname;
     String *otname;
     u32 personality;
+    u32 encryption_constant; // seeds cosmetic patterns (Spinda spots) on this mon's picture
     u32 otid;
     u16 species;
     u8 level;
     u8 form;
+    u8 gender;
     u16 moves[4];
 } SHOW_HOFMON;
 

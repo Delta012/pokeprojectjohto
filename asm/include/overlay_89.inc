@@ -186,7 +186,6 @@
 .public WirelessStatusIcon_Create
 .public WirelessStatusIcon_Destroy
 .public GetMonData
-.public GetNatureFromPersonality
 .public Party_GetCount
 .public Party_GetMonByIndex
 .public SaveArray_Party_Get

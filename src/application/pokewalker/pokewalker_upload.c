@@ -314,7 +314,7 @@ void PokewalkerApp_BuildStrollData(PokewalkerStrollData *data, PokewalkerApp *ap
     GF_ASSERT(app->selectMon.species != SPECIES_NONE);
     file = GfGfxLoader_LoadFromNarc(NARC_a_2_5_6, PokewalkerApp_GetPictureFile(app->selectMon.species, app->selectMon.gender, app->selectMon.form), TRUE, HEAP_ID_154, TRUE);
     if (app->selectMon.species == SPECIES_SPINDA) {
-        PokewalkerApp_DrawSpindaSpotsOnPicture(file, sSpindaSpotMask, GetBoxMonData(app->strollMon, MON_DATA_PERSONALITY, NULL));
+        PokewalkerApp_DrawSpindaSpotsOnPicture(file, sSpindaSpotMask, GetBoxMonData(app->strollMon, MON_DATA_ENCRYPTION_CONSTANT, NULL));
     }
     MI_CpuCopy8(file, data->monPicture, 0x600);
     Heap_Free(file);
@@ -369,11 +369,10 @@ static void PokewalkerApp_PrintStrollTexts(Window *windows, PokewalkerApp *app, 
 
 // Loads a Pokemon's front picture (80x80) into OBJ VRAM of the main (screen 0) or sub screen.
 int PokewalkerApp_LoadMonPicture(BoxPokemon *boxMon, void *buffer, PokepicTemplate *template, int screen) {
-    u32 personality, species;
+    u32 species;
     GetBoxmonSpriteCharAndPlttNarcIds(template, boxMon, 2, FALSE);
-    personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
     species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
-    CharTiles_LoadMonObjBlocksFromNarc((NarcId) template->narcID, template->charDataID, HEAP_ID_154, 0, 0, 10, 10, buffer, personality, FALSE, 2, species);
+    CharTiles_LoadMonObjBlocksFromNarc((NarcId) template->narcID, template->charDataID, HEAP_ID_154, 0, 0, 10, 10, buffer, template->spotSeed, FALSE, 2, species);
     DC_FlushRange(buffer, 0xC80);
     if (screen == 0) {
         GX_LoadOBJ(buffer, 0xB80, 0xC80);

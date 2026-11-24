@@ -191,8 +191,8 @@ void PokeathlonRelayRunHud_LoadMonPics(PokeathlonRelayRunHud *hud, const Pokeath
     PokepicTemplate template;
     int i;
     for (i = 0; i < POKEATHLON_TEAM_SIZE; mon++, i++) {
-        GetMonSpriteCharAndPlttNarcIdsEx(&template, mon->species, mon->gender, 2, mon->isShiny, mon->form, mon->personality);
-        hud->pics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, hud->heapId, mon->personality, FALSE, 2, mon->species);
+        GetMonSpriteCharAndPlttNarcIdsEx(&template, mon->species, mon->gender, 2, mon->isShiny, mon->form, mon->spotSeed);
+        hud->pics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId) template.narcID, template.charDataID, hud->heapId, mon->spotSeed, FALSE, 2, mon->species);
         hud->pics[i].palette = AllocAndLoadPltt16FromNarc((NarcId) template.narcID, template.palDataID, hud->heapId);
     }
 }

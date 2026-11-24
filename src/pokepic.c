@@ -1278,24 +1278,26 @@ static u8 swapNybbles(u8 val) {
 
 static void Pokepic_MaybeAddSpindaSpots(Pokepic *pokepic, u8 *charData) {
     if (pokepic->template.species != SPECIES_NONE) {
-        RawChardata_PlaceSpindaSpots(charData, pokepic->template.personality, TRUE);
+        RawChardata_PlaceSpindaSpots(charData, pokepic->template.spotSeed, TRUE);
     }
 }
 
-void RawChardata_PlaceSpindaSpots(u8 *pRawData, u32 pid, BOOL isAnimated) {
+// The four spot placements come one per byte of spotSeed.  A Pokemon supplies its
+// encryption constant here; the personality is free to be nothing but a shiny serial.
+void RawChardata_PlaceSpindaSpots(u8 *pRawData, u32 spotSeed, BOOL isAnimated) {
     const u8(*spotCoords)[2];
     int i;
     u8 x;
     u8 y;
     u8 j;
     int destOffset;
-    u32 lr = pid;
+    u32 lr = spotSeed;
     for (i = 0; i < 4; ++i) {
         spotCoords = sSpindaSpotsCoordsPtrs[i];
         j = 0;
         while (spotCoords[j][0] != 0xFF) {
-            x = spotCoords[j][0] + ((pid & 0x0F) - 8);
-            y = spotCoords[j][1] + (((pid & 0xF0) >> 4) - 8);
+            x = spotCoords[j][0] + ((spotSeed & 0x0F) - 8);
+            y = spotCoords[j][1] + (((spotSeed & 0xF0) >> 4) - 8);
             destOffset = x / 2 + y * 80;
             if (x & 1) {
                 if ((pRawData[destOffset] & 0xF0) >= 0x10 && (pRawData[destOffset] & 0xF0) <= 0x30) {
@@ -1308,16 +1310,16 @@ void RawChardata_PlaceSpindaSpots(u8 *pRawData, u32 pid, BOOL isAnimated) {
             }
             ++j;
         }
-        pid >>= 8;
+        spotSeed >>= 8;
     }
-    pid = lr;
+    spotSeed = lr;
     if (isAnimated) {
         for (i = 0; i < 4; ++i) {
             spotCoords = sSpindaSpotsCoordsPtrs[i];
             j = 0;
             while (spotCoords[j][0] != 0xFF) {
-                x = (spotCoords[j][0] - 14) + ((pid & 0x0F) - 8) + 80;
-                y = spotCoords[j][1] + (((pid & 0xF0) >> 4) - 8);
+                x = (spotCoords[j][0] - 14) + ((spotSeed & 0x0F) - 8) + 80;
+                y = spotCoords[j][1] + (((spotSeed & 0xF0) >> 4) - 8);
                 destOffset = x / 2 + y * 80;
                 if (x & 1) {
                     if ((pRawData[destOffset] & 0xF0) >= 0x10 && (pRawData[destOffset] & 0xF0) <= 0x30) {
@@ -1330,7 +1332,7 @@ void RawChardata_PlaceSpindaSpots(u8 *pRawData, u32 pid, BOOL isAnimated) {
                 }
                 ++j;
             }
-            pid >>= 8;
+            spotSeed >>= 8;
         }
     }
 }

@@ -120,6 +120,8 @@ void BattleSystem_GetBattleMon(BattleSystem *battleSystem, BattleContext *ctx, i
 
     ctx->battleMons[battlerId].exp = GetMonData(mon, MON_DATA_EXPERIENCE, NULL);
     ctx->battleMons[battlerId].personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    ctx->battleMons[battlerId].nature = GetMonNature(mon);
+    ctx->battleMons[battlerId].encryption_constant = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     ctx->battleMons[battlerId].otid = GetMonData(mon, MON_DATA_OT_ID, NULL);
     ctx->battleMons[battlerId].otGender = GetMonData(mon, MON_DATA_OT_GENDER, NULL);
 
@@ -3953,7 +3955,7 @@ BOOL TryUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battlerI
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 0;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_SPICY) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_SPICY) == -1) {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -3965,7 +3967,7 @@ BOOL TryUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battlerI
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 1;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_DRY) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_DRY) == -1) {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -3977,7 +3979,7 @@ BOOL TryUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battlerI
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 2;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_SWEET) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_SWEET) == -1) {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -3989,7 +3991,7 @@ BOOL TryUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battlerI
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 3;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_BITTER) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_BITTER) == -1) {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4001,7 +4003,7 @@ BOOL TryUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battlerI
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 4;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_SOUR) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_SOUR) == -1) {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4314,7 +4316,7 @@ BOOL CheckUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battle
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 0;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_SPICY) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_SPICY) == -1) {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4326,7 +4328,7 @@ BOOL CheckUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battle
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 1;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_DRY) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_DRY) == -1) {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4338,7 +4340,7 @@ BOOL CheckUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battle
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 2;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_SWEET) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_SWEET) == -1) {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4350,7 +4352,7 @@ BOOL CheckUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battle
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 3;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_BITTER) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_BITTER) == -1) {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4362,7 +4364,7 @@ BOOL CheckUseHeldItem(BattleSystem *battleSystem, BattleContext *ctx, int battle
             if (ctx->battleMons[battlerId].hp <= ctx->battleMons[battlerId].maxHp / 2) {
                 ctx->hpCalc = DamageDivide(ctx->battleMons[battlerId].maxHp, boost);
                 ctx->msgTemp = 4;
-                if (GetFlavorPreferenceFromPID(ctx->battleMons[battlerId].personality, FLAVOR_SOUR) == -1) {
+                if (GetFlavorPreferenceFromNature(ctx->battleMons[battlerId].nature, FLAVOR_SOUR) == -1) {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
                 } else {
                     *script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4762,7 +4764,7 @@ BOOL TryEatOpponentBerry(BattleSystem *battleSystem, BattleContext *ctx, int bat
         if (ctx->battleMons[ctx->battlerIdAttacker].hp != ctx->battleMons[ctx->battlerIdAttacker].maxHp) {
             ctx->hpCalc = DamageDivide(ctx->battleMons[ctx->battlerIdAttacker].maxHp, mod);
             ctx->msgTemp = 0;
-            if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdAttacker].personality, FLAVOR_SPICY) == -1) {
+            if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdAttacker].nature, FLAVOR_SPICY) == -1) {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
             } else {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4774,7 +4776,7 @@ BOOL TryEatOpponentBerry(BattleSystem *battleSystem, BattleContext *ctx, int bat
         if (ctx->battleMons[ctx->battlerIdAttacker].hp != ctx->battleMons[ctx->battlerIdAttacker].maxHp) {
             ctx->hpCalc = DamageDivide(ctx->battleMons[ctx->battlerIdAttacker].maxHp, mod);
             ctx->msgTemp = 1;
-            if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdAttacker].personality, FLAVOR_DRY) == -1) {
+            if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdAttacker].nature, FLAVOR_DRY) == -1) {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
             } else {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4786,7 +4788,7 @@ BOOL TryEatOpponentBerry(BattleSystem *battleSystem, BattleContext *ctx, int bat
         if (ctx->battleMons[ctx->battlerIdAttacker].hp != ctx->battleMons[ctx->battlerIdAttacker].maxHp) {
             ctx->hpCalc = DamageDivide(ctx->battleMons[ctx->battlerIdAttacker].maxHp, mod);
             ctx->msgTemp = 2;
-            if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdAttacker].personality, FLAVOR_SWEET) == -1) {
+            if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdAttacker].nature, FLAVOR_SWEET) == -1) {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
             } else {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4798,7 +4800,7 @@ BOOL TryEatOpponentBerry(BattleSystem *battleSystem, BattleContext *ctx, int bat
         if (ctx->battleMons[ctx->battlerIdAttacker].hp != ctx->battleMons[ctx->battlerIdAttacker].maxHp) {
             ctx->hpCalc = DamageDivide(ctx->battleMons[ctx->battlerIdAttacker].maxHp, mod);
             ctx->msgTemp = 3;
-            if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdAttacker].personality, FLAVOR_BITTER) == -1) {
+            if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdAttacker].nature, FLAVOR_BITTER) == -1) {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
             } else {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -4810,7 +4812,7 @@ BOOL TryEatOpponentBerry(BattleSystem *battleSystem, BattleContext *ctx, int bat
         if (ctx->battleMons[ctx->battlerIdAttacker].hp != ctx->battleMons[ctx->battlerIdAttacker].maxHp) {
             ctx->hpCalc = DamageDivide(ctx->battleMons[ctx->battlerIdAttacker].maxHp, mod);
             ctx->msgTemp = 4;
-            if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdAttacker].personality, FLAVOR_SOUR) == -1) {
+            if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdAttacker].nature, FLAVOR_SOUR) == -1) {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_DISLIKE_FLAVOR;
             } else {
                 script = BATTLE_SUBSCRIPT_HELD_ITEM_HP_RESTORE;
@@ -5002,7 +5004,7 @@ BOOL TryFling(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     case STEAL_EFFECT_RESTORE_SPICY: // figy berry
         ctx->flingData = DamageDivide(ctx->battleMons[ctx->battlerIdTarget].maxHp, mod);
         ctx->msgTemp = 0;
-        if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdTarget].personality, FLAVOR_SPICY) == -1) {
+        if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdTarget].nature, FLAVOR_SPICY) == -1) {
             ctx->flingScript = 207;
         } else {
             ctx->flingScript = 198;
@@ -5011,7 +5013,7 @@ BOOL TryFling(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     case STEAL_EFFECT_RESTORE_DRY: // wiki berry
         ctx->flingData = DamageDivide(ctx->battleMons[ctx->battlerIdTarget].maxHp, mod);
         ctx->msgTemp = 1;
-        if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdTarget].personality, FLAVOR_DRY) == -1) {
+        if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdTarget].nature, FLAVOR_DRY) == -1) {
             ctx->flingScript = 207;
         } else {
             ctx->flingScript = 198;
@@ -5020,7 +5022,7 @@ BOOL TryFling(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     case STEAL_EFFECT_RESTORE_SWEET: // mago berry
         ctx->flingData = DamageDivide(ctx->battleMons[ctx->battlerIdTarget].maxHp, mod);
         ctx->msgTemp = 2;
-        if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdTarget].personality, FLAVOR_SWEET) == -1) {
+        if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdTarget].nature, FLAVOR_SWEET) == -1) {
             ctx->flingScript = 207;
         } else {
             ctx->flingScript = 198;
@@ -5029,7 +5031,7 @@ BOOL TryFling(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     case STEAL_EFFECT_RESTORE_BITTER: // aguav berry
         ctx->flingData = DamageDivide(ctx->battleMons[ctx->battlerIdTarget].maxHp, mod);
         ctx->msgTemp = 3;
-        if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdTarget].personality, FLAVOR_BITTER) == -1) {
+        if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdTarget].nature, FLAVOR_BITTER) == -1) {
             ctx->flingScript = 207;
         } else {
             ctx->flingScript = 198;
@@ -5038,7 +5040,7 @@ BOOL TryFling(BattleSystem *battleSystem, BattleContext *ctx, int battlerId) {
     case STEAL_EFFECT_RESTORE_SOUR: // iappapa berry
         ctx->flingData = DamageDivide(ctx->battleMons[ctx->battlerIdTarget].maxHp, mod);
         ctx->msgTemp = 4;
-        if (GetFlavorPreferenceFromPID(ctx->battleMons[ctx->battlerIdTarget].personality, FLAVOR_SOUR) == -1) {
+        if (GetFlavorPreferenceFromNature(ctx->battleMons[ctx->battlerIdTarget].nature, FLAVOR_SOUR) == -1) {
             ctx->flingScript = 207;
         } else {
             ctx->flingScript = 198;

@@ -35,12 +35,15 @@ typedef struct PokeathlonTextContext {
     u32 windowCount;
 } PokeathlonTextContext;
 
+// A mon on a Pokéathlon screen with no Pokemon behind it - the medals board and the record board.
+// spotSeed is what its picture draws from: a stored constant, the Pokédex's seen-Spinda value, or 0 for a
+// row with no identity.  Course mons seed from PokeathlonCourseMonInfo.spotSeed.
 typedef struct PokeathlonMonInfo {
     u32 species : 9;
     u32 form : 5;
     u32 gender : 2;
     u32 shiny : 1;
-    u32 personality;
+    u32 spotSeed;
 } PokeathlonMonInfo;
 
 SpriteSystem *PokeathlonUtil_GetSpriteSystem(PokeathlonSpriteContext *ctx);

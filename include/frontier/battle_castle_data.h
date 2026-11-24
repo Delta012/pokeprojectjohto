@@ -6,9 +6,11 @@
 
 #include "frontier_save_access.h"
 
+#include "battle_frontier_communication.h"
+
 #define CASTLE_PARTY_SIZE       3
 #define CASTLE_OPPONENT_COUNT   4
-#define CASTLE_LINK_MON_BUFFER_SIZE 0x200
+#define CASTLE_LINK_MON_BUFFER_SIZE FRONTIER_LINK_MON_BUFFER_SIZE
 
 typedef struct BattleCastleData {
     enum HeapID heapId;

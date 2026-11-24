@@ -702,6 +702,7 @@ static void SetFrontierMon(FrontierMon *frontierMon, Pokemon *mon) {
     frontierMon->language = GetMonData(mon, MON_DATA_LANGUAGE, NULL);
     frontierMon->otId = GetMonData(mon, MON_DATA_OT_ID, NULL);
     frontierMon->pid = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    frontierMon->nature = GetMonNature(mon); // the personality says nothing about it
     frontierMon->ivsWord = GetMonData(mon, MON_DATA_COMBINED_IVS, NULL);
     for (s32 i = 0; i < NUM_STATS; i++) {
         frontierMon->evs[i] = GetMonData(mon, MON_DATA_HP_EV + i, NULL);

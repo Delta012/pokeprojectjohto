@@ -104,7 +104,7 @@ static int PokeathlonMedals_GetSeenGender(PokeathlonMedals *work, u16 species) {
     }
     gender = Pokedex_SpeciesGetLastSeenGender(PokeathlonMedals_GetPokedex(work), species, 0);
     if (gender == -1) {
-        gender = GetGenderBySpeciesAndPersonality(species, 0);
+        gender = GetSpeciesDisplayGender(species);
     }
     return gender;
 }
@@ -274,7 +274,7 @@ static void PokeathlonMedals_LoadMonPic(PokeathlonMedals *work, u16 species) {
     mon.info.form = PokeathlonMedals_GetSeenForm(work, species);
     mon.info.gender = PokeathlonMedals_GetSeenGender(work, species);
     if (species == SPECIES_SPINDA) {
-        mon.info.personality = PokeathlonMedals_GetSpindaPersonality(work);
+        mon.info.spotSeed = PokeathlonMedals_GetSpindaPersonality(work);
     }
     PokeathlonUtil_LoadMonPicSprite(work->sprites[3], &mon.info, FALSE, FALSE, work->heapId);
 }

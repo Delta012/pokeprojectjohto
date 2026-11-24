@@ -1118,6 +1118,7 @@ static PCBoxMonInfo *PCBox_CreateMonInfo(BoxPokemon *boxMon) {
         monInfo->species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
         monInfo->heldItem = GetBoxMonData(boxMon, MON_DATA_HELD_ITEM, NULL);
         monInfo->personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+        monInfo->encryption_constant = GetBoxMonData(boxMon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
         monInfo->type1 = GetBoxMonData(boxMon, MON_DATA_TYPE_1, NULL);
         monInfo->type2 = GetBoxMonData(boxMon, MON_DATA_TYPE_2, NULL);
         monInfo->ability = GetBoxMonData(boxMon, MON_DATA_ABILITY, NULL);

@@ -95,7 +95,7 @@ struct PokeathlonCourseMonInfo {
     u8 isShiny;
     u8 gender;
     int participant;
-    u32 personality;
+    u32 spotSeed; // the mon's encryption constant, or its personality when it has none
 };
 
 // A Pokemon's front picture: char and palette data loaded uncompressed from its NARC, uploaded into a picture

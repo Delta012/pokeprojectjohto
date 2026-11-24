@@ -517,13 +517,13 @@ void Gts_DrawTrainerInfo(MsgData *msgData, Window *trainerWindows, const u16 *tr
 void Gts_LoadMonPicture(Pokemon *mon) {
     PokepicTemplate pokepic;
     void *buf = Heap_Alloc(HEAP_ID_61, 0xC80);
-    u32 personality;
+    u32 spotSeed;
     int species;
 
     GetPokemonSpriteCharAndPlttNarcIds(&pokepic, mon, 2);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    spotSeed = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    CharTiles_LoadMonObjBlocksFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_61, 0, 0, 10, 10, buf, personality, FALSE, 2, species);
+    CharTiles_LoadMonObjBlocksFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_61, 0, 0, 10, 10, buf, spotSeed, FALSE, 2, species);
     DC_FlushRange(buf, 0xC80);
     GX_LoadOBJ(buf, 0x4A00, 0xC80);
     GfGfxLoader_GXLoadPal((NarcId)pokepic.narcID, pokepic.palDataID, GF_PAL_LOCATION_MAIN_OBJ, GF_PAL_SLOT_13_OFFSET, 0x20, HEAP_ID_61);

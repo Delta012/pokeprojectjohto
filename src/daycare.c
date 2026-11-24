@@ -11,6 +11,8 @@ void Save_Daycare_Init(Daycare *daycare) {
     ZeroBoxMonData(&daycare->mons[0].mon);
     ZeroBoxMonData(&daycare->mons[1].mon);
     daycare->egg_pid = 0;
+    daycare->egg_ec = 0;
+    daycare->egg_nature = 0;
     daycare->egg_cycles = 0;
 }
 
@@ -42,6 +44,14 @@ u32 Save_Daycare_GetEggPID(Daycare *daycare) {
     return daycare->egg_pid;
 }
 
+u32 Save_Daycare_GetEggEC(Daycare *daycare) {
+    return daycare->egg_ec;
+}
+
+u8 Save_Daycare_GetEggNature(Daycare *daycare) {
+    return daycare->egg_nature;
+}
+
 u8 Save_Daycare_GetEggCycleCounter(Daycare *daycare) {
     return daycare->egg_cycles;
 }
@@ -56,6 +66,14 @@ void DaycareMon_AddSteps(DaycareMon *dcmon, u32 steps) {
 
 void Save_Daycare_SetEggPID(Daycare *daycare, u32 pid) {
     daycare->egg_pid = pid;
+}
+
+void Save_Daycare_SetEggEC(Daycare *daycare, u32 ec) {
+    daycare->egg_ec = ec;
+}
+
+void Save_Daycare_SetEggNature(Daycare *daycare, u8 nature) {
+    daycare->egg_nature = nature;
 }
 
 void Save_Daycare_SetEggCycleCounter(Daycare *daycare, s32 count) {

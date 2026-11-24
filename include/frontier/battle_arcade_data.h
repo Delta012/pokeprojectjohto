@@ -5,6 +5,7 @@
 #include "frontier/frontier_map.h"
 #include "frontier/frontier_trainers.h"
 
+#include "battle_frontier_communication.h"
 #include "frontier_save_access.h"
 #include "save.h"
 #include "scrcmd_9.h"
@@ -54,8 +55,8 @@ typedef struct ArcadeContext {
     u16 gameBoardResults[6];
     u16 linkBuffer[20];      // 0x424, outgoing link message
     u8 filler_44C[0x28];
-    u8 linkMonBuffer[0x200]; // 0x474, outgoing Pokemon
-    u8 linkRecvMon[0x3FE];   // 0x674, received Pokemon, 0x200 per net id (the second one overlaps unkA72)
+    u8 linkMonBuffer[FRONTIER_LINK_MON_BUFFER_SIZE];            // outgoing Pokemon
+    u8 linkRecvMon[2 * FRONTIER_LINK_MON_BUFFER_SIZE];          // received Pokemon, one buffer per net id
     u8 unkA72;
     u8 unkA73;
     u8 partnerValueA;

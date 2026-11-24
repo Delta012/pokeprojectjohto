@@ -151,6 +151,7 @@ typedef struct RegisterHofMon {
     Pokemon *mon;
     u8 followPokeParam[4];
     u32 personality;
+    u32 encryption_constant; // seeds the Spinda spots drawn on the inducting pictures
     u16 species;
     u16 level;
     u8 form;
@@ -2002,6 +2003,7 @@ static void RegisterHallOfFame_GetPartyDetails(RegisterHallOfFameData *data) {
             hofMon->mon = pokemon;
             hofMon->species = GetMonData(pokemon, MON_DATA_SPECIES, NULL);
             hofMon->personality = GetMonData(pokemon, MON_DATA_PERSONALITY, NULL);
+            hofMon->encryption_constant = GetMonData(pokemon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
             hofMon->form = GetMonData(pokemon, MON_DATA_FORM, NULL);
             hofMon->gender = GetMonData(pokemon, MON_DATA_GENDER, NULL);
             hofMon->yOffset = GetMonPicHeightBySpeciesGenderForm(hofMon->species, hofMon->gender, 0, hofMon->form, hofMon->personality) + 8;
@@ -2015,11 +2017,11 @@ static void RegisterHallOfFame_GetPartyDetails(RegisterHallOfFameData *data) {
             }
             ReadWholeNarcMemberByIdPair(hofMon->followPokeParam, NARC_fielddata_tsurepoke_tp_param, SpeciesToOverworldModelIndexOffset(hofMon->species));
             GetPokemonSpriteCharAndPlttNarcIds(&pokepicTemplate, pokemon, MON_PIC_FACING_FRONT);
-            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[0], hofMon->frontspriteCharbuf[0], hofMon->personality, TRUE, 2, hofMon->species);
-            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[1], hofMon->frontspriteCharbuf[1], hofMon->personality, TRUE, 2, hofMon->species);
+            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[0], hofMon->frontspriteCharbuf[0], hofMon->encryption_constant, TRUE, 2, hofMon->species);
+            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[1], hofMon->frontspriteCharbuf[1], hofMon->encryption_constant, TRUE, 2, hofMon->species);
             GetPokemonSpriteCharAndPlttNarcIds(&pokepicTemplate, pokemon, MON_PIC_FACING_BACK);
-            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[0], hofMon->backspriteCharbuf[0], hofMon->personality, TRUE, 0, hofMon->species);
-            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[1], hofMon->backspriteCharbuf[1], hofMon->personality, TRUE, 0, hofMon->species);
+            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[0], hofMon->backspriteCharbuf[0], hofMon->encryption_constant, TRUE, 0, hofMon->species);
+            CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepicTemplate.narcID, pokepicTemplate.charDataID, HEAP_ID_REGISTER_HALL_OF_FAME, &tileRects[1], hofMon->backspriteCharbuf[1], hofMon->encryption_constant, TRUE, 0, hofMon->species);
             NARC_ReadPokepicAnimScript(narc, hofMon->frontspriteAnim, hofMon->species, 1);
             NARC_ReadPokepicAnimScript(narc, hofMon->backspriteAnim, hofMon->species, 0);
             ++data->numMons;

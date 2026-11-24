@@ -284,6 +284,8 @@ BattleSetup *BattleHall_NewBattleSetup(BattleHallData *data, FrontierLaunchArgs 
 
 // Moves the personality on until the opponent Pokemon is not shiny (the callers loop while it returns TRUE).
 static u8 BattleHall_RerollPersonality(BattleHallData *data, u32 index) {
+    // 0x3D0A9 is a multiple of 25: it mattered while the nature rode in the personality's residue.  The
+    // nature has its own byte now, so only the shininess gate moves.
     u32 pid = data->opponentMons[index].pid;
     if (pid > 0x3D0A9) {
         data->opponentMons[index].pid = pid - 0x3D0A9;

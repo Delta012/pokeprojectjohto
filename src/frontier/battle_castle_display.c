@@ -448,7 +448,9 @@ void BattleCastleSprite_LoadMonPic(BattleCastleSprite *sprite, BoxPokemon *boxMo
     buffer = Heap_AllocAtEnd(HEAP_ID_107, 0xC80);
     if (species != SPECIES_NONE) {
         GetBoxmonSpriteCharAndPlttNarcIds(&pokepic, boxMon, 2, FALSE);
-        CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_107, &rect, buffer, personality, FALSE, 2, species);
+        // A live box mon seeds from its own constant; the caller's personality is the Frontier record's,
+        // which only ever decided Spinda's spots.
+        CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_107, &rect, buffer, pokepic.spotSeed, FALSE, 2, species);
         narcId = (NarcId)pokepic.narcID;
         plttId = pokepic.palDataID;
     } else {

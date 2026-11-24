@@ -21,9 +21,8 @@
 // the work's link buffer and sends it; each receive callback counts the messages it got, also its own echo, and
 // most only take the partner's data when the local player is not the parent (net id 0), whose data wins.
 // Commands: Battle Factory 0x16-0x1C, Battle Hall 0x21-0x26, Battle Castle 0x2A-0x30, Battle Arcade 0x41-0x46.
-
-// Partner Pokemon are sent as raw Pokemon structs through a large-data command.
-#define LINK_MON_BUFFER_SIZE 0x200
+// Partner Pokemon are sent as raw Pokemon structs through a large-data command; the buffer that holds them
+// is FRONTIER_LINK_MON_BUFFER_SIZE, sized by the largest party a facility sends.
 
 // Battle Hall
 
@@ -102,8 +101,9 @@ void BattleHallLink_ReceiveValue(int netId, int size, const u16 *data, BattleHal
 BOOL BattleHallLink_SendPartyMon(BattleHallData *work) {
     u32 size = SizeOfStructPokemon();
     Pokemon *mon = Party_GetMonByIndex(SaveArray_Party_Get(work->saveData), work->partySlots[0]);
+    GF_ASSERT(size <= HALL_LINK_MON_BUFFER_SIZE);
     MI_CpuCopy8(mon, work->linkMonBuffer, size);
-    return Comm_SendCommandNoCopy(FRONTIER_LINK_CMD_HALL_PARTNER_MON, work->linkMonBuffer, LINK_MON_BUFFER_SIZE) == TRUE;
+    return Comm_SendCommandNoCopy(FRONTIER_LINK_CMD_HALL_PARTNER_MON, work->linkMonBuffer, size) == TRUE;
 }
 
 void BattleHallLink_ReceivePartnerMon(int netId, int size, const void *data, BattleHallData *work) {
@@ -114,7 +114,7 @@ void BattleHallLink_ReceivePartnerMon(int netId, int size, const void *data, Bat
 }
 
 void *BattleHallLink_GetRecvMonBuffer(int netId, BattleHallData *work, int size) {
-    GF_ASSERT(size <= LINK_MON_BUFFER_SIZE);
+    GF_ASSERT(size <= HALL_LINK_MON_BUFFER_SIZE);
     return work->linkRecvMon[netId];
 }
 
@@ -530,6 +530,7 @@ BOOL BattleCastleLink_SendPartyMons(BattleCastleData *work) {
     u32 size = SizeOfStructPokemon();
     s32 i;
     i = 0;
+    GF_ASSERT(count * size <= CASTLE_LINK_MON_BUFFER_SIZE);
     if (count > 0) {
         u32 offset = i;
         do {
@@ -539,7 +540,7 @@ BOOL BattleCastleLink_SendPartyMons(BattleCastleData *work) {
             offset += size;
         } while (i < count);
     }
-    return Comm_SendCommandNoCopy(FRONTIER_LINK_CMD_CASTLE_PARTY_MONS, work->linkMonBuffer, LINK_MON_BUFFER_SIZE) == TRUE;
+    return Comm_SendCommandNoCopy(FRONTIER_LINK_CMD_CASTLE_PARTY_MONS, work->linkMonBuffer, (u32)count * size) == TRUE;
 }
 
 // Adds the partner's Pokemon to the party; the child then swaps them in front of its own.
@@ -568,7 +569,7 @@ void BattleCastleLink_ReceivePartyMons(int netId, int size, const u8 *data, Batt
 }
 
 void *BattleCastleLink_GetRecvMonBuffer(int netId, BattleCastleData *work, int size) {
-    GF_ASSERT(size <= LINK_MON_BUFFER_SIZE);
+    GF_ASSERT(size <= CASTLE_LINK_MON_BUFFER_SIZE);
     return work->linkRecvMon[netId];
 }
 
@@ -703,6 +704,7 @@ BOOL BattleArcadeLink_SendPartyMons(ArcadeContext *ctx) {
     u32 size = SizeOfStructPokemon();
     s32 i;
     i = 0;
+    GF_ASSERT(count * size <= FRONTIER_LINK_MON_BUFFER_SIZE);
     if (count > 0) {
         u32 offset = i;
         do {
@@ -712,7 +714,7 @@ BOOL BattleArcadeLink_SendPartyMons(ArcadeContext *ctx) {
             offset += size;
         } while (i < count);
     }
-    return Comm_SendCommandNoCopy(FRONTIER_LINK_CMD_ARCADE_PARTY_MONS, ctx->linkMonBuffer, LINK_MON_BUFFER_SIZE) == TRUE;
+    return Comm_SendCommandNoCopy(FRONTIER_LINK_CMD_ARCADE_PARTY_MONS, ctx->linkMonBuffer, (u32)count * size) == TRUE;
 }
 
 // Adds the partner's Pokemon to the party; the child then swaps them in front of its own.
@@ -741,6 +743,6 @@ void BattleArcadeLink_ReceivePartyMons(int netId, int size, const u8 *data, Arca
 }
 
 void *BattleArcadeLink_GetRecvMonBuffer(int netId, ArcadeContext *ctx, int size) {
-    GF_ASSERT(size <= LINK_MON_BUFFER_SIZE);
-    return ctx->linkRecvMon + netId * LINK_MON_BUFFER_SIZE;
+    GF_ASSERT(size <= FRONTIER_LINK_MON_BUFFER_SIZE);
+    return ctx->linkRecvMon + netId * FRONTIER_LINK_MON_BUFFER_SIZE;
 }

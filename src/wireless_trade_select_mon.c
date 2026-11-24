@@ -1033,16 +1033,16 @@ static void WirelessTradeSelectMon_InitSpriteResources(WirelessTradeSelectMon *w
 }
 
 static u32 WirelessTradeSelectMon_LoadMonPic(u32 side, Pokemon *mon, void *dest, PokepicTemplate *pokepic) {
-    u32 personality;
+    u32 spotSeed;
     u32 species;
 
     GetPokemonSpriteCharAndPlttNarcIds(pokepic, mon, 2);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    spotSeed = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     if (GetMonData(mon, MON_DATA_IS_EGG, NULL) == TRUE && species == SPECIES_SPINDA) {
         species = SPECIES_EGG;
     }
-    CharTiles_LoadMonObjBlocksFromNarc((NarcId)pokepic->narcID, pokepic->charDataID, HEAP_ID_26, 0, 0, 10, 10, dest, personality, FALSE, 2, species);
+    CharTiles_LoadMonObjBlocksFromNarc((NarcId)pokepic->narcID, pokepic->charDataID, HEAP_ID_26, 0, 0, 10, 10, dest, spotSeed, FALSE, 2, species);
     DC_FlushRange(dest, WIRELESS_TRADE_MON_PIC_SIZE);
     return side + 1;
 }

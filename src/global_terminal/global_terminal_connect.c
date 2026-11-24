@@ -971,6 +971,7 @@ void GlobalTerminalNet_DressUpToUploadForm(const SaveFashionDataSub *src, Global
     MI_CpuFill8(dst, 0, sizeof(GlobalTerminalNetDressUpForm));
     dst->magic = src->magic;
     dst->personality = src->personality;
+    dst->encryption_constant = src->encryption_constant;
     dst->otId = src->otId;
     dst->species = src->species;
     for (i = 0; i < 8; i++) {
@@ -980,6 +981,8 @@ void GlobalTerminalNet_DressUpToUploadForm(const SaveFashionDataSub *src, Global
     dst->x = src->x;
     dst->y = src->y;
     dst->form = src->form;
+    dst->secondTextGender = src->secondTextGender;
+    dst->gender = src->gender;
     dst->itemMask = src->itemMask;
     dst->mailMsgBank = src->mailMessage.msg_bank;
     dst->mailMsgNo = src->mailMessage.msg_no;
@@ -1005,6 +1008,7 @@ void GlobalTerminalNet_UploadFormToDressUp(const GlobalTerminalNetDressUpForm *s
     MI_CpuFill8(dst, 0, FashionEntry_sizeof());
     dst->magic = src->magic;
     dst->personality = src->personality;
+    dst->encryption_constant = src->encryption_constant;
     dst->otId = src->otId;
     dst->species = src->species;
     for (i = 0; i < 8; i++) {
@@ -1014,6 +1018,8 @@ void GlobalTerminalNet_UploadFormToDressUp(const GlobalTerminalNetDressUpForm *s
     dst->x = src->x;
     dst->y = src->y;
     dst->form = src->form;
+    dst->secondTextGender = src->secondTextGender;
+    dst->gender = src->gender;
     dst->itemMask = src->itemMask;
     dst->mailMessage.msg_bank = src->mailMsgBank;
     dst->mailMessage.msg_no = src->mailMsgNo;

@@ -412,7 +412,7 @@ BOOL PokeathlonSnowThrow_Init(PokeathlonCourseData *course) {
         for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
             VecFx32 position = { 0, 0, 0 };
             PokeathlonCourseMonInfo *info = &infos[9 + i];
-            u8 height = GetMonPicHeightBySpeciesGenderForm(info->species, info->gender, 0, info->form, info->personality);
+            u8 height = GetMonPicHeightBySpeciesGenderForm(info->species, info->gender, 0, info->form, info->spotSeed);
             position.x = (16 + i * 50) << FX32_SHIFT;
             position.y = (height + 376) << FX32_SHIFT;
             position.y -= FX32_ONE * 16;

@@ -3,12 +3,13 @@
 
 #include "frontier/frontier_trainers.h"
 
+#include "battle_frontier_communication.h"
 #include "frontier_save_access.h"
 
 #define HALL_TRAINER_COUNT         20 // 2 per battle of a round (the second for the partner), 10 battles
 #define HALL_CELL_COUNT            18 // type cells of the board with a rank (the others are the Hall Matron's)
 #define HALL_TYPE_RANKS_SIZE       9  // 18 ranks of 4 bits
-#define HALL_LINK_MON_BUFFER_SIZE  0x200
+#define HALL_LINK_MON_BUFFER_SIZE  FRONTIER_LINK_MON_BUFFER_SIZE
 
 typedef struct BattleHallData {
     enum HeapID heapId;

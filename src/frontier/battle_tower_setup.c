@@ -204,15 +204,19 @@ static u32 BattleTower_GenerateFrontierMon(FrontierFieldSystem *tower, FrontierM
     mon->otId = otId;
     newPid = pid;
     if (newPid == 0) {
+        /* The personality is only a shininess gate now; the set's nature goes
+         * into its own byte, also for the static mon table in
+         * asm/frontier_script_commands_data.s. */
         do {
             u16 lo = FrontierFieldSystem_NextRandom(tower);
             u16 hi = FrontierFieldSystem_NextRandom(tower);
             newPid = lo | (hi << 16);
-        } while (set.nature != GetNatureFromPersonality(newPid) || CalcShininessByOtIdAndPersonality(otId, newPid) == TRUE);
+        } while (CalcShininessByOtIdAndPersonality(otId, newPid) == TRUE);
         mon->pid = newPid;
     } else {
         mon->pid = newPid;
     }
+    mon->nature = set.nature;
     mon->hpIv = iv;
     mon->atkIv = iv;
     mon->defIv = iv;
@@ -239,12 +243,8 @@ static u32 BattleTower_GenerateFrontierMon(FrontierFieldSystem *tower, FrontierM
     mon->ppUp = 0;
     mon->language = gGameLanguage;
     ability = GetMonBaseStat(mon->species, BASE_ABILITY_2);
-    if (ability != 0) {
-        if (mon->pid & 1) {
-            mon->ability = ability;
-        } else {
-            mon->ability = GetMonBaseStat(mon->species, BASE_ABILITY_1);
-        }
+    if (ability != 0 && (FrontierFieldSystem_NextRandom(tower) & 1)) { // the slot is its own draw
+        mon->ability = ability;
     } else {
         mon->ability = GetMonBaseStat(mon->species, BASE_ABILITY_1);
     }

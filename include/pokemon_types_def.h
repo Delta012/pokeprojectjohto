@@ -98,7 +98,8 @@ typedef struct {
     u8 form : 5;
     /* 0x19 */ u8 HGSS_shinyLeaves : 6;
     u8 unused1 : 2;
-    /* 0x1A */ u16 unused2;
+    /* 0x1A */ u16 nature : 5; //!< Nature (NATURE_*), stored rather than derived from the personality.
+    u16 natureUnused : 11;
 
     /* 0x1C */ u16 EggLocation_PtHGSS;
     /* 0x1E */ u16 MetLocation_PtHGSS;
@@ -110,7 +111,7 @@ typedef struct {
 typedef struct {
     /* 0x00 */ u16 nickname[11];
 
-    /* 0x16 */ u8 unused;
+    /* 0x16 */ u8 characteristic; //!< Best-stat descriptor, index * 5 + variant (0..29); still PID-derived until STEP 5.
     /* 0x17 */ u8 originGame;
 
     /* 0x18 */ u64 ribbonsDS2;
@@ -159,7 +160,8 @@ typedef struct BoxPokemon {
     u16 checksumFailed : 1;
     u16 unused : 13;
     /* 0x006 */ u16 checksum;
-    /* 0x008 */ PokemonDataBlock dataBlocks[4];
+    /* 0x008 */ u32 encryption_constant; //!< Encryption constant: keys the party segment and the data-block shuffle.
+    /* 0x00C */ PokemonDataBlock dataBlocks[4];
 } BoxPokemon;
 
 union MailPatternData {
@@ -197,24 +199,24 @@ typedef struct Mail {
  *  Rather than recalculating stats after each battle, they're stored here.
  */
 typedef struct PartyPokemon {
-    /* 0x088 */ u32 status;       // slp:3, psn:1, brn:1, frz:1, prz:1, tox:1, ...
-    /* 0x08C */ u8 level;         //!< The Pokemon's current level, as computed from its total EXP value and its species' level curve.
-    /* 0x08D */ u8 ballCapsuleID; //!< The ID of the ball capsule attached to the Pokemon.
-    /* 0x08E */ u16 hp;           //!< The Pokemon's current HP.
-    /* 0x090 */ u16 maxHP;        //!< The Pokemon's maximum HP.
-    /* 0x092 */ u16 atk;          //!< The Pokemon's Attack stat.
-    /* 0x094 */ u16 def;          //!< The Pokemon's Defense stat.
-    /* 0x096 */ u16 speed;        //!< The Pokemon's Speed stat.
-    /* 0x098 */ u16 spatk;        //!< The Pokemon's Special Attack stat.
-    /* 0x09A */ u16 spdef;        //!< The Pokemon's Special Defense stat.
-    /* 0x09C */ Mail mail;
-    /* 0x0D4 */ CAPSULE sealCoords; // seal coords
+    /* 0x08C */ u32 status;       // slp:3, psn:1, brn:1, frz:1, prz:1, tox:1, ...
+    /* 0x090 */ u8 level;         //!< The Pokemon's current level, as computed from its total EXP value and its species' level curve.
+    /* 0x091 */ u8 ballCapsuleID; //!< The ID of the ball capsule attached to the Pokemon.
+    /* 0x092 */ u16 hp;           //!< The Pokemon's current HP.
+    /* 0x094 */ u16 maxHP;        //!< The Pokemon's maximum HP.
+    /* 0x096 */ u16 atk;          //!< The Pokemon's Attack stat.
+    /* 0x098 */ u16 def;          //!< The Pokemon's Defense stat.
+    /* 0x09A */ u16 speed;        //!< The Pokemon's Speed stat.
+    /* 0x09C */ u16 spatk;        //!< The Pokemon's Special Attack stat.
+    /* 0x09E */ u16 spdef;        //!< The Pokemon's Special Defense stat.
+    /* 0x0A0 */ Mail mail;
+    /* 0x0D8 */ CAPSULE sealCoords; // seal coords
 } PartyPokemon;
 
 typedef struct {
     /* 0x000 */ BoxPokemon box;
-    /* 0x088 */ PartyPokemon party;
-} Pokemon; // size: 0xEC
+    /* 0x08C */ PartyPokemon party;
+} Pokemon; // size: 0xF0
 
 struct BattleRecordMon {
     /* 0x00 */ u32 personality;
@@ -261,6 +263,9 @@ struct BattleRecordMon {
     /* 0x6A */ u16 speed;
     /* 0x6C */ u16 spatk;
     /* 0x6E */ u16 spdef;
+    /* 0x70 */ u32 encryption_constant; // keys the block shuffle and the party segment, and seeds the cosmetic patterns
+    /* 0x74 */ u8 nature;
+    /* 0x75 */ u8 padding_75[3];
 };
 
 typedef struct PokepicTemplate {
@@ -270,7 +275,8 @@ typedef struct PokepicTemplate {
     u16 species;
     u8 isAnimated;
     u8 filler_9[3];
-    u32 personality;
+    u32 spotSeed; // cosmetic seed (Spinda's spots): a Pokemon's encryption constant,
+                  // or a record's personality when that record stores no constant
 } PokepicTemplate;
 
 struct PokeanmSub {

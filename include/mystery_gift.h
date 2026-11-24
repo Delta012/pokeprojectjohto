@@ -33,6 +33,8 @@
 #define MGMONDECOTYPE_FASHION    2
 #define MGMONDECOTYPE_BACKGROUND 3
 
+// The union is exactly full: a Pokemon now carries a stored encryption constant, so
+// MysteryGiftPokemonTag fills the whole 256-byte tag and no member of it may grow again.
 typedef struct MysteryGiftPokemonTag {
     BOOL fixedOT;
     Pokemon mon;

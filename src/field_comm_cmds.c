@@ -124,7 +124,7 @@ static const FieldCommCommand sFieldCommCommands[] = {
     { CommCmd_RecvIgnored, CommCmd_GetSize0,         NULL         },
     { CommCmd_RecvIgnored, CommCmd_GetSize0,         NULL         },
     { CommCmd_RecvIgnored, CommCmd_GetSize24,         NULL         },
-    { CommCmd_RecvIgnored, CommCmd_GetSize1424,         NULL         },
+    { CommCmd_RecvIgnored, CommCmd_GetSizePartyCore,   NULL         },
     { BattleHall_RecvPartnerSpecies, CommCmd_GetSizeVariable,         NULL         },
     { BattleCastle_RecvPartnerTeam, CommCmd_GetSizeVariable,         NULL         },
     { BattleArcade_RecvPartnerTeam, CommCmd_GetSizeVariable,         NULL         }
@@ -134,8 +134,8 @@ u32 CommCmd_GetSize24() {
     return 0x18;
 }
 
-u32 CommCmd_GetSize1424() {
-    return 0x590;
+u32 CommCmd_GetSizePartyCore() {
+    return sizeof(PartyCore);
 }
 
 void CommCmd_RecvIgnored() {

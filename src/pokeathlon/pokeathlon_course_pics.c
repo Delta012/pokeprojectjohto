@@ -381,10 +381,10 @@ static void PokeathlonCourse_LoadMonPicEx(ManagedSprite *sprite, PokeathlonCours
         ManagedSprite_SetDrawFlag(sprite, FALSE);
         return;
     }
-    GetMonSpriteCharAndPlttNarcIdsEx(&template, info->species, info->gender, 2, info->isShiny, info->form, info->personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&template, info->species, info->gender, 2, info->isShiny, info->form, info->spotSeed);
     rect = sPokeathlonCourseMonPicRect;
     buffer = Heap_AllocAtEnd(heapId, 0xC80);
-    CharTiles_LoadMonRectAsObjFromNarc((NarcId) template.narcID, template.charDataID, heapId, &rect, buffer, info->personality, FALSE, 2, info->species);
+    CharTiles_LoadMonRectAsObjFromNarc((NarcId) template.narcID, template.charDataID, heapId, &rect, buffer, info->spotSeed, FALSE, 2, info->species);
     PokeathlonCourse_LoadSpriteChars(sprite->sprite, buffer, 0xC80);
     if (loadPalette) {
         PokeathlonCourse_LoadSpritePalette(sprite, (NarcId) template.narcID, template.palDataID, mainScreen, grayScale, heapId);

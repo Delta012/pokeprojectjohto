@@ -316,13 +316,11 @@
 .public AllocMonZeroed
 .public CreateMon
 .public CreateMonWithNature
-.public CreateMonWithGenderNatureLetter
 .public CreateMonWithFixedIVs
 .public GetMonData
 .public SetMonData
 .public GetMonBaseStat
 .public GetMonNature
-.public GetNatureFromPersonality
 .public GetGenderBySpeciesAndPersonality
 .public GenerateShinyPersonality
 .public GetPokemonSpriteCharAndPlttNarcIds

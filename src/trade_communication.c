@@ -34,14 +34,11 @@ u32 WirelessTrade_GetPartnerSlot(u32 slot) {
 void WirelessTrade_RecvPartyChunk(int sender, int unused, void *data, TradeContext *context) {
     WirelessTradeSelectMon *work = context->work;
     if (sender != Comm_GetLocalNetId()) {
-        memcpy(work->partnerParty, data, 0x590);
+        memcpy(work->partnerParty, data, WIRELESS_TRADE_PARTY_CHUNK_SIZE);
         work->receivedChunks++;
-        if (work->receivedChunks * 0x590 >= 0x590) {
-            if (Comm_GetLocalNetId() == 1) {
-                WirelessTradeSelectMon_SendCommandIfChanged(work, 27, 0);
-            } else {
-                WirelessTradeSelectMon_SendPartyChunk(Comm_GetLocalNetId(), work->party, work->sentChunks);
-            }
+        // The party arrives whole in this one chunk, so the partner's party is complete here.
+        if (Comm_GetLocalNetId() == 1) {
+            WirelessTradeSelectMon_SendCommandIfChanged(work, 27, 0);
         } else {
             WirelessTradeSelectMon_SendPartyChunk(Comm_GetLocalNetId(), work->party, work->sentChunks);
         }
@@ -123,7 +120,7 @@ u32 WirelessTrade_GetPalPadSize(void) {
 }
 
 u32 WirelessTrade_GetPartyChunkSize(void) {
-    return 0x590;
+    return WIRELESS_TRADE_PARTY_CHUNK_SIZE;
 }
 
 void *WirelessTrade_GetRecvBuffer(int sender, TradeContext *context) {

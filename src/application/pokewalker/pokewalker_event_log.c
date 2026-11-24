@@ -63,6 +63,8 @@ void PokewalkerBoxDisplay_LoadMonPicture(PokewalkerBoxDisplaySprites *sprites, P
     PokepicTemplate pokepic;
     NNSG2dPaletteData *palette;
     void *plttFile;
+    // The box selector's report carries a personality but no constant, so this picture seeds from the
+    // personality; a strolling Spinda's uploaded picture uses its constant.
     GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, info->species, info->gender, 2, info->isShiny, info->form, info->personality);
     CharTiles_LoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, sprites->heapId, sprites->monCharData, info->personality, FALSE, 2, info->species);
     plttFile = AllocAndReadWholeNarcMemberByIdPair((NarcId)pokepic.narcID, pokepic.palDataID, sprites->heapId);

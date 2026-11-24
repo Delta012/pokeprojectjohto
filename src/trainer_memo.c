@@ -430,167 +430,19 @@ static void FormatDateAndLocation_Egg(TrainerMemo *memo, int msgNo, BOOL hatched
 }
 
 static void FormatCharacteristic(TrainerMemo *memo) {
-    int index;
-    int maxIv;
+    u32 characteristic = GetMonData(memo->mon, MON_DATA_CHARACTERISTIC, NULL);
 
     memo->notepad.characteristic = String_New(0x48, memo->heapID);
 
-    int hpIv = GetMonData(memo->mon, MON_DATA_HP_IV, NULL);
-    int atkIv = GetMonData(memo->mon, MON_DATA_ATK_IV, NULL);
-    int defIv = GetMonData(memo->mon, MON_DATA_DEF_IV, NULL);
-    int speedIv = GetMonData(memo->mon, MON_DATA_SPEED_IV, NULL);
-    int spAtkIv = GetMonData(memo->mon, MON_DATA_SPATK_IV, NULL);
-    int spDefIv = GetMonData(memo->mon, MON_DATA_SPDEF_IV, NULL);
-    u32 personality = GetMonData(memo->mon, MON_DATA_PERSONALITY, NULL);
-
-    switch (personality % 6) {
-    case 0:
-    default:
-        index = 0;
-        maxIv = hpIv;
-        if (maxIv < atkIv) {
-            index = 1;
-            maxIv = atkIv;
-        }
-        if (maxIv < defIv) {
-            index = 2;
-            maxIv = defIv;
-        }
-        if (maxIv < speedIv) {
-            index = 3;
-            maxIv = speedIv;
-        }
-        if (maxIv < spAtkIv) {
-            index = 4;
-            maxIv = spAtkIv;
-        }
-        if (maxIv < spDefIv) {
-            index = 5;
-            maxIv = spDefIv;
-        }
-        break;
-    case 1:
-        index = 1;
-        maxIv = atkIv;
-        if (maxIv < defIv) {
-            index = 2;
-            maxIv = defIv;
-        }
-        if (maxIv < speedIv) {
-            index = 3;
-            maxIv = speedIv;
-        }
-        if (maxIv < spAtkIv) {
-            index = 4;
-            maxIv = spAtkIv;
-        }
-        if (maxIv < spDefIv) {
-            index = 5;
-            maxIv = spDefIv;
-        }
-        if (maxIv < hpIv) {
-            index = 0;
-            maxIv = hpIv;
-        }
-        break;
-    case 2:
-        index = 2;
-        maxIv = defIv;
-        if (maxIv < speedIv) {
-            index = 3;
-            maxIv = speedIv;
-        }
-        if (maxIv < spAtkIv) {
-            index = 4;
-            maxIv = spAtkIv;
-        }
-        if (maxIv < spDefIv) {
-            index = 5;
-            maxIv = spDefIv;
-        }
-        if (maxIv < hpIv) {
-            index = 0;
-            maxIv = hpIv;
-        }
-        if (maxIv < atkIv) {
-            index = 1;
-            maxIv = atkIv;
-        }
-        break;
-    case 3:
-        index = 3;
-        maxIv = speedIv;
-        if (maxIv < spAtkIv) {
-            index = 4;
-            maxIv = spAtkIv;
-        }
-        if (maxIv < spDefIv) {
-            index = 5;
-            maxIv = spDefIv;
-        }
-        if (maxIv < hpIv) {
-            index = 0;
-            maxIv = hpIv;
-        }
-        if (maxIv < atkIv) {
-            index = 1;
-            maxIv = atkIv;
-        }
-        if (maxIv < defIv) {
-            index = 2;
-            maxIv = defIv;
-        }
-        break;
-    case 4:
-        index = 4;
-        maxIv = spAtkIv;
-        if (maxIv < spDefIv) {
-            index = 5;
-            maxIv = spDefIv;
-        }
-        if (maxIv < hpIv) {
-            index = 0;
-            maxIv = hpIv;
-        }
-        if (maxIv < atkIv) {
-            index = 1;
-            maxIv = atkIv;
-        }
-        if (maxIv < defIv) {
-            index = 2;
-            maxIv = defIv;
-        }
-        if (maxIv < speedIv) {
-            index = 3;
-            maxIv = speedIv;
-        }
-        break;
-    case 5:
-        index = 5;
-        maxIv = spDefIv;
-        if (maxIv < hpIv) {
-            index = 0;
-            maxIv = hpIv;
-        }
-        if (maxIv < atkIv) {
-            index = 1;
-            maxIv = atkIv;
-        }
-        if (maxIv < defIv) {
-            index = 2;
-            maxIv = defIv;
-        }
-        if (maxIv < speedIv) {
-            index = 3;
-            maxIv = speedIv;
-        }
-        if (maxIv < spAtkIv) {
-            index = 4;
-            maxIv = spAtkIv;
-        }
-        break;
+    /* The line is a draw stored when the Pokemon was created, as
+     * characteristic * 5 + variant.  It no longer reports which stat is highest,
+     * so it never changes as the Pokemon levels up and says nothing about the
+     * individual values.  Saves written before this byte existed leave it unset,
+     * in which case the first line is shown. */
+    if (characteristic >= MON_CHARACTERISTIC_NUM) {
+        characteristic = 0;
     }
-    ReadMsgDataIntoString(memo->msgData, sCharactersticMsgs[index][maxIv % 5], memo->notepad.characteristic);
+    ReadMsgDataIntoString(memo->msgData, sCharactersticMsgs[characteristic / 5][characteristic % 5], memo->notepad.characteristic);
 }
 
 static void FormatFlavorPreference(TrainerMemo *memo) {

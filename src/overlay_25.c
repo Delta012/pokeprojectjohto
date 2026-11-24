@@ -307,6 +307,20 @@ static void TrainerHouse_CopyToPokemon(TrainerHouseMon *trainerHouseMon, Pokemon
     u32 ivs = trainerHouseMon->ivsWord & 0x3fffffff;
     u32 pid = trainerHouseMon->pid;
     CreateMonWithFixedIVs(mon, species, tempByte, ivs, pid);
+    u8 nature = trainerHouseMon->nature;
+    u8 gender = trainerHouseMon->gender;
+    u32 ec = trainerHouseMon->encryption_constant;
+    if (ec == 0 && nature == 0 && gender == 0) {
+        /* No stored identity (the built-in set, or a set handed over by a peer
+         * that does not carry these fields): derive it from the personality so
+         * the same set always fields the same Pokemon, battle after battle. */
+        nature = (u8)(pid % NATURE_NUM);
+        gender = GetGenderBySpeciesAndPersonality(species, pid);
+        ec = pid;
+    }
+    SetMonData(mon, MON_DATA_NATURE, &nature);
+    SetMonData(mon, MON_DATA_GENDER, &gender);
+    SetMonEncryptionConstant(mon, ec);
     tempByte = trainerHouseMon->form;
     SetMonData(mon, MON_DATA_FORM, &tempByte);
     SetMonData(mon, MON_DATA_HELD_ITEM, &trainerHouseMon->item);

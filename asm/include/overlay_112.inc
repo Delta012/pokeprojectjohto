@@ -275,7 +275,6 @@
 .public Mon_GetBoxMon
 .public CopyBoxPokemonToPokemon
 .public Mon_UpdateShayminForm
-.public ChangePersonalityToNatureGenderAndAbility
 .public PCStorage_PlaceMonInBoxByIndexPair
 .public PCStorage_DeleteBoxMonByIndexPair
 .public PCStorage_FindFirstEmptySlot

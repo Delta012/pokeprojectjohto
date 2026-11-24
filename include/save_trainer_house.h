@@ -53,6 +53,10 @@ typedef struct TrainerHouseMon {
     u8 friendship;
     u8 level;
     u16 nickname[POKEMON_NAME_LENGTH];
+    u32 encryption_constant; // keys the block shuffle and the party segment, and seeds the cosmetic patterns
+    u8 nature;
+    u8 gender; // MON_MALE / MON_FEMALE / MON_GENDERLESS
+    u8 padding_5C[2];
 } TrainerHouseMon;
 
 typedef struct TrainerHouseSet {

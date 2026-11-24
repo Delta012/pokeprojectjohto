@@ -70,7 +70,6 @@
 .public GetMonData
 .public SetMonData
 .public GetMonBaseStat
-.public GetNatureFromPersonality
 .public GetMonSpriteCharAndPlttNarcIdsEx
 .public GetMonPicHeightBySpeciesGenderForm
 .public CreateTrainerPicSprite

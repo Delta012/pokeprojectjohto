@@ -109,7 +109,6 @@ static BOOL EncounterGen_DoesRepelSuppressEncounter(u8 roamerLevel, EncounterGen
 static BOOL EncounterGen_CanGenerateUnownEncounter(EncounterGenState *encounterGen);
 static void initRoamingWildmon(u32 otId, Roamer *roamer, BattleSetup *battleSetup);
 static BOOL getRandomActiveRoamerInCurrMap(FieldSystem *fieldSystem, Roamer **pRoamer);
-static BOOL hasCaughtUnownForm(Pokedex *pokedex, u8 numForms, u8 targetForm);
 static u8 EncounterGen_ChooseUnownForm(EncounterGenState *encounterGen);
 static BOOL addGeneratedMonToBattleSetupParty(int battler, EncounterGenState *encounterGen, Pokemon *pokemon, BattleSetup *battleSetup);
 static u8 ApplyAbilityEffectToSlotLevel(EncounterSlot *encSlots, int numEncSlots, EncounterGenState *encounterGen, u8 chosenSlot);
@@ -733,7 +732,7 @@ static void ApplyFluteEffectToEncounterRate(FieldSystem *fieldSystem, u8 *pEncou
 
 static u8 getWildMonNature(Pokemon *pokemon, EncounterGenState *encounterGen) {
     if (!encounterGen->isEgg && encounterGen->ability == ABILITY_SYNCHRONIZE && LCRandRange(2) == 0) {
-        return GetMonData(pokemon, MON_DATA_PERSONALITY, NULL) % 25;
+        return GetMonNature(pokemon);
     } else {
         return LCRandRange(25);
     }
@@ -794,27 +793,19 @@ static void generateWildShinyAndAddToParty(u16 species, u8 level, int battler, u
             }
         }
     }
+    /* Only the shiny gate touches the personality now. Cute Charm and
+     * Synchronise write their value into the mon itself instead of making the
+     * game search for a personality that happens to encode it. */
     personality = GenerateShinyPersonality(otid);
-    if (overrideGenderOrNature) {
-        do {
-            if (encounterGen->ability == ABILITY_CUTE_CHARM) {
-                u8 generatedGender = GetGenderBySpeciesAndPersonality(species, personality);
-                GF_ASSERT(generatedGender != MON_GENDERLESS);
-                if (generatedGender != monGender) {
-                    break;
-                }
-                personality = GenerateShinyPersonality(otid);
-            } else if (encounterGen->ability == ABILITY_SYNCHRONIZE) {
-                u8 generatedNature = GetNatureFromPersonality(personality);
-                if (generatedNature == monNature) {
-                    break;
-                }
-                personality = GenerateShinyPersonality(otid);
-            }
-        } while (TRUE);
-    }
-
     CreateMon(wildMon, species, level, 0x20, TRUE, personality, OT_ID_PRESET, encounterGen->playerId);
+    if (overrideGenderOrNature) {
+        if (encounterGen->ability == ABILITY_CUTE_CHARM) {
+            SetMonData(wildMon, MON_DATA_GENDER, &monGender);
+        } else {
+            SetMonData(wildMon, MON_DATA_NATURE, &monNature);
+            CalcMonLevelAndStats(wildMon);
+        }
+    }
     GF_ASSERT(addGeneratedMonToBattleSetupParty(battler, encounterGen, wildMon, battleSetup));
     Heap_Free(wildMon);
 }
@@ -844,7 +835,8 @@ static void generateWildNonShinyAndAddToParty(u16 species, u8 level, int battler
         } else {
             GF_ASSERT(FALSE); // can't put cute charm on a genderless pokemon
         }
-        CreateMonWithGenderNatureLetter(wildMon, species, level, 0x20, monGender, getWildMonNature(leadMon, encounterGen), 0);
+        CreateMonWithNature(wildMon, species, level, 0x20, getWildMonNature(leadMon, encounterGen));
+        SetMonData(wildMon, MON_DATA_GENDER, &monGender);
         SetMonData(wildMon, MON_DATA_OT_ID, &encounterGen->playerId);
         GF_ASSERT(addGeneratedMonToBattleSetupParty(battler, encounterGen, wildMon, battleSetup));
         Heap_Free(wildMon);
@@ -1206,6 +1198,19 @@ static void initRoamingWildmon(u32 otId, Roamer *roamer, BattleSetup *battleSetu
     u16 hp = GetRoamerData(roamer, ROAMER_DATA_HP);
 
     CreateMonWithFixedIVs(pokemon, species, level, ivs, pid);
+    u32 ec = (u32)GetRoamerData(roamer, ROAMER_DATA_ENCRYPTION_CONSTANT);
+    if (ec != 0) {
+        /* This roamer was recorded with an identity (see Save_CreateRoamerByID):
+         * put it back on, so fleeing and meeting it again - or meeting it after a
+         * reset - gives the same nature, gender, ability and patterns. */
+        u8 nature = (u8)GetRoamerData(roamer, ROAMER_DATA_NATURE);
+        u8 gender = (u8)GetRoamerData(roamer, ROAMER_DATA_GENDER);
+        u8 ability = (u8)GetRoamerData(roamer, ROAMER_DATA_ABILITY);
+        SetMonData(pokemon, MON_DATA_NATURE, &nature);
+        SetMonData(pokemon, MON_DATA_GENDER, &gender);
+        SetMonData(pokemon, MON_DATA_ABILITY, &ability);
+        SetMonEncryptionConstant(pokemon, ec);
+    }
     SetMonData(pokemon, MON_DATA_OT_ID, &otId);
     SetMonData(pokemon, MON_DATA_STATUS, &status);
     SetMonData(pokemon, MON_DATA_HP, &hp);
@@ -1238,16 +1243,6 @@ static BOOL getRandomActiveRoamerInCurrMap(FieldSystem *fieldSystem, Roamer **pR
         *pRoamer = foundRoamers[0];
     }
     return TRUE;
-}
-
-static BOOL hasCaughtUnownForm(Pokedex *pokedex, u8 numForms, u8 targetForm) {
-    for (int i = 0; i < numForms; ++i) {
-        if (targetForm == Pokedex_GetSeenFormByIdx_Unown(pokedex, i, TRUE)) {
-            return TRUE;
-        }
-    }
-
-    return FALSE;
 }
 
 static const u8 sUnlockedUnown_Kabuto[] = {
@@ -1297,54 +1292,31 @@ static const UnlockedUnown sUnlockedUnown[] = {
     { NELEMS(sUnlockedUnown_Sinjoh),     sUnlockedUnown_Sinjoh     },
 };
 
+// Unown's letter is a stored form, rolled with the encounter: one draw out of the pool of letters that the
+// unlocked Ruins of Alph puzzles offer; Sinjoh's ruins offer only their own two.
 static u8 EncounterGen_ChooseUnownForm(EncounterGenState *encounterGen) {
-    u8 ret;
+    u8 availableUnown[UNOWN_FORM_MAX];
+    int numAvailableUnown;
     int i;
     int j;
-    int numUncaughtUnown;
-    int numAvailableUnown;
-    int numSeenUnown;
-    BOOL isUnownSounds = FALSE;
-    u8 *availableUnown;
-    u8 *availableUncaughtUnown;
     const UnlockedUnown *unlocked;
 
     if (encounterGen->isSinjohMap) {
-        return sUnlockedUnown[4].letters[LCRandom() % 2];
+        return sUnlockedUnown[4].letters[LCRandom() % sUnlockedUnown[4].num];
     }
 
-    availableUnown = Heap_AllocAtEnd(HEAP_ID_FIELD1, UNOWN_FORM_MAX);
-    availableUncaughtUnown = Heap_AllocAtEnd(HEAP_ID_FIELD1, UNOWN_FORM_MAX);
-    MI_CpuClear8(availableUnown, UNOWN_FORM_MAX);
-    MI_CpuClear8(availableUncaughtUnown, UNOWN_FORM_MAX);
-    if (GetRadioMusicPlayingSeq() == RADIO_MUSIC_SEQ_UNOWN) {
-        isUnownSounds = TRUE;
-    }
-    numUncaughtUnown = 0;
     numAvailableUnown = 0;
-    numSeenUnown = Pokedex_GetSeenFormNum_Unown(encounterGen->pokedex, TRUE);
     for (i = 0; i < 4; ++i) {
         if (!encounterGen->unownPuzzleFlags[i]) {
             continue;
         }
         unlocked = &sUnlockedUnown[i];
         for (j = 0; j < unlocked->num; ++j) {
-            if (!hasCaughtUnownForm(encounterGen->pokedex, numSeenUnown, unlocked->letters[j])) {
-                availableUncaughtUnown[numUncaughtUnown] = unlocked->letters[j];
-                ++numUncaughtUnown;
-            }
             availableUnown[numAvailableUnown] = unlocked->letters[j];
             ++numAvailableUnown;
         }
     }
-    if (isUnownSounds && numUncaughtUnown > 0 && (LCRandom() % 100) < 50) {
-        ret = availableUncaughtUnown[LCRandom() % numUncaughtUnown];
-    } else {
-        ret = availableUnown[LCRandom() % numAvailableUnown];
-    }
-    Heap_Free(availableUncaughtUnown);
-    Heap_Free(availableUnown);
-    return ret;
+    return availableUnown[LCRandom() % numAvailableUnown];
 }
 
 static BOOL addGeneratedMonToBattleSetupParty(int battler, EncounterGenState *encounterGen, Pokemon *pokemon, BattleSetup *battleSetup) {

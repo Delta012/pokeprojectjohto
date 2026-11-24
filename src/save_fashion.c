@@ -31,6 +31,9 @@ struct SaveFashionMon {
     u8 y;
     u8 form;
     u8 secondTextGender; // gender of the trainer named by secondText
+    u8 gender; // the dressed-up Pokemon's own gender byte
+    u8 padding_38[2];
+    u32 encryption_constant; // the mon's own constant; it seeds its picture
 };
 
 // One dressed-up Pokemon entry.
@@ -109,6 +112,10 @@ static void FashionMon_Init(SaveFashionMon *dst, Pokemon *mon, u8 x, u8 y, s8 z)
     dst->personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
     dst->otId = GetMonData(mon, MON_DATA_OT_ID, NULL);
     dst->form = GetMonData(mon, MON_DATA_FORM, NULL);
+    // The portrait below is rebuilt from this record: gender and the Spinda seed travel with the entry,
+    // because the personality says neither.
+    dst->encryption_constant = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
+    dst->gender = (u8)GetMonData(mon, MON_DATA_GENDER, NULL);
     dst->x = x;
     dst->y = y;
     dst->z = z;
@@ -126,9 +133,13 @@ static void FashionMon_SetSecondText(SaveFashionMon *dst, String *str, u32 gende
 }
 
 static void FashionMon_CreatePokemon(SaveFashionMon *src, Pokemon *mon) {
-    CreateMon(mon, src->species, 0, 0, TRUE, src->personality, TRUE, src->otId);
+    // Rebuilt from the entry, which supplies the personality (shininess) and the constant (block order,
+    // picture seeding) instead of either being re-rolled here.
+    CreateMonWithPersonalityAndEC(mon, src->species, 0, 0, src->personality, src->encryption_constant);
     SetMonData(mon, MON_DATA_NICKNAME, src->nickname);
     SetMonData(mon, MON_DATA_FORM, &src->form);
+    SetMonData(mon, MON_DATA_OT_ID, &src->otId);
+    SetMonData(mon, MON_DATA_GENDER, &src->gender);
 }
 
 static void SetFashionItemPlacement(u8 *dst, u8 accessoryId, u8 x, u8 y, u8 z) {

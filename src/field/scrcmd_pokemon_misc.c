@@ -1117,12 +1117,15 @@ BOOL ScrCmd_GiveSpikyEarPichu(ScriptContext *ctx) {
     ZeroMonData(mon);
 
     u32 trId = PlayerProfile_GetTrainerID(profile);
-    u32 personality = ChangePersonalityToNatureGenderAndAbility(trId, 0xac, NATURE_NAUGHTY, MON_FEMALE, 0, 0);
-    CreateMon(mon, SPECIES_PICHU, 30, 0x20, 1, personality, 1, trId);
+    u32 personality = GenerateNonShinyPersonality(trId);
+    CreateMon(mon, SPECIES_PICHU, 30, 0x20, 1, (int)personality, 1, trId);
 
     form = 1;
     SetMonData(mon, MON_DATA_FORM, &form);
-
+    // Naughty nature, female, first ability slot: values the personality used to encode.  Stored after the
+    // form so the ability resolves for the spiky-eared form, and the stats recompute for the nature.
+    Mon_SetNatureGenderAndAbility(&mon->box, NATURE_NAUGHTY, MON_FEMALE, 0);
+    CalcMonLevelAndStats(mon);
     for (i = 0; i < MAX_MON_MOVES; i++) {
         SetMonData(mon, MON_DATA_MOVE1 + i, &sSpikyEarPichuMoveset[i]);
         maxPP = GetMonData(mon, MON_DATA_MOVE1_MAX_PP + i, 0);

@@ -102,6 +102,8 @@ typedef struct BattleControllerPacketPokemonEncounter {
     u16 movePPCur[MAX_MON_MOVES];
     u16 movePP[MAX_MON_MOVES];
     u16 nickname[POKEMON_NAME_LENGTH + 1];
+    u8 nature;
+    u32 encryption_constant; // seeds cosmetic patterns (Spinda spots) on this mon's picture
 } BattleControllerPacketPokemonEncounter;
 
 // Shared by the slide-in (3) and send-out (4) commands
@@ -120,7 +122,9 @@ typedef struct BattleControllerPacketPokemonSendOut {
     u16 movePPCur[MAX_MON_MOVES];
     u16 movePP[MAX_MON_MOVES];
     u16 nickname[POKEMON_NAME_LENGTH + 1];
-    u8 padding_46[2];
+    u8 nature;
+    u8 padding_47;
+    u32 encryption_constant; // seeds cosmetic patterns (Spinda spots) on this mon's picture
     u32 partnerSelectedMonIndex;
     u32 isSubstitute;
     u16 allSpecies[BATTLER_MAX];

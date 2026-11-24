@@ -676,7 +676,7 @@ static void HallOfFameShowcase_ShowMonDetail(HallOfFameShowcase *showcase, u32 i
     int height;
     int shiny;
     void *buffer;
-    u32 personality;
+    u32 spotSeed;
 
     if (index >= showcase->numMons) {
         HallOfFameShowcase_HideMonDetail(showcase);
@@ -692,16 +692,18 @@ static void HallOfFameShowcase_ShowMonDetail(HallOfFameShowcase *showcase, u32 i
         firstWindow = 8;
     }
     Save_HOF_GetMonStatsByIndexPair(showcase->hallOfFame, showcase->record, index, &showcase->mon);
-    gender = GetGenderBySpeciesAndPersonality(showcase->mon.species, showcase->mon.personality);
+    gender = showcase->mon.gender; // the record stores the gender it was inducted with
     ((void (*)(NARC *, s8 *, u16))NARC_ReadPokepicShadowHeight)(showcase->pokegraNarc, yOffset, showcase->mon.species);
     height = GetMonPicHeightBySpeciesGenderForm(showcase->mon.species, gender, 2, showcase->mon.form, showcase->mon.personality);
     sprites = showcase->sprites;
     ManagedSprite_SetPositionXYWithSubscreenOffset(showcase->sprites[slot], 64, height + 64 - yOffset[0], FX32_CONST(512));
     shiny = CalcShininessByOtIdAndPersonality(showcase->mon.otid, showcase->mon.personality) != 0;
     buffer = Heap_AllocAtEnd(HEAP_ID_59, 3200);
-    personality = showcase->mon.personality;
-    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, showcase->mon.species, GetGenderBySpeciesAndPersonality(showcase->mon.species, personality), 2, shiny, showcase->mon.form, personality);
-    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_59, &picRect, buffer, showcase->mon.personality, FALSE, 2, showcase->mon.species);
+    // The record carries the encryption constant the mon was inducted with, so a Hall
+    // of Fame Spinda shows the same spots it had as a live Pokemon.
+    spotSeed = showcase->mon.encryption_constant;
+    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, showcase->mon.species, gender, 2, shiny, showcase->mon.form, spotSeed);
+    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_59, &picRect, buffer, spotSeed, FALSE, 2, showcase->mon.species);
     HallOfFameShowcase_LoadSubObjChar(buffer, NNS_G2dGetImageLocation(Sprite_GetImageProxy(sprites[slot]->sprite), NNS_G2D_VRAM_TYPE_2DSUB), 3200);
     Heap_Free(buffer);
     GfGfxLoader_GXLoadPal((NarcId)pokepic.narcID, pokepic.palDataID, GF_PAL_LOCATION_SUB_OBJ, (enum GFPalSlotOffset)NNS_G2dGetImagePaletteLocation(Sprite_GetPaletteProxy(sprites[slot]->sprite), NNS_G2D_VRAM_TYPE_2DSUB), 32, HEAP_ID_59);
@@ -780,7 +782,7 @@ static void HallOfFameShowcase_CreatePartyIcon(HallOfFameShowcase *showcase, u32
     imageLocation = NNS_G2dGetImageLocation(Sprite_GetImageProxy(sprites[spriteIndex]->sprite), NNS_G2D_VRAM_TYPE_2DMAIN);
 
     tileSize = dim * (dim << 5);
-    member = HallOfFameShowcase_GetOverworldModelFileId(showcase->mon.species, showcase->mon.form, GetGenderBySpeciesAndPersonality(showcase->mon.species, showcase->mon.personality));
+    member = HallOfFameShowcase_GetOverworldModelFileId(showcase->mon.species, showcase->mon.form, showcase->mon.gender);
     modelFile = AllocAndReadWholeNarcMemberByIdPair(NARC_data_mmodel_mmodel, member, HEAP_ID_59);
     tex = NNS_G3dGetTex((NNSG3dResFileHeader *)modelFile);
     texData = NNS_G3dGetTexData(tex);

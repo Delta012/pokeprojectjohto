@@ -3,8 +3,11 @@
 
 #include "global_terminal/global_terminal_net.h"
 
+#include "battle_record.h"
+
+// One battle video as the server stores it: the BattleRecord payload without its four-byte prefix.
 typedef struct GlobalTerminalServerVideoUpload {
-    u32 data[1875];
+    u32 data[(sizeof(BattleRecord) - 4) / 4];
 } GlobalTerminalServerVideoUpload;
 
 // The Global Terminal server connection: the requests are sent by a socket thread; the result is read with

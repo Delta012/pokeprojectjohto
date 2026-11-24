@@ -11,8 +11,8 @@ static void CharTiles_CopyRows(const u8 *src, u8 *dest, int *pSrcOffset, int *pD
 static void CharTiles_LoadUnpacked(NarcId narcId, s32 fileId, enum HeapID heapID, NNSG2dCharacterData **pCharData);
 static void CharTiles_CopyRect(int x, int y, int width, int height, NNSG2dCharacterData *pCharData, void *dest);
 static BOOL SpeciesHasSpindaSpots(int species);
-static void CharTiles_LoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest, u32 pid, BOOL isAnimated, int whichFacing, int species);
-static void *CharTiles_AllocAndLoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, u32 pid, BOOL isAnimated, int whichFacing, int species);
+static void CharTiles_LoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest, u32 spotSeed, BOOL isAnimated, int whichFacing, int species);
+static void *CharTiles_AllocAndLoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, u32 spotSeed, BOOL isAnimated, int whichFacing, int species);
 static void CharTiles_CopyBlock(int srcWidth, int srcHeight, int x, int y, int width, int height, int *pDstOffset, const void *src, void *dest);
 static void CharTiles_CopyBlockFromRect(int srcWidth, int srcHeight, const TileRect *template, int *pDstOffset, const void *src, void *dest);
 static void CharTiles_LoadObjBlocksFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest);
@@ -77,20 +77,20 @@ static BOOL SpeciesHasSpindaSpots(int species) {
     return FALSE;
 }
 
-static void CharTiles_LoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest, u32 pid, BOOL isAnimated, int whichFacing, int species) {
+static void CharTiles_LoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest, u32 spotSeed, BOOL isAnimated, int whichFacing, int species) {
     NNSG2dCharacterData *ppCharData = NULL;
     CharTiles_LoadUnpacked(narcId, fileId, heapID, &ppCharData);
     UnscanPokepic(ppCharData->pRawData, narcId);
     BOOL isSpinda = SpeciesHasSpindaSpots(species);
     if (whichFacing == MON_PIC_FACING_FRONT && isSpinda == TRUE) {
-        RawChardata_PlaceSpindaSpots(ppCharData->pRawData, pid, isAnimated);
+        RawChardata_PlaceSpindaSpots(ppCharData->pRawData, spotSeed, isAnimated);
     }
     CharTiles_CopyRect(x, y, width, height, ppCharData, dest);
 }
 
-static void *CharTiles_AllocAndLoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, u32 pid, BOOL isAnimated, int whichFacing, int species) {
+static void *CharTiles_AllocAndLoadMonRect(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, u32 spotSeed, BOOL isAnimated, int whichFacing, int species) {
     void *ret = Heap_Alloc(heapID, width * height * 32);
-    CharTiles_LoadMonRect(narcId, fileId, heapID, x, y, width, height, ret, pid, isAnimated, whichFacing, species);
+    CharTiles_LoadMonRect(narcId, fileId, heapID, x, y, width, height, ret, spotSeed, isAnimated, whichFacing, species);
     return ret;
 }
 
@@ -198,7 +198,7 @@ void *AllocAndLoadPltt16FromNarc(NarcId narcId, s32 fileId, enum HeapID heapID) 
     return ret;
 }
 
-void CharTiles_LoadMonObjBlocksFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest, u32 pid, BOOL isAnimated, int whichFacing, int species) {
+void CharTiles_LoadMonObjBlocksFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, int x, int y, int width, int height, void *dest, u32 spotSeed, BOOL isAnimated, int whichFacing, int species) {
     TileRect blocks[6] = {
         { 0, 0, 8, 8 },
         { 8, 0, 2, 4 },
@@ -209,25 +209,25 @@ void CharTiles_LoadMonObjBlocksFromNarc(NarcId narcId, s32 fileId, enum HeapID h
     };
 
     int dstOffset = 0;
-    void *rectBuf = CharTiles_AllocAndLoadMonRect(narcId, fileId, heapID, x, y, width, height, pid, isAnimated, whichFacing, species);
+    void *rectBuf = CharTiles_AllocAndLoadMonRect(narcId, fileId, heapID, x, y, width, height, spotSeed, isAnimated, whichFacing, species);
     for (int i = 0; i < 6; ++i) {
         CharTiles_CopyBlockFromRect(width, height, &blocks[i], &dstOffset, rectBuf, dest);
     }
     Heap_Free(rectBuf);
 }
 
-void CharTiles_LoadMonRectAsObjFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, TileRect *rect, void *dest, u32 personality, BOOL isAnimated, int whichFacing, int species) {
-    CharTiles_LoadMonObjBlocksFromNarc(narcId, fileId, heapID, rect->x, rect->y, rect->w, rect->h, dest, personality, isAnimated, whichFacing, species);
+void CharTiles_LoadMonRectAsObjFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, TileRect *rect, void *dest, u32 spotSeed, BOOL isAnimated, int whichFacing, int species) {
+    CharTiles_LoadMonObjBlocksFromNarc(narcId, fileId, heapID, rect->x, rect->y, rect->w, rect->h, dest, spotSeed, isAnimated, whichFacing, species);
 }
 
-void CharTiles_LoadMonPicAsObjFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, void *dest, u32 personality, BOOL isAnimated, int whichFacing, int species) {
+void CharTiles_LoadMonPicAsObjFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, void *dest, u32 spotSeed, BOOL isAnimated, int whichFacing, int species) {
     TileRect rect = { 0, 0, 10, 10 };
-    CharTiles_LoadMonRectAsObjFromNarc(narcId, fileId, heapID, &rect, dest, personality, isAnimated, whichFacing, species);
+    CharTiles_LoadMonRectAsObjFromNarc(narcId, fileId, heapID, &rect, dest, spotSeed, isAnimated, whichFacing, species);
 }
 
-void *CharTiles_AllocAndLoadMonPicAsObjFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, u32 personality, BOOL isAnimated, int whichFacing, int species) {
+void *CharTiles_AllocAndLoadMonPicAsObjFromNarc(NarcId narcId, s32 fileId, enum HeapID heapID, u32 spotSeed, BOOL isAnimated, int whichFacing, int species) {
     void *ret = Heap_Alloc(heapID, 3200);
-    CharTiles_LoadMonPicAsObjFromNarc(narcId, fileId, heapID, ret, personality, isAnimated, whichFacing, species);
+    CharTiles_LoadMonPicAsObjFromNarc(narcId, fileId, heapID, ret, spotSeed, isAnimated, whichFacing, species);
     return ret;
 }
 

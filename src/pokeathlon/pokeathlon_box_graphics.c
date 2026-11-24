@@ -465,8 +465,8 @@ static void PokeathlonBox_LoadMonPic(PokeathlonBox_SubGraphics *sub, PokeathlonB
     NNSG2dPaletteData *plttData;
     void *file;
 
-    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, mon->species, mon->gender, MON_PIC_FACING_FRONT, mon->isShiny, mon->form, mon->personality);
-    CharTiles_LoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, sub->heapID, sub->monPicChars, mon->personality, FALSE, MON_PIC_FACING_FRONT, mon->species);
+    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, mon->species, mon->gender, MON_PIC_FACING_FRONT, mon->isShiny, mon->form, mon->spotSeed);
+    CharTiles_LoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, sub->heapID, sub->monPicChars, mon->spotSeed, FALSE, MON_PIC_FACING_FRONT, mon->species);
     file = AllocAndReadWholeNarcMemberByIdPair((NarcId)pokepic.narcID, pokepic.palDataID, sub->heapID);
     if (NNS_G2dGetUnpackedPaletteData(file, &plttData) != TRUE) {
         GF_ASSERT(FALSE);

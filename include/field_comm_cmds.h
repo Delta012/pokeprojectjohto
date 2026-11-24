@@ -21,7 +21,7 @@ u32 CommCmd_GetTrainerCardSize();
 u32 CommCmd_GetSize3008();
 u32 CommCmd_GetSize1008();
 u32 CommCmd_GetSize24();
-u32 CommCmd_GetSize1424();
+u32 CommCmd_GetSizePartyCore();
 void CommCmd_RecvIgnored();
 u32 CommCmd_GetSize10();
 u32 CommCmd_GetSize50();

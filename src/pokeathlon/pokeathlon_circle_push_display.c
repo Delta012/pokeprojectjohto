@@ -304,8 +304,8 @@ void PokeathlonCirclePushDisplay_LoadMonPics(PokeathlonCirclePushDisplay *displa
 
     for (i = 0; i < POKEATHLON_MONS; i++) {
         PokeathlonCourse_GetMonInfo(display->course, i / POKEATHLON_TEAM_SIZE, i % POKEATHLON_TEAM_SIZE, &view);
-        GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, view.species, view.gender, 2, view.isShiny, view.form, view.personality);
-        display->anim.monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, display->heapId, view.personality, FALSE, 2, view.species);
+        GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, view.species, view.gender, 2, view.isShiny, view.form, view.spotSeed);
+        display->anim.monPics[i].chars = CharTiles_AllocAndLoadMonPicAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, display->heapId, view.spotSeed, FALSE, 2, view.species);
         display->anim.monPics[i].palette = AllocAndLoadPltt16FromNarc((NarcId)pokepic.narcID, pokepic.palDataID, display->heapId);
     }
 }

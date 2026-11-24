@@ -20,10 +20,10 @@ void GtsSave_SetHasStoredMon(GtsSave *data, u16 value) {
     data->hasStoredMon = value;
 }
 void GtsSave_GetStoredMon(GtsSave *data, Pokemon *out) {
-    MI_CpuCopyFast(data->storedMon, out, 0xEC);
+    MI_CpuCopyFast(data->storedMon, out, sizeof(Pokemon));
 }
 void GtsSave_SetStoredMon(GtsSave *data, Pokemon *src, int box) {
-    MI_CpuCopyFast(src, data->storedMon, 0xEC);
+    MI_CpuCopyFast(src, data->storedMon, sizeof(Pokemon));
 }
 u32 GtsSave_GetDepositDate(GtsSave *data) {
     return data->depositDate;

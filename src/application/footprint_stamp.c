@@ -1111,6 +1111,7 @@ static void FootprintStamp_LoadParty(u32 inkColumn, SaveData *saveData, Footprin
             party->species = GetMonData(mon, MON_DATA_SPECIES_OR_EGG, NULL);
             party->personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
             party->form = GetMonData(mon, MON_DATA_FORM, NULL);
+            party->nature = GetMonNature(mon);
             party->color = FootprintStamp_GetInkColor(inkColumn, GetMonData(mon, MON_DATA_OT_ID, NULL));
             i++;
             party++;

@@ -256,15 +256,16 @@ typedef struct PokeathlonPennantCaptureIconMon {
     u16 form;
 } PokeathlonPennantCaptureIconMon;
 
-// A team member as passed to PokeathlonPennantCaptureDisplay_LoadMonPics.
+// A team member as passed to PokeathlonPennantCaptureDisplay_LoadMonPics.  It is a view of
+// PokeathlonCourseMonInfo (the caller casts), so the seed at 0x0C is that record's spotSeed.
 typedef struct PokeathlonPennantCapturePicMon {
     u16 species;
     u16 form;
     u16 unused4;
     u8 shiny;
     u8 gender;
-    u32 unused8;
-    u32 personality;
+    u32 participant;
+    u32 spotSeed;
 } PokeathlonPennantCapturePicMon;
 
 // What the CPU sees of a participant: the Pokemon and its position on the touch screen of the host.

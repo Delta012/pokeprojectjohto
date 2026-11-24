@@ -1,6 +1,7 @@
 #ifndef POKEHEARTGOLD_POKEATHLON_SAVE_H
 #define POKEHEARTGOLD_POKEATHLON_SAVE_H
 
+#include "constants/global.h"
 #include "save.h"
 
 typedef struct PokeathlonStatistics {
@@ -30,20 +31,35 @@ typedef struct PokeathlonEventRecordTeam {
     u16 mons[3]; // bits 0-9: species, bits 10-14: form
 } PokeathlonEventRecordTeam;
 
+// A ranking of an event.  A record board has no Pokemon to ask, so each slot keeps the encryption constant
+// its picture seeds from; 0 means no identity - the trophy-target row, or an NPC team.
 typedef struct PokeathlonEventRecordEntry {
     u16 score;
     PokeathlonEventRecordTeam team;
-} PokeathlonEventRecordEntry; // size: 0x8
+    u32 encryption_constant[3];
+} PokeathlonEventRecordEntry; // size: 0x14
+
+// The trainer of a link ranking, as the record keeps it.
+typedef struct PokeathlonEventRecordTrainer {
+    u32 trainerId;
+    u16 name[PLAYER_NAME_LENGTH + 1];
+    u8 language;
+    u8 padding[3];
+} PokeathlonEventRecordTrainer; // size: 0x18
 
 typedef struct Pokeathlon_RecordsSolo {
     PokeathlonEventRecordEntry entries[5];
     u8 timesPlayed[0x4];
-} Pokeathlon_RecordsSolo; // size: 0x2C
+} Pokeathlon_RecordsSolo; // size: 0x68
 
+// The five rankings of a link event and the trainer behind each; PokeathlonCourseLinkEventRecord writes
+// this block, so the two agree on the trainer size.
 typedef struct Pokeathlon_RecordsLink {
     PokeathlonEventRecordEntry entries[5];
-    u8 unk_28[0x7C];
-} Pokeathlon_RecordsLink; // size: 0xA4
+    u32 timesPlayed;
+    u8 padding[4];
+    PokeathlonEventRecordTrainer trainers[5];
+} Pokeathlon_RecordsLink; // size: 0xE4
 
 typedef union PokeathlonSavePrefix {
     struct {
@@ -55,15 +71,15 @@ typedef union PokeathlonSavePrefix {
 
 typedef struct PokeathlonSave {
     PokeathlonSavePrefix prefix;           // 0x000: serialized byte and halfword views
-    Pokeathlon_RecordsSolo recordsSolo[10]; // 0x2CC
-    Pokeathlon_RecordsLink recordsLink[10]; // 0x484
-    u8 soloEventBestPoints[0x14];                       // pointed to by PokeathlonSave_GetSoloEventBestPoints
-    PokeathlonStatistics statistics;    // pointed to by PokeathlonSave_GetStatistics / PokeathlonSave_GetStatistics2
-    int athletePoints;                      // 0xB74 - capped at 99999
+    Pokeathlon_RecordsSolo recordsSolo[10];   // 0x2CC
+    Pokeathlon_RecordsLink recordsLink[10];   // 0x6DC
+    u8 soloEventBestPoints[0x14];             // 0xFC4 - pointed to by PokeathlonSave_GetSoloEventBestPoints
+    PokeathlonStatistics statistics;          // 0xFD8 - pointed to by PokeathlonSave_GetStatistics / PokeathlonSave_GetStatistics2
+    int athletePoints;                      // 0x104C - capped at 99999
     u32 dataCardsBought;                            // bitfield, bits 0-26 (PokeathlonSave_IsDataCardBought / PokeathlonSave_SetDataCardBought)
     u16 dailyItemsBought;                            // bitfield (PokeathlonSave_IsDailyItemBought / PokeathlonSave_SetDailyItemBought / PokeathlonSave_ResetDailyItemsBought)
-    u16 unk_B7E;
-} PokeathlonSave; // size: 0xB80
+    u16 unk_1056;
+} PokeathlonSave; // size: 0x1058
 
 typedef struct PokeathlonFriendshipRoomStatueData {
     u16 species;

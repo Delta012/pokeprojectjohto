@@ -1052,7 +1052,7 @@ static void PokeathlonCourseCeremony_LoadWinnerMonPics(PokeathlonCourseData *cou
     for (i = 0; i < POKEATHLON_TEAM_SIZE; i++) {
         PokeathlonCourse_GetMonInfo(course, team, i, &info);
         PokeathlonCourse_LoadMonPicWithPalette(ceremony->monPicSprites[i], &info, TRUE, FALSE, ceremony->heapId, FALSE);
-        GetMonSpriteCharAndPlttNarcIdsEx(&template, info.species, info.gender, 2, info.isShiny, info.form, info.personality);
+        GetMonSpriteCharAndPlttNarcIdsEx(&template, info.species, info.gender, 2, info.isShiny, info.form, info.spotSeed);
         file = GfGfxLoader_GetPlttData((NarcId) template.narcID, template.palDataID, &palette, ceremony->heapId);
         PokeathlonCourseMonObjects_SetPalette(ceremony->objects, i * POKEATHLON_TEAM_SIZE + 1, NNS_G2D_VRAM_TYPE_2DMAIN, palette->pRawData);
         Heap_Free(file);

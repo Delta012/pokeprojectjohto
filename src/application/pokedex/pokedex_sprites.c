@@ -379,18 +379,18 @@ void PokedexApp_LoadMonPicToSprite(PokedexAppData *pokedexApp, int species, u8 f
     PokepicTemplate pokepic;
     TileRect rect = gPokedexMonPicSpriteRect;
     void *buffer = Heap_AllocAtEnd(HEAP_ID_POKEDEX_APP, 3200);
-    u32 personality, location, palette;
+    u32 spotSeed, location, palette;
     ManagedSprite **sprites;
     int index;
 
     MI_CpuClearFast(&pokepic, sizeof(PokepicTemplate));
     if (species == SPECIES_SPINDA && facing == 2) {
-        personality = Pokedex_GetSeenSpindaPersonality(pokedexApp->args->pokedex, 0);
+        spotSeed = Pokedex_GetSeenSpindaPersonality(pokedexApp->args->pokedex, 0);
     } else {
-        personality = 0;
+        spotSeed = 0;
     }
-    ((void (*)(PokepicTemplate *, int, u8, u8, u8, u8, u32))GetMonSpriteCharAndPlttNarcIdsEx)(&pokepic, species, gender, facing, 0, form, personality);
-    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_POKEDEX_APP, &rect, buffer, personality, FALSE, facing, species);
+    ((void (*)(PokepicTemplate *, int, u8, u8, u8, u8, u32))GetMonSpriteCharAndPlttNarcIdsEx)(&pokepic, species, gender, facing, 0, form, spotSeed);
+    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_POKEDEX_APP, &rect, buffer, spotSeed, FALSE, facing, species);
     sprites = pokedexApp->sprites;
     index = sprite;
     location = NNS_G2dGetImageLocation(Sprite_GetImageProxy(sprites[index]->sprite), NNS_G2D_VRAM_TYPE_2DSUB);

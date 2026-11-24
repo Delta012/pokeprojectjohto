@@ -644,8 +644,9 @@ gGtsServer:
 gGtsServerFriendKey:
 	.space 0x8
 
+// holds a GtsRecord plus the four-byte exchange id of exchange.asp (GTS_RECORD_SIZE + 4)
 gGtsServerRequest:
-	.space 0xEC
+	.space 0x12C
 
 gGtsServerPending:
 	.space 0x20

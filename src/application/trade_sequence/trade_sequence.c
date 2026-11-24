@@ -506,7 +506,7 @@ void TradeSequence_LoadMonPicToBg(TradeSequence *ts, u32 whichMon, u32 bgId, u32
     u16 species;
     BOOL lock;
     BoxPokemon *boxMon;
-    u32 personality;
+    u32 spotSeed;
 
     if (buffer) {
         local.settings = sTradeSequenceMonPicSettings;
@@ -517,7 +517,7 @@ void TradeSequence_LoadMonPicToBg(TradeSequence *ts, u32 whichMon, u32 bgId, u32
         }
         lock = AcquireBoxMonLock(boxMon);
         GetBoxmonSpriteCharAndPlttNarcIds(&local.template, boxMon, 2, FALSE);
-        personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+        spotSeed = GetBoxMonData(boxMon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
         species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
         if (large) {
             local.settings.w *= 2;
@@ -525,7 +525,7 @@ void TradeSequence_LoadMonPicToBg(TradeSequence *ts, u32 whichMon, u32 bgId, u32
         if (GetBoxMonData(boxMon, MON_DATA_IS_EGG, NULL) == TRUE && species == SPECIES_SPINDA) {
             species = SPECIES_EGG;
         }
-        CharTiles_LoadMonRectAsObjFromNarc((NarcId)local.template.narcID, local.template.charDataID, HEAP_ID_56, &local.settings, buffer, personality, large, 2, species);
+        CharTiles_LoadMonRectAsObjFromNarc((NarcId)local.template.narcID, local.template.charDataID, HEAP_ID_56, &local.settings, buffer, spotSeed, large, 2, species);
         DC_FlushRange(buffer, size);
         BG_LoadCharTilesData(ts->bgConfig, bgId, buffer, size, 0);
         ReleaseBoxMonLock(boxMon, lock);

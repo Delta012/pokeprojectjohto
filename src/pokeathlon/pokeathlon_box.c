@@ -290,6 +290,7 @@ static void PokeathlonBox_CopySelectedMons(PokeathlonBox *data, PokeathlonBoxArg
                 Pokemon *partyMon = Party_GetMonByIndex(SaveArray_Party_Get(args->courseArgs->saveData), data->selectedMons[i].slot);
                 args->selectedMons[i].species = GetMonData(partyMon, MON_DATA_SPECIES, NULL);
                 args->selectedMons[i].personality = GetMonData(partyMon, MON_DATA_PERSONALITY, NULL);
+                args->selectedMons[i].encryption_constant = GetMonData(partyMon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
                 args->selectedMons[i].form = GetMonData(partyMon, MON_DATA_FORM, NULL);
                 GetMonData(partyMon, MON_DATA_NICKNAME, &args->selectedMons[i].nickname);
                 args->selectedMons[i].isShiny = MonIsShiny(partyMon);
@@ -299,6 +300,7 @@ static void PokeathlonBox_CopySelectedMons(PokeathlonBox *data, PokeathlonBoxArg
                 PokeathlonBox_GetBoxMon(SaveArray_PCStorage_Get(args->courseArgs->saveData), data->selectedMons[i].page, data->selectedMons[i].slot, &boxMon);
                 args->selectedMons[i].species = boxMon.species;
                 args->selectedMons[i].personality = boxMon.personality;
+                args->selectedMons[i].encryption_constant = PCStorage_GetMonDataByIndexPair(SaveArray_PCStorage_Get(args->courseArgs->saveData), data->selectedMons[i].page, data->selectedMons[i].slot, MON_DATA_ENCRYPTION_CONSTANT, NULL);
                 args->selectedMons[i].form = boxMon.form;
                 CopyU16StringArrayN(args->selectedMons[i].nickname, boxMon.nickname, POKEMON_NAME_LENGTH + 1);
                 args->selectedMons[i].isShiny = boxMon.isShiny;
@@ -374,7 +376,8 @@ static void PokeathlonBox_ShowMonInfo(int boxno, int slot, void *arg) {
         if (boxno == NUM_BOXES) {
             Party *party = SaveArray_Party_Get(data->saveData);
             Pokemon *partyMon = Party_GetMonByIndex(party, slot);
-            monInfo.personality = GetMonData(partyMon, MON_DATA_PERSONALITY, NULL);
+            // The summary screen's seed: every creation path writes a constant, so no fallback here.
+            monInfo.spotSeed = GetMonData(partyMon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
             monInfo.species = GetMonData(partyMon, MON_DATA_SPECIES, NULL);
             monInfo.form = GetMonData(partyMon, MON_DATA_FORM, NULL);
             GetMonData(partyMon, MON_DATA_NICKNAME, monInfo.nickname);
@@ -397,7 +400,8 @@ static void PokeathlonBox_ShowMonInfo(int boxno, int slot, void *arg) {
         }
 
         PokeathlonBox_GetBoxMon(SaveArray_PCStorage_Get(data->saveData), boxno, slot, &pokeathlonBoxMon);
-        monInfo.personality = pokeathlonBoxMon.personality;
+        // The mon's own constant, as on its summary screen; see the party case above.
+        monInfo.spotSeed = PCStorage_GetMonDataByIndexPair(SaveArray_PCStorage_Get(data->saveData), boxno, slot, MON_DATA_ENCRYPTION_CONSTANT, NULL);
         monInfo.species = pokeathlonBoxMon.species;
         monInfo.form = pokeathlonBoxMon.form;
         CopyU16StringArrayN(monInfo.nickname, pokeathlonBoxMon.nickname, POKEMON_NAME_LENGTH + 1);

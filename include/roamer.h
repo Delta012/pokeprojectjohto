@@ -14,6 +14,10 @@ enum RoamerDataParam {
     ROAMER_DATA_LEVEL = 6,
     ROAMER_DATA_STATUS = 7,
     ROAMER_DATA_ACTIVE = 8,
+    ROAMER_DATA_ENCRYPTION_CONSTANT = 9,
+    ROAMER_DATA_NATURE = 10,
+    ROAMER_DATA_GENDER = 11,
+    ROAMER_DATA_ABILITY = 12,
 };
 
 typedef struct Roamer { // todo: this appears to be used for swarms as well
@@ -26,6 +30,10 @@ typedef struct Roamer { // todo: this appears to be used for swarms as well
     u8 status;
     u8 active;
     u8 dummy;
+    u32 encryption_constant; // one identity per roamer: keys its blocks and seeds its cosmetic patterns
+    u8 nature;
+    u8 gender; // MON_MALE / MON_FEMALE / MON_GENDERLESS
+    u8 ability; // ability slot
 } Roamer;
 
 typedef struct RoamerSaveData { // todo: this appears to be used for swarms as well

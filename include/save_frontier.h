@@ -32,7 +32,23 @@ typedef struct FrontierMon {
     u8 ability;
     u8 friendship;
     u16 nickname[11];
-} FrontierMon;
+    /* NEW: the set's nature.  FrontierMon used to hide it in the residue of the
+     * personality (pid - pid % 25 + nature), which only worked while the
+     * personality also carried the nature; the personality now carries nothing
+     * but shininess.  Kept last so the asm mon tables grow by whole entries. */
+    u8 nature;
+    /* NEW: the mon's gender.  FrontierMon used to re-derive it from species and
+     * personality every time a mon was built; the value is recorded instead. */
+    u8 gender; // MON_MALE / MON_FEMALE / MON_GENDERLESS
+    u8 padding_39[2];
+    /* NEW: the encryption constant, the key for the rebuilt mon's data blocks and
+     * its cosmetic patterns.  FrontierMon_ToPokemon used to roll a fresh one on
+     * every build, so the same set looked different each time (Spinda spots,
+     * gender icon) and its blocks moved around.  Zero means "this record carries
+     * no identity" - the static asm tables - and the constant is then taken from
+     * the personality, which is what the old code effectively did. */
+    u32 encryption_constant;
+} FrontierMon; // size: 0x40
 
 // The Battle Tower challenge in progress (fields addressed by enum BattleTowerChallengeField).
 typedef struct BattleTowerChallenge {
@@ -116,7 +132,7 @@ struct FrontierData {
 
 // One trainer of a downloaded Wi-Fi Battle Room.
 typedef struct BattleRoomTrainer {
-    u8 team[0xA8];
+    FrontierMon team[3]; // was a 0xA8 byte blob: three FrontierMon entries
     u16 name[16];
     u8 useDefaultName : 1, gender : 1, pad : 6;
     u8 trainerClass;
@@ -164,6 +180,6 @@ typedef struct FrontierSave {
     u8 hallFlags[4];
     u8 castleFlags[4];
     u8 arcadeFlags[4];
-} FrontierSave; // size: 0x1628
+} FrontierSave; // size: 0x1700
 
 #endif

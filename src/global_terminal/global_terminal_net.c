@@ -189,11 +189,13 @@ void GlobalTerminalNet_PackBoxData(SaveData *saveData, PCStorage *storage, int b
     for (i = 0; i < 30; i++) {
         form->species[i] = PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_SPECIES, NULL);
         form->personality[i] = PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_PERSONALITY, NULL);
+        form->encryption_constant[i] = PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_ENCRYPTION_CONSTANT, NULL);
         form->otIds[i] = PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_OT_ID, NULL);
         if (PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_SPECIES_OR_EGG, NULL) == SPECIES_EGG) {
             form->eggFlags |= 1 << i;
         }
         form->forms[i] = PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_FORM, NULL);
+        form->genders[i] = PCStorage_GetMonDataByIndexPair(storage, box, i, MON_DATA_GENDER, NULL);
     }
     form->wallpaper = PCStorage_GetBoxWallpaper(storage, box);
     form->category = 0;
@@ -359,7 +361,7 @@ BOOL GlobalTerminalNet_RequestVideoUpload(GlobalTerminalNet *net, const Frontier
     if (!GlobalTerminalNet_IsIdle(net)) {
         return FALSE;
     }
-    GF_ASSERT(BattleRecord_sizeof() - 4 == 0x1D4C);
+    GF_ASSERT(sizeof(GlobalTerminalServerVideoUpload) == BattleRecord_sizeof() - 4);
     net->request.video = BattleRecord_GetProfile2();
     VsRecorder_EncryptRecord(net->saveData);
     MI_CpuCopy8(header, BattleRecord_GetProfile(), 0x80);

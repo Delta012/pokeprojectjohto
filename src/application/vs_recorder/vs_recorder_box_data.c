@@ -933,6 +933,7 @@ static void VsRecorder_CreateBoxMonPic(VsRecorderWork *work) {
     int form = boxData->form.forms[cursor];
     u16 species = boxData->form.species[cursor];
     u32 personality = boxData->form.personality[cursor];
+    u32 encryptionConstant = boxData->form.encryption_constant[cursor];
     BASE_STATS *personal;
     u8 gender;
     u8 shiny;
@@ -951,10 +952,19 @@ static void VsRecorder_CreateBoxMonPic(VsRecorderWork *work) {
         species = SPECIES_EGG;
     }
     personal = AllocAndLoadMonPersonal(species, HEAP_ID_109);
-    gender = GetGenderBySpeciesAndPersonality(species, personality);
+    // A downloaded box is a GlobalTerminalNetBoxForm record with no Pokemon behind it: its stored constant
+    // seeds the picture and its stored gender says what the personality used to.  Only an out-of-range
+    // gender byte, or a 0 constant, falls back to the personality.
+    if (encryptionConstant == 0) {
+        encryptionConstant = personality;
+    }
+    gender = boxData->form.genders[cursor];
+    if (gender > MON_GENDERLESS) {
+        gender = GetGenderBySpeciesAndPersonality(species, personality);
+    }
     shiny = CalcShininessByOtIdAndPersonality(otId, personality);
-    GetMonPicHeightBySpeciesGenderForm(species, gender, 2, form, personality);
-    GetMonSpriteCharAndPlttNarcIdsEx(&template, species, gender, 2, shiny, form, personality);
+    GetMonPicHeightBySpeciesGenderForm(species, gender, 2, form, encryptionConstant);
+    GetMonSpriteCharAndPlttNarcIdsEx(&template, species, gender, 2, shiny, form, encryptionConstant);
     boxData->pokepic = PokepicManager_CreatePokepic(work->pokepicManager, &template, 42, 91, 0, 0, NULL, NULL);
     FreeMonPersonal(personal);
 }

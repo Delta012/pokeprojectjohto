@@ -34,11 +34,15 @@ typedef struct PokeathlonBox_MonStats {
     u16 speedColor : 3;
 } PokeathlonBox_MonStats;
 
-// A Pokemon picked in the box, as the course stores its participants' Pokemon.
+// A Pokemon picked in the box, as the course stores its participants' mons.  Its picture seeds from the
+// encryption constant; the personality is only the seed of an entry with no constant of its own, an NPC
+// team, and is what the saved best-record entries keep.  Heap-side record: it only has to stay the same
+// size as struct PokeathlonCourseMon, whose storage it shares.
 typedef struct PokeathlonBoxArgs_SelectedMon {
     u16 species;
     u16 form;
     u32 personality;
+    u32 encryption_constant;
     PokeathlonBox_MonStats stats;
     u8 isShiny;
     u8 gender;
@@ -74,7 +78,7 @@ typedef struct PokeathlonBox_StatChange {
 } PokeathlonBox_StatChange;
 
 typedef struct PokeathlonBox_MonInfo {
-    u32 personality;
+    u32 spotSeed; // the mon's own encryption constant, the seed its summary picture uses too
     u16 species;
     u8 isShiny;
     u8 form;

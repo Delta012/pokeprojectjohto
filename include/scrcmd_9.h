@@ -23,7 +23,7 @@ typedef struct FrontierTrainer {
     MailMessage winMessage;
     MailMessage loseMessage;
     FrontierMon frontierMons[4];
-} FrontierTrainer; // size: 0x110
+} FrontierTrainer; // size: 0x120 (was 0x110 before FrontierMon grew its nature byte)
 
 typedef struct FrontierMultiBattleAllyData {
     u32 otId;

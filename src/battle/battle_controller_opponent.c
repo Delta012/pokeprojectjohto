@@ -1676,6 +1676,8 @@ static void BattleControllerOpponent_ChangeForm(BattleSystem *battleSystem, Oppo
     } else {
         facing = 0;
     }
+    // The change-form packet is battle protocol: it carries the (copied) personality and no constant, so its
+    // spots stay seeded by the personality; the field picture comes from the send-out packet.
     GetMonSpriteCharAndPlttNarcIdsEx(&template, packet->species, packet->gender, facing, packet->shiny, packet->form, packet->personality);
     pokepicTemplate = Pokepic_GetTemplate(opponentData->pokepic);
     *pokepicTemplate = template;
@@ -1930,7 +1932,7 @@ static void OpponentData_PokemonEncounter(BattleSystem *battleSystem, OpponentDa
         ManagedSprite_SetPositionXY(work->terrain->sprite, gBattlerPokepicPositions[0][opponentData->battlerType & BATTLER_TYPE_IS_ENEMY][0], 136);
     }
 
-    GetMonSpriteCharAndPlttNarcIdsEx(&pokepicTemplate, packet->species, packet->gender, work->facing, packet->shiny != 0, packet->form, packet->personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&pokepicTemplate, packet->species, packet->gender, work->facing, packet->shiny != 0, packet->form, packet->encryption_constant);
     height = GetMonPicHeightBySpeciesGenderForm(packet->species, packet->gender, work->facing, packet->form, packet->personality);
     READ_POKEPIC_SHADOW_HEIGHT(opponentData->pokepicAnimNarc, &anim.shadowHeight, packet->species);
     READ_POKEPIC_SHADOW_X_OFFSET(opponentData->pokepicAnimNarc, &anim.shadowXOffset, packet->species);
@@ -1961,7 +1963,7 @@ static void OpponentData_PokemonEncounter(BattleSystem *battleSystem, OpponentDa
     work->form = packet->form;
     work->cryParam = packet->cryParam;
     work->battlerType = opponentData->battlerType;
-    work->nature = GetNatureFromPersonality(packet->personality);
+    work->nature = packet->nature;
     work->shiny = packet->shiny;
     if (work->facing == 2 && (BattleSystem_GetBattleSpecial(battleSystem) & BATTLE_SPECIAL_GIRATINA)) {
         SysTask_CreateOnMainQueue(Task_GiratinaEncounter, work, 0);
@@ -1982,7 +1984,7 @@ static void OpponentData_PokemonSlideIn(BattleSystem *battleSystem, OpponentData
     } else {
         work->facing = 0;
     }
-    GetMonSpriteCharAndPlttNarcIdsEx(&work->pokepicTemplate, packet->species, packet->gender, work->facing, packet->shiny != 0, packet->form, packet->personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&work->pokepicTemplate, packet->species, packet->gender, work->facing, packet->shiny != 0, packet->form, packet->encryption_constant);
     work->height = GetMonPicHeightBySpeciesGenderForm(packet->species, packet->gender, work->facing, packet->form, packet->personality);
     READ_POKEPIC_SHADOW_HEIGHT(opponentData->pokepicAnimNarc, &work->shadowHeight, packet->species);
     READ_POKEPIC_SHADOW_X_OFFSET(opponentData->pokepicAnimNarc, &work->shadowXOffset, packet->species);
@@ -2000,7 +2002,7 @@ static void OpponentData_PokemonSlideIn(BattleSystem *battleSystem, OpponentData
     work->battlerType = opponentData->battlerType;
     work->cryParam = packet->cryParam;
     work->selectedMonIndex = packet->selectedMonIndex;
-    work->nature = GetNatureFromPersonality(packet->personality);
+    work->nature = packet->nature;
     work->ball = packet->ball;
     work->shiny = packet->shiny;
     work->breakOut = 0;
@@ -2030,7 +2032,7 @@ static void OpponentData_PokemonSendOut(BattleSystem *battleSystem, OpponentData
     } else {
         work->facing = 0;
     }
-    GetMonSpriteCharAndPlttNarcIdsEx(&work->pokepicTemplate, packet->species, packet->gender, work->facing, packet->shiny != 0, packet->form, packet->personality);
+    GetMonSpriteCharAndPlttNarcIdsEx(&work->pokepicTemplate, packet->species, packet->gender, work->facing, packet->shiny != 0, packet->form, packet->encryption_constant);
     work->height = GetMonPicHeightBySpeciesGenderForm(packet->species, packet->gender, work->facing, packet->form, packet->personality);
     READ_POKEPIC_SHADOW_HEIGHT(opponentData->pokepicAnimNarc, &work->shadowHeight, packet->species);
     READ_POKEPIC_SHADOW_X_OFFSET(opponentData->pokepicAnimNarc, &work->shadowXOffset, packet->species);
@@ -2046,7 +2048,7 @@ static void OpponentData_PokemonSendOut(BattleSystem *battleSystem, OpponentData
     work->battlerType = opponentData->battlerType;
     work->cryParam = packet->cryParam;
     work->selectedMonIndex = packet->selectedMonIndex;
-    work->nature = GetNatureFromPersonality(packet->personality);
+    work->nature = packet->nature;
     work->ball = packet->ball;
     work->shiny = packet->shiny;
     work->breakOut = packet->breakOut;
@@ -2166,7 +2168,7 @@ static void OpponentData_TrainerEncounter(BattleSystem *battleSystem, OpponentDa
         template.palDataID = files.nclr_id;
         template.species = SPECIES_NONE;
         template.isAnimated = FALSE;
-        template.personality = 0;
+        template.spotSeed = 0;
         work->pokepic = PokepicManager_CreatePokepic(pokepicManager, &template, x, y, gBattlerPokepicPositions[0][position][2], opponentData->battlerId, NULL, NULL);
     } else {
         work->pokepic = NULL;
@@ -6496,7 +6498,7 @@ static Pokepic *BattleControllerOpponent_CreatePokepic(BattleSystem *battleSyste
     } else {
         facing = 0;
     }
-    CharTiles_LoadMonPicAsObjFromNarc((NarcId) template->narcID, template->charDataID, HEAP_ID_BATTLE, charData, template->personality, FALSE, facing, template->species);
+    CharTiles_LoadMonPicAsObjFromNarc((NarcId) template->narcID, template->charDataID, HEAP_ID_BATTLE, charData, template->spotSeed, FALSE, facing, template->species);
     MonPicData_SetNarcId(BattleSystem_GetMonPicDataList(battleSystem), battlerId, template->narcID);
     MonPicData_SetPaletteId(BattleSystem_GetMonPicDataList(battleSystem), battlerId, template->palDataID);
     MonPicData_SetHeight(BattleSystem_GetMonPicDataList(battleSystem), battlerId, height);

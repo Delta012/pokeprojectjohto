@@ -286,7 +286,7 @@ typedef struct VsRecorderVideoList {
 // server data of the work
 typedef struct VsRecorderNetData {
     u8 *downloadedVideo; // profile + header + battle
-    u8 videoBuffer[0x1D54 - 4];
+    u8 videoBuffer[sizeof(BattleRecord)];
     VsRecorderVideoList videoList;
 } VsRecorderNetData;
 

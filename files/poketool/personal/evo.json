@@ -178,8 +178,8 @@
         { "baseSpecies": "SPECIES_ZIGZAGOON", "evos": [ { "method": "EVO_LEVEL", "param": 20, "target": "SPECIES_LINOONE" } ] },
         { "baseSpecies": "SPECIES_WURMPLE", "evos":
             [
-                { "method": "EVO_LEVEL_PID_LO", "param": 7, "target": "SPECIES_SILCOON" },
-                { "method": "EVO_LEVEL_PID_HI", "param": 7, "target": "SPECIES_CASCOON" }
+                { "method": "EVO_LEVEL_EC_LO", "param": 7, "target": "SPECIES_SILCOON" },
+                { "method": "EVO_LEVEL_EC_HI", "param": 7, "target": "SPECIES_CASCOON" }
             ]
         },
         { "baseSpecies": "SPECIES_SILCOON", "evos": [ { "method": "EVO_LEVEL", "param": 10, "target": "SPECIES_BEAUTIFLY" } ] },

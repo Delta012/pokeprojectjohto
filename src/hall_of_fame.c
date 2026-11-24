@@ -43,7 +43,9 @@ void Save_HOF_RecordParty(HallOfFame *hof, Party *party, RTCDate *date) {
                 team->party[j].species = GetMonData(mon, MON_DATA_SPECIES, NULL);
                 team->party[j].level = GetMonData(mon, MON_DATA_LEVEL, NULL);
                 team->party[j].form = GetMonData(mon, MON_DATA_FORM, NULL);
+                team->party[j].gender = GetMonGender(mon);
                 team->party[j].personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+                team->party[j].encryption_constant = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
                 team->party[j].otid = GetMonData(mon, MON_DATA_OT_ID, NULL);
                 team->party[j].moves[0] = GetMonData(mon, MON_DATA_MOVE1, NULL);
                 team->party[j].moves[1] = GetMonData(mon, MON_DATA_MOVE2, NULL);
@@ -119,8 +121,10 @@ void Save_HOF_GetMonStatsByIndexPair(HallOfFame *hallOfFame, int teamNum, int mo
     dest->species = mon->species;
     dest->level = mon->level;
     dest->personality = mon->personality;
+    dest->encryption_constant = mon->encryption_constant;
     dest->otid = mon->otid;
     dest->form = mon->form;
+    dest->gender = mon->gender;
     CopyU16ArrayToString(dest->nickname, mon->nickname);
     CopyU16ArrayToString(dest->otname, mon->otname);
     for (i = 0; i < 4; i++) {

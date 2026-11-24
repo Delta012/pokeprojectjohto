@@ -20,8 +20,10 @@ typedef struct DaycareMon {
 typedef struct Daycare {
     DaycareMon mons[2];
     u32 egg_pid;
+    u32 egg_ec;     // the egg's encryption constant, drawn next to its pid
     u8 egg_cycles;
-    u8 padding_1DD[3];
+    u8 egg_nature;  // the nature locked in when the egg was made (Everstone)
+    u8 padding_1DE[2];
 } Daycare;
 
 u32 Save_Daycare_sizeof(void);
@@ -32,10 +34,14 @@ DaycareMail *DaycareMon_GetExtras(DaycareMon *dcmon);
 u32 DaycareMon_GetSteps(DaycareMon *dcmon);
 Mail *DaycareMail_GetMailPtr(DaycareMail *dcmail);
 u32 Save_Daycare_GetEggPID(Daycare *daycare);
+u32 Save_Daycare_GetEggEC(Daycare *daycare);
+u8 Save_Daycare_GetEggNature(Daycare *daycare);
 u8 Save_Daycare_GetEggCycleCounter(Daycare *daycare);
 void DaycareMon_SetSteps(DaycareMon *dcmon, u32 steps);
 void DaycareMon_AddSteps(DaycareMon *dcmon, u32 steps);
 void Save_Daycare_SetEggPID(Daycare *daycare, u32 pid);
+void Save_Daycare_SetEggEC(Daycare *daycare, u32 ec);
+void Save_Daycare_SetEggNature(Daycare *daycare, u8 nature);
 void Save_Daycare_SetEggCycleCounter(Daycare *daycare, s32 count);
 BOOL Save_Daycare_MasudaCheck(Daycare *daycare);
 void DaycareMon_Copy(DaycareMon *dest, const DaycareMon *src);

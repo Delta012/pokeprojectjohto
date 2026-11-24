@@ -256,23 +256,26 @@ static int Daycare_EverstoneCheck(Daycare *dayCare) {
 
 static void GenerateEggPID(Daycare *dayCare) {
     u32 pid;
-    int i = 0;
+    u8 nature;
     int everstone_num = Daycare_EverstoneCheck(dayCare);
     if (everstone_num < 0) {
-        Save_Daycare_SetEggPID(dayCare, MTRandom());
+        pid = MTRandom();
+        nature = MonRollNature();
     } else {
-        int nature = GetNatureFromPersonality(GetBoxMonData(Daycare_GetBoxMonI(dayCare, everstone_num), MON_DATA_PERSONALITY, NULL));
-        for (;;) {
-            pid = MTRandom();
-            if (nature == GetNatureFromPersonality(pid) && pid != 0) {
-                break;
-            }
-            if (++i > 2400) {
-                break;
-            }
-        }
-        Save_Daycare_SetEggPID(dayCare, pid);
+        // The Everstone parent's nature is kept: it is stored next to the egg's personality and applied when
+        // the egg reaches the player, so nothing is searched for any more.
+        nature = GetBoxMonNature(Daycare_GetBoxMonI(dayCare, everstone_num));
+        pid = MTRandom();
     }
+    if (pid == 0) {
+        pid = MTRandom(); // a zero personality means "no egg" in the save
+    }
+    /* The egg's encryption constant is drawn together with its personality,
+     * here at egg creation: it is the only moment the value can be chosen,
+     * because it keys the data-block shuffle of the mon that is built later. */
+    Save_Daycare_SetEggPID(dayCare, pid);
+    Save_Daycare_SetEggEC(dayCare, (u32)(MTRandom() | (MTRandom() << 16)));
+    Save_Daycare_SetEggNature(dayCare, nature);
 }
 
 static void _IVList_Remove(u8 *list, int statID) {
@@ -459,6 +462,8 @@ static void InheritMoves(Pokemon *egg, BoxPokemon *father, BoxPokemon *mother) {
 
 void Save_Daycare_ResetEggStats(Daycare *dayCare) {
     Save_Daycare_SetEggPID(dayCare, 0);
+    Save_Daycare_SetEggEC(dayCare, 0);
+    Save_Daycare_SetEggNature(dayCare, 0);
     Save_Daycare_SetEggCycleCounter(dayCare, 0);
 }
 
@@ -596,6 +601,7 @@ void SetEggStats(Pokemon *mon, int species, u8 metLocation, PlayerProfile *profi
 static void SetBreedEggStats(Pokemon *mon, u16 species, Daycare *dayCare, u32 otId, u8 form) {
     u16 pokeball;
     u8 metLevel;
+    u8 nature;
     u8 friendship = GetMonBaseStat(species, BASE_EGG_CYCLES);
     u32 pid = Save_Daycare_GetEggPID(dayCare);
     if (Save_Daycare_MasudaCheck(dayCare)) {
@@ -608,8 +614,13 @@ static void SetBreedEggStats(Pokemon *mon, u16 species, Daycare *dayCare, u32 ot
             }
         }
     }
-    CreateMon(mon, species, 1, 32, TRUE, pid, OT_ID_PLAYER_ID, 0);
-
+    /* The egg keeps the personality pair the day care drew for it. Its nature is
+     * the one locked in at egg creation (the Everstone parent's, or a draw), so
+     * it is stored here instead of being read out of the personality. */
+    CreateMonWithPersonalityAndEC(mon, species, 1, 32, pid, Save_Daycare_GetEggEC(dayCare));
+    nature = Save_Daycare_GetEggNature(dayCare);
+    SetMonData(mon, MON_DATA_NATURE, &nature);
+    CalcMonLevelAndStats(mon);
     metLevel = 0;
     pokeball = BALL_POKE;
 
@@ -675,7 +686,7 @@ static u8 ComputeCompatibilityBetweenBoxMons(BoxPokemon **parents) {
     for (u32 i = 0; i < NUM_DAYCARE_MONS; i++) {
         species[i] = GetBoxMonData(parents[i], MON_DATA_SPECIES, NULL);
         otIds[i] = GetBoxMonData(parents[i], MON_DATA_OT_ID, NULL);
-        genders[i] = GetGenderBySpeciesAndPersonality(species[i], GetBoxMonData(parents[i], MON_DATA_PERSONALITY, NULL));
+        genders[i] = GetBoxMonGender(parents[i]);
         eggGroups[i][0] = GetMonBaseStat(species[i], BASE_EGG_GROUP_1);
         eggGroups[i][1] = GetMonBaseStat(species[i], BASE_EGG_GROUP_2);
     }
@@ -921,6 +932,10 @@ static void HatchEgg_RecreateMon(Pokemon *mon, enum HeapID heapID) {
         pp[i] = GetMonData(mon, MON_DATA_MOVE1_PP + i, NULL);
     }
     u32 pid = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    u32 ec = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
+    u8 nature = GetMonNature(mon);
+    u8 gender = GetMonGender(mon);
+    int ability = GetMonData(mon, MON_DATA_ABILITY, NULL);
     for (i = 0; i < NUM_STATS; i++) {
         ivs[i] = GetMonData(mon, MON_DATA_HP_IV + i, NULL);
     }
@@ -940,7 +955,14 @@ static void HatchEgg_RecreateMon(Pokemon *mon, enum HeapID heapID) {
             } while (CalcShininessByOtIdAndPersonality(otId, pid));
         }
     }
-    CreateMon(tempMon, species, 1, 32, TRUE, pid, OT_ID_PLAYER_ID, 0);
+    /* The hatchling is rebuilt with the egg's own personality pair, and keeps
+     * the nature, gender and ability the egg was created with - none of them
+     * are read out of the personality any more. */
+    CreateMonWithPersonalityAndEC(tempMon, species, 1, 32, pid, ec);
+    SetMonData(tempMon, MON_DATA_NATURE, &nature);
+    SetMonData(tempMon, MON_DATA_GENDER, &gender);
+    SetMonData(tempMon, MON_DATA_ABILITY, &ability);
+    CalcMonLevelAndStats(tempMon);
     for (i = 0; i < MAX_MON_MOVES; i++) {
         SetMonData(tempMon, MON_DATA_MOVE1 + i, &moves[i]);
         SetMonData(tempMon, MON_DATA_MOVE1_PP + i, &pp[i]);

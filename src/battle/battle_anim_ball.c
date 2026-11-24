@@ -1812,6 +1812,8 @@ static void BattleAnimUtil_LoadMonIntoPic(BattleAnimBattlerPicParams *params, in
     gender = params->genders[params->sourceBattler];
     shiny = params->shiny[params->sourceBattler];
     form = params->forms[params->sourceBattler];
+    // Battle animation packets carry a personality but no constant (they are battle protocol, and the same
+    // data is replayed from battle records), so this redraw keeps seeding from the personality.
     personality = params->personalities[params->sourceBattler];
     if (oppositeFacing) {
         if (params->battlerTypes[target] & BATTLER_TYPE_IS_ENEMY) {
@@ -1897,7 +1899,7 @@ void BattleAnimUtil_LoadSubstituteIntoPic(BattleAnimBattlerPicParams *params, en
     template.palDataID = 258;
     template.species = SPECIES_NONE;
     template.isAnimated = FALSE;
-    template.personality = 0;
+    template.spotSeed = 0;
     if (params->battlerTypes[params->battler] & BATTLER_TYPE_IS_ENEMY) {
         template.charDataID = 257;
         member = 135;

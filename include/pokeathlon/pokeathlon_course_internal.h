@@ -19,11 +19,13 @@
 
 // Course participants
 
-// One Pokemon of a participant's team.
+// One Pokemon of a participant's team.  Same layout as PokeathlonBoxArgs_SelectedMon, whose storage
+// this shares (PokeathlonCourseData.localParticipant aliases PokeathlonBoxArgs.selectedMons).
 struct PokeathlonCourseMon {
     u16 species;
     u16 form;
     u32 personality;
+    u32 encryption_constant; // seeds this Pokemon's picture; 0 when the record has no identity of its own
     u8 stats[5]; // current Pokeathlon performance (power, stamina, jump, skill, speed)
     u8 padding_0D;
     u16 starColors; // 3 bits per stat, in the order of stats
@@ -372,7 +374,7 @@ struct PokeathlonCourseData {
     PokeathlonCourseState courseState;
     PokeathlonStateInfo stateInfo;
     PokeathlonStateInfo eventStateInfo;
-    u32 unk3D4;
+    u32 unk3E0; // 0xC higher than before the three local participant records grew by a constant each
     u32 roundEvents[POKEATHLON_LINK_ROUNDS];
     u32 courseId;
     PokeathlonCourseParticipant participants[POKEATHLON_PARTICIPANTS];
@@ -412,7 +414,9 @@ struct PokeathlonCourseData {
 #define POKEATHLON_RECORD_RANKS  5       // the top 5 of an event ranking
 #define POKEATHLON_STATISTIC_MAX 9999999 // the cap of the play counts and statistics
 
-// A Pokemon of a course record.
+// A Pokemon of a course record, written whenever a course gets a new best total
+// (PokeathlonCourse_SaveCourseRecord).  Nothing reads these back - the screens and the ceremony only ever
+// read totalPoints - and unk08 is never written at all.
 typedef struct PokeathlonCourseSavedMon {
     u32 species : 9;
     u32 form : 5;
@@ -430,10 +434,12 @@ typedef struct PokeathlonCourseBestRecord {
     PokeathlonCourseSavedMon mons[POKEATHLON_TEAM_SIZE];
 } PokeathlonCourseBestRecord;
 
-// A result in an event ranking: score, the Pokemon (form << 10 | species) and, in link rankings, the trainer.
+// A result in an event ranking: score, the Pokemon (form << 10 | species) with the constants their
+// pictures seed from and, in link rankings, the trainer.
 typedef struct PokeathlonCourseRankEntry {
     u16 score;
     u16 mons[POKEATHLON_TEAM_SIZE];
+    u32 encryption_constant[POKEATHLON_TEAM_SIZE];
     u32 trainerId;
     u16 name[PLAYER_NAME_LENGTH + 1];
     u8 language;
@@ -446,18 +452,12 @@ typedef struct PokeathlonCourseEventRecord {
     u32 timesPlayed;
 } PokeathlonCourseEventRecord;
 
-typedef struct PokeathlonCourseTrainerRecord {
-    u32 trainerId;
-    u16 name[PLAYER_NAME_LENGTH + 1];
-    u8 language;
-    u8 padding[3];
-} PokeathlonCourseTrainerRecord;
-
 // Top 5 of a link event (Pokeathlon_RecordsLink).
 typedef struct PokeathlonCourseLinkEventRecord {
     PokeathlonEventRecordEntry top[POKEATHLON_RECORD_RANKS];
     u32 timesPlayed;
-    PokeathlonCourseTrainerRecord trainers[POKEATHLON_RECORD_RANKS];
+    u8 padding[4];
+    PokeathlonEventRecordTrainer trainers[POKEATHLON_RECORD_RANKS];
 } PokeathlonCourseLinkEventRecord;
 
 // NPC teams (NARC a/2/5/8): five for each course, the link courses' teams also make the pool of the random

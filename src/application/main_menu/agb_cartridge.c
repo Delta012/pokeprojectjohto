@@ -8,6 +8,7 @@
 #include "CTRDG_task.h"
 #include "config.h"
 #include "item.h"
+#include "math_util.h"
 #include "pm_version.h"
 #include "pokemon.h"
 #include "system.h"
@@ -1383,6 +1384,11 @@ void MigrateBoxMon(AgbBoxMon *agbMon, BoxPokemon *boxMon) {
 
     ZeroBoxMonData(boxMon);
     lock = AcquireBoxMonLock(boxMon);
+    /* The GBA format has no encryption constant, so a transferred Pokemon gets a
+     * fresh one.  It is the first field written because it keys the data-block
+     * shuffle: writing it after the blocks hold data would scramble them. */
+    data = (u32)(LCRandom() | (LCRandom() << 16));
+    SetBoxMonData(boxMon, MON_DATA_ENCRYPTION_CONSTANT, &data);
     COPY_FIELD(AGB_MON_DATA_PERSONALITY, MON_DATA_PERSONALITY);
     data = AGB_GetBoxMonData(agbMon, AGB_MON_DATA_SPECIES, NULL);
     data = TranslateAgbSpecies(data);
@@ -1446,10 +1452,18 @@ void MigrateBoxMon(AgbBoxMon *agbMon, BoxPokemon *boxMon) {
     COPY_FIELD(AGB_MON_DATA_CHAMPION_RIBBON + 10, MON_DATA_EARTH_RIBBON);
     COPY_FIELD(AGB_MON_DATA_WORLD_RIBBON, MON_DATA_WORLD_RIBBON);
     COPY_FIELD(AGB_MON_DATA_FATEFUL_ENCOUNTER, MON_DATA_FATEFUL_ENCOUNTER);
-    data = GetBoxMonGender(boxMon);
+    /* A Gen III Pokemon stores no nature, gender or characteristic.  The transfer
+     * keeps the GBA personality and derives the first two from it, exactly as
+     * before, and draws the characteristic the way a new Pokemon does. */
+    data = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL) % NATURE_NUM;
+    SetBoxMonData(boxMon, MON_DATA_NATURE, &data);
+    data = GetGenderBySpeciesAndPersonality((u16)GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL), GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL));
     SetBoxMonData(boxMon, MON_DATA_GENDER, &data);
+    data = (u32)(LCRandom() % MON_CHARACTERISTIC_NUM);
+    SetBoxMonData(boxMon, MON_DATA_CHARACTERISTIC, &data);
     if (GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL) == SPECIES_UNOWN) {
-        // the Unown letter comes from the personality
+        // the letter of a Gen III Unown rides on its personality, so the transfer
+        // turns that into the stored form.  Gen IV encounters roll a form instead.
         u32 personality = AGB_GetBoxMonData(agbMon, AGB_MON_DATA_PERSONALITY, NULL);
         data = personality;
         u32 mask = 3;

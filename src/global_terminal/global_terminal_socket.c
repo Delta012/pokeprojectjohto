@@ -951,13 +951,15 @@ static int GlobalTerminalSocket_GetResponseBufferSize(int command) {
         size = 8;
         break;
     case GTS_REQUEST_DRESS_UP_DOWNLOAD:
-        size = 0x93C;
+        // header + count, then the photos the client is told about (12-byte entry each, plus the form)
+        size = 8 + 10 * (12 + (int)sizeof(GlobalTerminalNetDressUpUpload));
         break;
     case GTS_REQUEST_BOX_UPLOAD:
         size = 8;
         break;
     case GTS_REQUEST_BOX_DOWNLOAD:
-        size = 0x2B74;
+        // header + count, then the boxes the client is told about (16-byte entry each, plus the form)
+        size = 8 + 20 * (16 + (int)sizeof(GlobalTerminalNetBoxUpload));
         break;
     case GTS_REQUEST_22000:
         size = 4;
@@ -972,7 +974,7 @@ static int GlobalTerminalSocket_GetResponseBufferSize(int command) {
         size = 0x1C24;
         break;
     case GTS_REQUEST_VIDEO_DOWNLOAD:
-        size = 0x1D58;
+        size = (int)sizeof(GlobalTerminalServerVideoUpload) + 12;
         break;
     case GTS_REQUEST_23003:
         size = 0;

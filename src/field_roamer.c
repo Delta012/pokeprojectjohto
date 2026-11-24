@@ -212,6 +212,13 @@ void Save_CreateRoamerByID(SaveData *saveData, u8 idx) {
     SetRoamerData(roamerStats, ROAMER_DATA_ACTIVE, TRUE);
     SetRoamerData(roamerStats, ROAMER_DATA_IVS, GetMonData(mon, MON_DATA_COMBINED_IVS, NULL));
     SetRoamerData(roamerStats, ROAMER_DATA_PERSONALITY, GetMonData(mon, MON_DATA_PERSONALITY, NULL));
+    /* The roamer keeps one identity, not just IVs and a personality: nature,
+     * gender, ability and the encryption constant are recorded here so that
+     * every later encounter is the same Pokemon. */
+    SetRoamerData(roamerStats, ROAMER_DATA_NATURE, GetMonData(mon, MON_DATA_NATURE, NULL));
+    SetRoamerData(roamerStats, ROAMER_DATA_GENDER, GetMonData(mon, MON_DATA_GENDER, NULL));
+    SetRoamerData(roamerStats, ROAMER_DATA_ABILITY, GetMonData(mon, MON_DATA_ABILITY, NULL));
+    SetRoamerData(roamerStats, ROAMER_DATA_ENCRYPTION_CONSTANT, GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL));
     SetRoamerData(roamerStats, ROAMER_DATA_HP, GetMonData(mon, MON_DATA_MAX_HP, NULL));
     Heap_Free(mon);
     RoamerLocationSetRandom(roamerSave, idx, PlayerLocationHistoryGetBack(roamerSave));

@@ -700,7 +700,7 @@ void FrontierMap_CreateMonSprite(FrontierMap *map, Pokemon *mon, enum HeapID hea
     ManagedSpriteTemplate template;
     ManagedSprite *sprite;
     void *buffer;
-    u32 personality;
+    u32 spotSeed;
     int species, i;
     NNSG2dImageProxy *image;
     u32 offset;
@@ -726,10 +726,10 @@ void FrontierMap_CreateMonSprite(FrontierMap *map, Pokemon *mon, enum HeapID hea
     sprite = SpriteSystem_NewSprite(spriteSystem, spriteManager, &template);
     ManagedSprite_TickFrame(sprite);
     buffer = Heap_Alloc(heapId, 3200);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    spotSeed = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     GetPokemonSpriteCharAndPlttNarcIds(&pokepic, mon, 2);
-    CharTiles_LoadMonObjBlocksFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, heapId, 0, 0, 10, 10, buffer, personality, FALSE, 2, species);
+    CharTiles_LoadMonObjBlocksFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, heapId, 0, 0, 10, 10, buffer, spotSeed, FALSE, 2, species);
     image = Sprite_GetImageProxy(sprite->sprite);
     DC_FlushRange(buffer, 4);
     GX_LoadOBJ(buffer, image->vramLocation.baseAddrOfVram[NNS_G2D_VRAM_TYPE_2DMAIN], 3200);

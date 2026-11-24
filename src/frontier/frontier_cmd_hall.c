@@ -25,8 +25,6 @@
 
 FS_EXTERN_OVERLAY(OVY_82);
 
-void FrontierLink_RegisterCommands(void);
-
 static void BattleHall_OnAppExit(void *args);
 static BOOL FrontierScriptNative_WaitHallLink(FrontierScriptContext *ctx);
 
@@ -230,8 +228,9 @@ BOOL FrtCmd_HallAction(FrontierScriptContext *ctx) {
         break;
     }
     case HALL_ACTION_REGISTER_LINK_COMMANDS:
-        // BUG: the link commands are registered without the Hall data as their context (the argument is missing).
-        FrontierLink_RegisterCommands();
+        // The Hall data is the context the receive handlers get back; without it they read past the
+        // arguments the sender sent (the call used to omit the argument entirely).
+        FrontierLink_RegisterCommands(data);
         break;
     case HALL_ACTION_IS_MULTI:
         *result = BattleHall_IsMultiType(data->type);

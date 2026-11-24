@@ -39,7 +39,10 @@ static void SetMonDataInternal(Pokemon *mon, int attr, const void *data);
 static void SetBoxMonDataInternal(BoxPokemon *boxMon, int attr, const void *data);
 static void AddMonDataInternal(Pokemon *mon, int attr, int value);
 static void AddBoxMonDataInternal(BoxPokemon *boxMon, int attr, int value);
-PokemonDataBlock *GetSubstruct(BoxPokemon *boxMon, u32 pid, u8 which_struct);
+PokemonDataBlock *GetSubstruct(BoxPokemon *boxMon, u32 ec, u8 which_struct);
+static void CreateMonWithEC(Pokemon *mon, int species, int level, int fixedIV, int hasFixedPersonality, int fixedPersonality, int otIdType, int fixedOtId, u32 ec);
+static void CreateBoxMonWithEC(BoxPokemon *boxMon, int species, int level, int fixedIV, int hasFixedPersonality, int fixedPersonality, int otIdType, int fixedOtId, u32 ec);
+static u32 RollEncryptionConstant(void);
 void LoadMonPersonal(int species, BASE_STATS *dest);
 int ResolveMonForm(int species, int form);
 u8 GetGenderBySpeciesAndPersonality_PreloadedPersonal(const BASE_STATS *personal, u16 species, u32 pid);
@@ -58,7 +61,7 @@ BOOL MonHasMove(Pokemon *mon, u16 move_id);
 void BoxMonSetCatchData(BoxPokemon *boxMon, PlayerProfile *playerProfile, u32 pokeball, u32 mapsec, u32 encounterType, enum HeapID heapID);
 void BoxMonSetCatchDataNoHealBall(BoxPokemon *boxMon, PlayerProfile *playerProfile, u32 pokeball, u32 mapsec, u32 encounterType, enum HeapID heapID);
 
-#define ENCRY_ARGS_PTY(mon)    (u16 *)&(mon)->party, sizeof((mon)->party), (mon)->box.personality
+#define ENCRY_ARGS_PTY(mon)    (u16 *)&(mon)->party, sizeof((mon)->party), (mon)->box.encryption_constant
 #define ENCRY_ARGS_BOX(boxMon) (u16 *)&(boxMon)->dataBlocks, sizeof((boxMon)->dataBlocks), (boxMon)->checksum
 #define ENCRYPT_PTY(mon)       MonEncryptSegment(ENCRY_ARGS_PTY(mon))
 #define ENCRYPT_BOX(boxMon)    MonEncryptSegment(ENCRY_ARGS_BOX(boxMon))
@@ -68,7 +71,6 @@ void BoxMonSetCatchDataNoHealBall(BoxPokemon *boxMon, PlayerProfile *playerProfi
 #define SHINY_CHECK(otid, pid) ((                                                                                                              \
                                     (((otid) & 0xFFFF0000u) >> 16u) ^ ((otid) & 0xFFFFu) ^ (((pid) & 0xFFFF0000u) >> 16u) ^ ((pid) & 0xFFFFu)) \
     < 8u)
-#define CALC_UNOWN_LETTER(pid) ((u32)((((pid) & 0x3000000) >> 18) | (((pid) & 0x30000) >> 12) | (((pid) & 0x300) >> 6) | (((pid) & 0x3) >> 0)) % 28u)
 
 static const s8 sFlavorPreferencesByNature[NATURE_NUM][FLAVOR_MAX] = {
     { 0,  0,  0,  0,  0  },
@@ -166,11 +168,27 @@ BOOL ReleaseBoxMonLock(BoxPokemon *boxMon, BOOL locked) {
     return prev;
 }
 void CreateMon(Pokemon *mon, int species, int level, int fixedIV, int hasFixedPersonality, int fixedPersonality, int otIdType, int fixedOtId) {
+    CreateMonWithEC(mon, species, level, fixedIV, hasFixedPersonality, fixedPersonality, otIdType, fixedOtId, RollEncryptionConstant());
+}
+
+// NEW: for a Pokemon whose personality and encryption constant were generated
+// elsewhere - the day care makes an egg's pair, and hatching keeps the egg's.
+void CreateMonWithPersonalityAndEC(Pokemon *mon, int species, int level, int fixedIV, u32 personality, u32 ec) {
+    CreateMonWithEC(mon, species, level, fixedIV, TRUE, (int)personality, OT_ID_PLAYER_ID, 0, ec);
+}
+
+// NEW: the encryption constant is a plain random word, independent of the
+// personality. It only keys the party segment and the data-block shuffle.
+static u32 RollEncryptionConstant(void) {
+    return (u32)(LCRandom() | (LCRandom() << 16));
+}
+
+static void CreateMonWithEC(Pokemon *mon, int species, int level, int fixedIV, int hasFixedPersonality, int fixedPersonality, int otIdType, int fixedOtId, u32 ec) {
     Mail *mail;
     u32 capsule;
     CAPSULE seal_coords;
     ZeroMonData(mon);
-    CreateBoxMon(&mon->box, species, level, fixedIV, hasFixedPersonality, fixedPersonality, otIdType, fixedOtId);
+    CreateBoxMonWithEC(&mon->box, species, level, fixedIV, hasFixedPersonality, fixedPersonality, otIdType, fixedOtId, ec);
     // Not your average encryption call
     MonEncryptSegment((u16 *)&mon->party, sizeof(mon->party), 0);
     ENCRYPT_PTY(mon);
@@ -186,14 +204,22 @@ void CreateMon(Pokemon *mon, int species, int level, int fixedIV, int hasFixedPe
 }
 
 void CreateBoxMon(BoxPokemon *boxMon, int species, int level, int fixedIV, int hasFixedPersonality, int fixedPersonality, int otIdType, int fixedOtId) {
+    CreateBoxMonWithEC(boxMon, species, level, fixedIV, hasFixedPersonality, fixedPersonality, otIdType, fixedOtId, RollEncryptionConstant());
+}
+
+static void CreateBoxMonWithEC(BoxPokemon *boxMon, int species, int level, int fixedIV, int hasFixedPersonality, int fixedPersonality, int otIdType, int fixedOtId, u32 ec) {
     BOOL decry;
     u32 exp;
     u32 iv;
+    u8 nature;
     ZeroBoxMonData(boxMon);
     decry = AcquireBoxMonLock(boxMon);
     if (hasFixedPersonality == 0) {
         fixedPersonality = (LCRandom() | (LCRandom() << 16));
     }
+    /* The encryption constant keys the data-block shuffle, so it can only be
+     * written here, while all four data blocks are still identical. */
+    SetBoxMonData(boxMon, MON_DATA_ENCRYPTION_CONSTANT, &ec);
     SetBoxMonData(boxMon, MON_DATA_PERSONALITY, &fixedPersonality);
     if (otIdType == 2) {
         do {
@@ -238,10 +264,12 @@ void CreateBoxMon(BoxPokemon *boxMon, int species, int level, int fixedIV, int h
         iv = (exp & 0x7C00) >> 10;
         SetBoxMonData(boxMon, MON_DATA_SPDEF_IV, &iv);
     }
+    nature = MonRollNature();
+    SetBoxMonData(boxMon, MON_DATA_NATURE, &nature);
     exp = (u32)GetMonBaseStat(species, BASE_ABILITY_1);
     iv = (u32)GetMonBaseStat(species, BASE_ABILITY_2);
     if (iv != 0) {
-        if (fixedPersonality & 1) {
+        if (LCRandom() & 1) { // the ability slot is its own draw
             SetBoxMonData(boxMon, MON_DATA_ABILITY, &iv);
         } else {
             SetBoxMonData(boxMon, MON_DATA_ABILITY, &exp);
@@ -249,52 +277,22 @@ void CreateBoxMon(BoxPokemon *boxMon, int species, int level, int fixedIV, int h
     } else {
         SetBoxMonData(boxMon, MON_DATA_ABILITY, &exp);
     }
-    exp = GetBoxMonGender(boxMon);
+    exp = (u32)MonRollGender((u16)species);
     SetBoxMonData(boxMon, MON_DATA_GENDER, &exp);
+    /* The Trainer Memo's characteristic is its own stored draw - characteristic
+     * index * 5 + variant - unrelated to the personality and to the IVs. */
+    exp = (u32)(LCRandom() % MON_CHARACTERISTIC_NUM);
+    SetBoxMonData(boxMon, MON_DATA_CHARACTERISTIC, &exp);
     InitBoxMonMoveset(boxMon);
     ReleaseBoxMonLock(boxMon, decry);
 }
 
 void CreateMonWithNature(Pokemon *mon, u16 species, u8 level, u8 fixedIv, u8 nature) {
-    u32 personality;
-    do {
-        personality = (u32)(LCRandom() | (LCRandom() << 16));
-    } while (nature != GetNatureFromPersonality(personality));
-    CreateMon(mon, (int)species, (int)level, (int)fixedIv, TRUE, (int)personality, (int)0, (int)0);
-}
-
-void CreateMonWithGenderNatureLetter(Pokemon *mon, u16 species, u8 level, u8 fixedIv, u8 gender, u8 nature, u8 letter) {
-    u32 pid = 0;
-    u16 test = 0;
-    if (letter != 0 && letter < 29) {
-        do {
-            pid = (u32)(LCRandom() | (LCRandom() << 16));
-            test = (u16)CALC_UNOWN_LETTER(pid);
-        } while (nature != GetNatureFromPersonality(pid) || gender != GetGenderBySpeciesAndPersonality(species, pid) || test != letter - 1);
-    } else {
-        pid = GenPersonalityByGenderAndNature(species, gender, nature);
-    }
-    CreateMon(mon, (int)species, (int)level, (int)fixedIv, 1, (int)pid, 0, 0);
-}
-
-u32 GenPersonalityByGenderAndNature(u16 species, u8 gender, u8 nature) {
-    int pid = nature;
-    u8 ratio = (u8)GetMonBaseStat(species, BASE_GENDER_RATIO);
-    switch (ratio) {
-    case MON_RATIO_MALE:
-    case MON_RATIO_FEMALE:
-    case MON_RATIO_UNKNOWN:
-        break;
-    default:
-        if (gender == MON_MALE) {
-            // Smallest increment that forces the low byte to exceed the
-            // gender ratio, thus making the mon male
-            pid = 25 * ((ratio / 25) + 1);
-            pid += nature;
-        }
-        break;
-    }
-    return (u32)pid;
+    // The personality no longer carries the nature: create the mon, then store
+    // the requested nature and recompute the stats that depend on it.
+    CreateMon(mon, (int)species, (int)level, (int)fixedIv, FALSE, 0, (int)0, (int)0);
+    SetMonData(mon, MON_DATA_NATURE, &nature);
+    CalcMonLevelAndStats(mon);
 }
 
 void CreateMonWithFixedIVs(Pokemon *mon, u16 species, u8 level, u32 ivs, u32 personality) {
@@ -480,10 +478,10 @@ u32 GetBoxMonData(BoxPokemon *boxMon, int attr, void *dest) {
 
 static u32 GetBoxMonDataInternal(BoxPokemon *boxMon, int attr, void *dest) {
     u32 ret = 0;
-    PokemonDataBlockA *blockA = &GetSubstruct(boxMon, boxMon->personality, 0)->blockA;
-    PokemonDataBlockB *blockB = &GetSubstruct(boxMon, boxMon->personality, 1)->blockB;
-    PokemonDataBlockC *blockC = &GetSubstruct(boxMon, boxMon->personality, 2)->blockC;
-    PokemonDataBlockD *blockD = &GetSubstruct(boxMon, boxMon->personality, 3)->blockD;
+    PokemonDataBlockA *blockA = &GetSubstruct(boxMon, boxMon->encryption_constant, 0)->blockA;
+    PokemonDataBlockB *blockB = &GetSubstruct(boxMon, boxMon->encryption_constant, 1)->blockB;
+    PokemonDataBlockC *blockC = &GetSubstruct(boxMon, boxMon->encryption_constant, 2)->blockC;
+    PokemonDataBlockD *blockD = &GetSubstruct(boxMon, boxMon->encryption_constant, 3)->blockD;
 
     switch (attr) {
     default:
@@ -491,6 +489,9 @@ static u32 GetBoxMonDataInternal(BoxPokemon *boxMon, int attr, void *dest) {
         break;
     case MON_DATA_PERSONALITY:
         ret = boxMon->personality;
+        break;
+    case MON_DATA_ENCRYPTION_CONSTANT:
+        ret = boxMon->encryption_constant;
         break;
     case MON_DATA_IS_PARTY_DECRYPTED:
         ret = boxMon->partyDecrypted;
@@ -718,9 +719,7 @@ static u32 GetBoxMonDataInternal(BoxPokemon *boxMon, int attr, void *dest) {
         ret = blockB->fatefulEncounter;
         break;
     case MON_DATA_GENDER:
-        ret = GetGenderBySpeciesAndPersonality(blockA->species, boxMon->personality);
-        blockB->gender = (u8)ret;
-        boxMon->checksum = CHECKSUM(boxMon);
+        ret = blockB->gender;
         break;
     case MON_DATA_FORM:
         ret = blockB->form;
@@ -728,8 +727,8 @@ static u32 GetBoxMonDataInternal(BoxPokemon *boxMon, int attr, void *dest) {
     case MON_DATA_UNUSED_113:
         ret = blockB->unused1;
         break;
-    case MON_DATA_UNUSED_114:
-        ret = blockB->unused2;
+    case MON_DATA_NATURE:
+        ret = blockB->nature;
         break;
     case MON_DATA_NICKNAME:
         if (boxMon->checksumFailed) {
@@ -754,8 +753,8 @@ static u32 GetBoxMonDataInternal(BoxPokemon *boxMon, int attr, void *dest) {
             CopyU16ArrayToString(dest, blockC->nickname);
         }
         break;
-    case MON_DATA_UNUSED_121:
-        ret = blockC->unused;
+    case MON_DATA_CHARACTERISTIC:
+        ret = blockC->characteristic;
         break;
     case MON_DATA_MET_GAME:
         ret = blockC->originGame;
@@ -978,12 +977,15 @@ static void SetBoxMonDataInternal(BoxPokemon *boxMon, int attr, const void *valu
     u16 namebuf3[POKEMON_NAME_LENGTH + 1];
     String *speciesName;
 
-    PokemonDataBlockA *blockA = &GetSubstruct(boxMon, boxMon->personality, 0)->blockA;
-    PokemonDataBlockB *blockB = &GetSubstruct(boxMon, boxMon->personality, 1)->blockB;
-    PokemonDataBlockC *blockC = &GetSubstruct(boxMon, boxMon->personality, 2)->blockC;
-    PokemonDataBlockD *blockD = &GetSubstruct(boxMon, boxMon->personality, 3)->blockD;
+    PokemonDataBlockA *blockA = &GetSubstruct(boxMon, boxMon->encryption_constant, 0)->blockA;
+    PokemonDataBlockB *blockB = &GetSubstruct(boxMon, boxMon->encryption_constant, 1)->blockB;
+    PokemonDataBlockC *blockC = &GetSubstruct(boxMon, boxMon->encryption_constant, 2)->blockC;
+    PokemonDataBlockD *blockD = &GetSubstruct(boxMon, boxMon->encryption_constant, 3)->blockD;
 
     switch (attr) {
+    case MON_DATA_ENCRYPTION_CONSTANT:
+        boxMon->encryption_constant = VALUE(u32);
+        break;
     case MON_DATA_PERSONALITY:
         boxMon->personality = VALUE(u32);
         break;
@@ -1182,7 +1184,7 @@ static void SetBoxMonDataInternal(BoxPokemon *boxMon, int attr, const void *valu
         blockB->fatefulEncounter = VALUE(u8);
         break;
     case MON_DATA_GENDER:
-        blockB->gender = GetGenderBySpeciesAndPersonality(blockA->species, boxMon->personality);
+        blockB->gender = VALUE(u8);
         break;
     case MON_DATA_FORM:
         blockB->form = VALUE(u8);
@@ -1190,8 +1192,8 @@ static void SetBoxMonDataInternal(BoxPokemon *boxMon, int attr, const void *valu
     case MON_DATA_UNUSED_113:
         blockB->unused1 = VALUE(u8);
         break;
-    case MON_DATA_UNUSED_114:
-        blockB->unused2 = VALUE(u16);
+    case MON_DATA_NATURE:
+        blockB->nature = VALUE(u8);
         break;
     case MON_DATA_NICKNAME_FLAT_COMPARE:
         GetSpeciesNameIntoArray(blockA->species, HEAP_ID_DEFAULT, namebuf);
@@ -1211,8 +1213,8 @@ static void SetBoxMonDataInternal(BoxPokemon *boxMon, int attr, const void *valu
     case MON_DATA_NICKNAME_STRING:
         CopyStringToU16Array(value, blockC->nickname, POKEMON_NAME_LENGTH + 1);
         break;
-    case MON_DATA_UNUSED_121:
-        blockC->unused = VALUE(u8);
+    case MON_DATA_CHARACTERISTIC:
+        blockC->characteristic = VALUE(u8);
         break;
     case MON_DATA_MET_GAME:
         blockC->originGame = VALUE(u8);
@@ -1400,10 +1402,10 @@ static void AddMonDataInternal(Pokemon *mon, int attr, int value) {
 }
 
 static void AddBoxMonDataInternal(BoxPokemon *boxMon, int attr, int value) {
-    PokemonDataBlockA *blockA = &GetSubstruct(boxMon, boxMon->personality, 0)->blockA;
-    PokemonDataBlockB *blockB = &GetSubstruct(boxMon, boxMon->personality, 1)->blockB;
-    PokemonDataBlockC *blockC = &GetSubstruct(boxMon, boxMon->personality, 2)->blockC;
-    PokemonDataBlockD *blockD = &GetSubstruct(boxMon, boxMon->personality, 3)->blockD;
+    PokemonDataBlockA *blockA = &GetSubstruct(boxMon, boxMon->encryption_constant, 0)->blockA;
+    PokemonDataBlockB *blockB = &GetSubstruct(boxMon, boxMon->encryption_constant, 1)->blockB;
+    PokemonDataBlockC *blockC = &GetSubstruct(boxMon, boxMon->encryption_constant, 2)->blockC;
+    PokemonDataBlockD *blockD = &GetSubstruct(boxMon, boxMon->encryption_constant, 3)->blockD;
 
     switch (attr) {
     case MON_DATA_EXPERIENCE:
@@ -1634,12 +1636,12 @@ static void AddBoxMonDataInternal(BoxPokemon *boxMon, int attr, int value) {
     case MON_DATA_GENDER:
     case MON_DATA_FORM:
     case MON_DATA_UNUSED_113:
-    case MON_DATA_UNUSED_114:
+    case MON_DATA_NATURE:
     case MON_DATA_NICKNAME:
     case MON_DATA_NICKNAME_FLAT_COMPARE:
     case MON_DATA_NICKNAME_STRING:
     case MON_DATA_NICKNAME_STRING_AND_FLAG:
-    case MON_DATA_UNUSED_121:
+    case MON_DATA_CHARACTERISTIC:
     case MON_DATA_MET_GAME:
     case MON_DATA_SUPER_COOL_RIBBON:
     case MON_DATA_SUPER_COOL_RIBBON_GREAT:
@@ -1951,13 +1953,49 @@ u8 GetMonNature(Pokemon *mon) {
 
 u8 GetBoxMonNature(BoxPokemon *boxMon) {
     BOOL decry = AcquireBoxMonLock(boxMon);
-    u32 personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+    u8 nature = (u8)GetBoxMonData(boxMon, MON_DATA_NATURE, NULL);
     ReleaseBoxMonLock(boxMon, decry);
-    return GetNatureFromPersonality(personality);
+    return nature;
 }
 
-u8 GetNatureFromPersonality(u32 pid) {
-    return (u8)(pid % 25);
+// NEW: nature is its own draw. Same distribution as the old pid % NATURE_NUM,
+// but no longer readable out of the personality.
+u8 MonRollNature(void) {
+    return (u8)((u32)(LCRandom() | (LCRandom() << 16)) % NATURE_NUM);
+}
+
+// NEW: gender is its own draw against the species' gender ratio, using the
+// same ratio comparison the old pid low byte was tested with.
+u8 MonRollGender(u16 species) {
+    u8 ratio = (u8)GetMonBaseStat(species, BASE_GENDER_RATIO);
+    switch (ratio) {
+    case MON_RATIO_MALE:
+        return MON_MALE;
+    case MON_RATIO_FEMALE:
+        return MON_FEMALE;
+    case MON_RATIO_UNKNOWN:
+        return MON_GENDERLESS;
+    default:
+        if (ratio > (u8)(LCRandom() & 0xFF)) {
+            return MON_FEMALE;
+        }
+        return MON_MALE;
+    }
+}
+
+// NEW: which gender a species is drawn with when no particular Pokemon is known (a record that stores no
+// gender of its own) - what querying the old "personality 0" produced, stated without a personality.
+u8 GetSpeciesDisplayGender(u16 species) {
+    switch (GetMonBaseStat(species, BASE_GENDER_RATIO)) {
+    case MON_RATIO_MALE:
+        return MON_MALE;
+    case MON_RATIO_FEMALE:
+        return MON_FEMALE;
+    case MON_RATIO_UNKNOWN:
+        return MON_GENDERLESS;
+    default:
+        return MON_FEMALE;
+    }
 }
 
 const s8 gNatureStatMods[NATURE_NUM][NUM_EV_STATS] = {
@@ -2078,10 +2116,9 @@ u8 GetMonGender(Pokemon *mon) {
 
 u8 GetBoxMonGender(BoxPokemon *boxMon) {
     BOOL decry = AcquireBoxMonLock(boxMon);
-    u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
-    u32 pid = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+    u8 gender = (u8)GetBoxMonData(boxMon, MON_DATA_GENDER, NULL);
     ReleaseBoxMonLock(boxMon, decry);
-    return GetGenderBySpeciesAndPersonality(species, pid);
+    return gender;
 }
 
 u8 GetGenderBySpeciesAndPersonality(u16 species, u32 pid) {
@@ -2164,7 +2201,7 @@ void GetBoxmonSpriteCharAndPlttNarcIds(PokepicTemplate *pokepicTemplate, BoxPoke
     u16 species = GetBoxMonData(boxMon, MON_DATA_SPECIES_OR_EGG, NULL);
     u8 gender = GetBoxMonGender(boxMon);
     u8 shiny = BoxMonIsShiny(boxMon);
-    u32 pid = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+    u32 spotSeed = GetBoxMonData(boxMon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     u8 form;
     if (species == SPECIES_EGG) {
         if (GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL) == SPECIES_MANAPHY) {
@@ -2176,17 +2213,17 @@ void GetBoxmonSpriteCharAndPlttNarcIds(PokepicTemplate *pokepicTemplate, BoxPoke
         form = GetBoxMonData(boxMon, MON_DATA_FORM, NULL);
     }
     if (useDPVariant == TRUE) {
-        DP_GetMonSpriteCharAndPlttNarcIdsEx(pokepicTemplate, species, gender, whichFacing, shiny, form, pid);
+        DP_GetMonSpriteCharAndPlttNarcIdsEx(pokepicTemplate, species, gender, whichFacing, shiny, form, spotSeed);
     } else {
-        GetMonSpriteCharAndPlttNarcIdsEx(pokepicTemplate, species, gender, whichFacing, shiny, form, pid);
+        GetMonSpriteCharAndPlttNarcIdsEx(pokepicTemplate, species, gender, whichFacing, shiny, form, spotSeed);
     }
     ReleaseBoxMonLock(boxMon, decry);
 }
 
-void GetMonSpriteCharAndPlttNarcIdsEx(PokepicTemplate *pokepicTemplate, u16 species, u8 gender, u8 whichFacing, u8 shiny, u8 form, u32 personality) {
+void GetMonSpriteCharAndPlttNarcIdsEx(PokepicTemplate *pokepicTemplate, u16 species, u8 gender, u8 whichFacing, u8 shiny, u8 form, u32 spotSeed) {
     pokepicTemplate->species = SPECIES_NONE;
     pokepicTemplate->isAnimated = FALSE;
-    pokepicTemplate->personality = 0;
+    pokepicTemplate->spotSeed = 0;
     form = SanitizeMonForm(species, form);
     switch (species) {
     case SPECIES_BURMY:
@@ -2271,7 +2308,7 @@ void GetMonSpriteCharAndPlttNarcIdsEx(PokepicTemplate *pokepicTemplate, u16 spec
         if (species == SPECIES_SPINDA && whichFacing == MON_PIC_FACING_FRONT) {
             pokepicTemplate->species = SPECIES_SPINDA;
             pokepicTemplate->isAnimated = FALSE;
-            pokepicTemplate->personality = personality;
+            pokepicTemplate->spotSeed = spotSeed;
         }
         break;
     }
@@ -2359,10 +2396,10 @@ void DP_GetDefaultMonSpriteCharAndPlttNarcIds(PokepicTemplate *pokepicTemplate, 
     pokepicTemplate->palDataID = (u16)(shiny + (species * 6 + 4));
 }
 
-void DP_GetMonSpriteCharAndPlttNarcIdsEx(PokepicTemplate *pokepicTemplate, u16 species, u8 gender, u8 whichFacing, u8 shiny, u8 form, u32 personality) {
+void DP_GetMonSpriteCharAndPlttNarcIdsEx(PokepicTemplate *pokepicTemplate, u16 species, u8 gender, u8 whichFacing, u8 shiny, u8 form, u32 spotSeed) {
     pokepicTemplate->species = SPECIES_NONE;
     pokepicTemplate->isAnimated = FALSE;
-    pokepicTemplate->personality = 0;
+    pokepicTemplate->spotSeed = 0;
     form = SanitizeMonForm(species, form);
     switch (species) {
     case SPECIES_BURMY:
@@ -2461,7 +2498,7 @@ void DP_GetMonSpriteCharAndPlttNarcIdsEx(PokepicTemplate *pokepicTemplate, u16 s
         if (species == SPECIES_SPINDA && whichFacing == MON_PIC_FACING_FRONT) {
             pokepicTemplate->species = SPECIES_SPINDA;
             pokepicTemplate->isAnimated = FALSE;
-            pokepicTemplate->personality = personality;
+            pokepicTemplate->spotSeed = spotSeed;
         }
         break;
     }
@@ -2786,18 +2823,18 @@ u16 GetMonEvolution(Party *party, Pokemon *mon, u8 context, u16 usedItem, int *m
     int i;
     u16 target = SPECIES_NONE;
     u16 friendship;
-    u32 pid;
+    u32 ec;
     u8 holdEffect;
     u8 beauty; // for Feebas, but queried unconditionally.
-    u16 pid_hi = 0;
+    u16 ec_hi = 0;
     struct Evolution *evoTable;
     int method_local;
 
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     heldItem = GetMonData(mon, MON_DATA_HELD_ITEM, NULL);
-    pid = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    ec = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     beauty = GetMonData(mon, MON_DATA_BEAUTY, NULL);
-    pid_hi = (u16)((pid & 0xFFFF0000) >> 16);
+    ec_hi = (u16)((ec & 0xFFFF0000) >> 16);
     holdEffect = GetItemAttr(heldItem, ITEMATTR_HOLD_EFFECT, HEAP_ID_DEFAULT);
     // Kadabra bypasses Everstone because he's just that broken.
     if (species != SPECIES_KADABRA && holdEffect == HOLD_EFFECT_NO_EVOLVE && context != EVOCTX_ITEM_USE) {
@@ -2868,16 +2905,16 @@ u16 GetMonEvolution(Party *party, Pokemon *mon, u8 context, u16 usedItem, int *m
                     *method_ret = EVO_LEVEL_ATK_LT_DEF;
                 }
                 break;
-            case EVO_LEVEL_PID_LO:
-                if (evoTable[i].param <= level && pid_hi % 10 < 5) {
+            case EVO_LEVEL_EC_LO: // Wurmple -> Silcoon: high half of the encryption constant, % 10 < 5
+                if (evoTable[i].param <= level && ec_hi % 10 < 5) {
                     target = evoTable[i].target;
-                    *method_ret = EVO_LEVEL_PID_LO;
+                    *method_ret = EVO_LEVEL_EC_LO;
                 }
                 break;
-            case EVO_LEVEL_PID_HI:
-                if (evoTable[i].param <= level && pid_hi % 10 >= 5) {
+            case EVO_LEVEL_EC_HI: // Wurmple -> Cascoon: high half of the encryption constant, % 10 >= 5
+                if (evoTable[i].param <= level && ec_hi % 10 >= 5) {
                     target = evoTable[i].target;
-                    *method_ret = EVO_LEVEL_PID_HI;
+                    *method_ret = EVO_LEVEL_EC_HI;
                 }
                 break;
             case EVO_LEVEL_NINJASK:
@@ -3290,12 +3327,11 @@ s8 MonGetFlavorPreference(Pokemon *mon, int flavor) {
 }
 
 s8 BoxMonGetFlavorPreference(BoxPokemon *boxMon, int flavor) {
-    u32 personality = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
-    return GetFlavorPreferenceFromPID(personality, flavor);
+    return GetFlavorPreferenceFromNature(GetBoxMonNature(boxMon), flavor);
 }
 
-s8 GetFlavorPreferenceFromPID(u32 personality, int flavor) {
-    return sFlavorPreferencesByNature[GetNatureFromPersonality(personality)][flavor];
+s8 GetFlavorPreferenceFromNature(u8 nature, int flavor) {
+    return sFlavorPreferencesByNature[nature][flavor];
 }
 
 int Species_LoadLearnsetTable(u32 species, u32 form, u16 *dest) {
@@ -3807,50 +3843,66 @@ void UpdateMonAbility(Pokemon *mon) {
 }
 
 void UpdateBoxMonAbility(BoxPokemon *boxMon) {
+    // The ability byte is trusted: a species or form change keeps the slot the
+    // mon already has. Only a slot the new species/form does not offer is
+    // replaced, and that choice is its own draw.
     BOOL decry = AcquireBoxMonLock(boxMon);
     int species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
-    int pid = GetBoxMonData(boxMon, MON_DATA_PERSONALITY, NULL);
+    int ability = GetBoxMonData(boxMon, MON_DATA_ABILITY, NULL);
     int form = GetBoxMonData(boxMon, MON_DATA_FORM, NULL);
     int ability1 = GetMonBaseStat_HandleAlternateForm(species, form, BASE_ABILITY_1);
     int ability2 = GetMonBaseStat_HandleAlternateForm(species, form, BASE_ABILITY_2);
-    if (ability2 != ABILITY_NONE) {
-        if (pid & 1) {
-            SetBoxMonData(boxMon, MON_DATA_ABILITY, &ability2);
+    if (ability != ability1 && ability != ability2) {
+        if (ability2 != ABILITY_NONE && (LCRandom() & 1)) {
+            ability = ability2;
         } else {
-            SetBoxMonData(boxMon, MON_DATA_ABILITY, &ability1);
+            ability = ability1;
         }
-    } else {
-        SetBoxMonData(boxMon, MON_DATA_ABILITY, &ability1);
+        SetBoxMonData(boxMon, MON_DATA_ABILITY, &ability);
     }
     ReleaseBoxMonLock(boxMon, decry);
 }
 
 void SetMonPersonality(Pokemon *mon, u32 personality) {
-    PokemonDataBlockA *oldBlockA;
-    PokemonDataBlockB *oldBlockB;
-    PokemonDataBlockC *oldBlockC;
-    PokemonDataBlockD *oldBlockD;
-    PokemonDataBlockA *newBlockA;
-    PokemonDataBlockB *newBlockB;
-    PokemonDataBlockC *newBlockC;
-    PokemonDataBlockD *newBlockD;
-    Pokemon *tmpMon;
+    // The personality no longer keys the party segment or the data-block
+    // shuffle (the encryption constant does), so replacing it can no longer
+    // move data between blocks; the vanilla block-relocation dance is gone.
+    // All the personality now carries is shininess; nature, gender and ability live in their own bytes.
+    SetMonData(mon, MON_DATA_PERSONALITY, &personality);
+}
 
+void SetMonEncryptionConstant(Pokemon *mon, u32 ec) {
+    PokemonDataBlockA *oldBlockA; // r4
+    PokemonDataBlockB *oldBlockB; // r5
+    PokemonDataBlockC *oldBlockC; // r6
+    PokemonDataBlockD *oldBlockD; // r7
+    PokemonDataBlockA *newBlockA; // sb
+    PokemonDataBlockB *newBlockB; // sl
+    PokemonDataBlockC *newBlockC; // fp
+    PokemonDataBlockD *newBlockD; // ip
+    Pokemon *tmpMon;              // sp4
+
+    // The constant keys both the party segment and the data-block shuffle, so a mon that already has data has
+    // each logical block moved to the physical block the new constant selects.  Records and payloads that store
+    // a constant use this to put a stored identity onto a freshly created mon.
+    if (mon->box.encryption_constant == ec) {
+        return;
+    }
     tmpMon = AllocMonZeroed(HEAP_ID_DEFAULT);
     CopyPokemonToPokemon(mon, tmpMon);
-    oldBlockA = &GetSubstruct(&tmpMon->box, mon->box.personality, 0)->blockA;
-    oldBlockB = &GetSubstruct(&tmpMon->box, mon->box.personality, 1)->blockB;
-    oldBlockC = &GetSubstruct(&tmpMon->box, mon->box.personality, 2)->blockC;
-    oldBlockD = &GetSubstruct(&tmpMon->box, mon->box.personality, 3)->blockD;
-    newBlockA = &GetSubstruct(&mon->box, personality, 0)->blockA;
-    newBlockB = &GetSubstruct(&mon->box, personality, 1)->blockB;
-    newBlockC = &GetSubstruct(&mon->box, personality, 2)->blockC;
-    newBlockD = &GetSubstruct(&mon->box, personality, 3)->blockD;
+    oldBlockA = &GetSubstruct(&tmpMon->box, mon->box.encryption_constant, 0)->blockA;
+    oldBlockB = &GetSubstruct(&tmpMon->box, mon->box.encryption_constant, 1)->blockB;
+    oldBlockC = &GetSubstruct(&tmpMon->box, mon->box.encryption_constant, 2)->blockC;
+    oldBlockD = &GetSubstruct(&tmpMon->box, mon->box.encryption_constant, 3)->blockD;
+    newBlockA = &GetSubstruct(&mon->box, ec, 0)->blockA;
+    newBlockB = &GetSubstruct(&mon->box, ec, 1)->blockB;
+    newBlockC = &GetSubstruct(&mon->box, ec, 2)->blockC;
+    newBlockD = &GetSubstruct(&mon->box, ec, 3)->blockD;
 
     DECRYPT_BOX(&tmpMon->box);
     DECRYPT_PTY(mon);
     DECRYPT_BOX(&mon->box);
-    mon->box.personality = personality;
+    mon->box.encryption_constant = ec;
     *newBlockA = *oldBlockA;
     *newBlockB = *oldBlockB;
     *newBlockC = *oldBlockC;
@@ -3861,61 +3913,48 @@ void SetMonPersonality(Pokemon *mon, u32 personality) {
     Heap_Free(tmpMon);
 }
 
-u32 ChangePersonalityToNatureGenderAndAbility(u32 pid, u16 species, u8 nature, u8 gender, u8 ability, BOOL gen_mode) {
-    // u32 pid is a random seed to convolve into a pid that bears the
-    // requested nature, gender, and ability. This is used to make
-    // pokemon caught on the Pokewalker, and the Spiky-Eared Pichu.
-    // In both actual use cases, u32 pid is OTID, which means otIdXor and trainerIdXor
-    // are always SID ^ TID.
-    GF_ASSERT(ability < 2);
-    GF_ASSERT(gender != 0xFF);
-    if (gen_mode) {
-        u32 otIdXor = ((pid & 0xFFFF0000) >> 16) ^ (u16)pid;
-        pid = GenPersonalityByGenderAndNature(species, gender, nature);
-        if ((pid & 1) != ability) {
-            // Force correct ability for gender and nature pid
-            pid++;
-        }
-        pid |= ((u16)pid ^ otIdXor) << 16;
-    } else {
-        u32 trainerIdXor;
-        u8 ratio = GetMonBaseStat(species, BASE_GENDER_RATIO);
-        GF_ASSERT((nature & 1) == ability);
-        trainerIdXor = ((pid & 0xFFFF0000) >> 16) ^ (u16)pid;
-        pid = (0xFF00 ^ (trainerIdXor & 0xFF00)) << 16;
-        // Force the pid to have the requested nature
-        pid += nature - (pid % 25);
-        // Maintaining that pid%25 is nature, and pid&1 is ability,
-        // ensure pid&0xFF compared to the gender ratio yields gender
-        switch (ratio) {
-        case MON_RATIO_MALE:
-        case MON_RATIO_FEMALE:
-        case MON_RATIO_UNKNOWN:
-            break;
-        default:
-            if (gender == MON_MALE) {
-                if (ratio > (u8)pid) {
-                    // pid is female; force pid to become male
-                    pid += 25 * ((ratio - (u8)pid) / 25u + 1);
-                    if ((pid & 1) != ability) {
-                        GF_ASSERT((u8)pid <= 230);
-                        pid += 25;
-                    }
-                }
-            } else {
-                if (ratio < (u8)pid) {
-                    // pid is male; force pid to become female
-                    pid -= 25 * (((u8)pid - ratio) / 25u + 1);
-                    if ((pid & 1) != ability) {
-                        GF_ASSERT((u8)pid >= 25);
-                        pid -= 25;
-                    }
-                }
-            }
-            break;
-        }
-    }
+// NEW: a personality that is verified not shiny for this OTID. Used where the
+// game used to bend the personality into a shape (nature, gender, ability,
+// non-shininess); only the shiny gate is kept.
+u32 GenerateNonShinyPersonality(u32 otid) {
+    u32 pid;
+    do {
+        pid = (u32)(LCRandom() | (LCRandom() << 16));
+    } while (CalcShininessByOtIdAndPersonality(otid, pid));
     return pid;
+}
+
+// NEW: resolves an ability slot (0 or 1) against the mon's species and form,
+// and stores the ability it points at.
+static void SetBoxMonAbilitySlot(BoxPokemon *boxMon, u8 abilitySlot) {
+    int species = GetBoxMonData(boxMon, MON_DATA_SPECIES, NULL);
+    int form = GetBoxMonData(boxMon, MON_DATA_FORM, NULL);
+    int ability1 = GetMonBaseStat_HandleAlternateForm(species, form, BASE_ABILITY_1);
+    int ability2 = GetMonBaseStat_HandleAlternateForm(species, form, BASE_ABILITY_2);
+    if (ability2 != ABILITY_NONE && abilitySlot != 0) {
+        SetBoxMonData(boxMon, MON_DATA_ABILITY, &ability2);
+    } else {
+        SetBoxMonData(boxMon, MON_DATA_ABILITY, &ability1);
+    }
+}
+
+void Mon_SetAbilitySlot(BoxPokemon *boxMon, u8 abilitySlot) {
+    BOOL decry = AcquireBoxMonLock(boxMon);
+    SetBoxMonAbilitySlot(boxMon, abilitySlot);
+    ReleaseBoxMonLock(boxMon, decry);
+}
+
+// NEW: writes a scripted nature, gender and ability slot onto a Pokemon. This
+// replaces the old search that encoded all three inside the personality (the
+// Pokemon caught on the Pokewalker and the Spiky-Eared Pichu).
+void Mon_SetNatureGenderAndAbility(BoxPokemon *boxMon, u8 nature, u8 gender, u8 abilitySlot) {
+    BOOL decry = AcquireBoxMonLock(boxMon);
+    GF_ASSERT(gender != 0xFF);
+    GF_ASSERT(abilitySlot < 2);
+    SetBoxMonData(boxMon, MON_DATA_NATURE, &nature);
+    SetBoxMonData(boxMon, MON_DATA_GENDER, &gender);
+    SetBoxMonAbilitySlot(boxMon, abilitySlot);
+    ReleaseBoxMonLock(boxMon, decry);
 }
 
 void LoadMonPersonal(int species, BASE_STATS *personal) {
@@ -3948,7 +3987,7 @@ u32 CalcMonChecksum(void *_data, u32 size) {
     return ret;
 }
 
-PokemonDataBlock *GetSubstruct(BoxPokemon *boxMon, u32 pid, u8 which) {
+PokemonDataBlock *GetSubstruct(BoxPokemon *boxMon, u32 ec, u8 which) {
     static const u8 offsets[32][4] = {
         { 0x00, 0x20, 0x40, 0x60 },
         { 0x00, 0x20, 0x60, 0x40 },
@@ -3984,9 +4023,9 @@ PokemonDataBlock *GetSubstruct(BoxPokemon *boxMon, u32 pid, u8 which) {
         { 0x20, 0x00, 0x60, 0x40 },
     };
 
-    pid = ((pid & 0x3E000) >> 13);
+    ec = ((ec & 0x3E000) >> 13);
     GF_ASSERT(which <= 3);
-    return (PokemonDataBlock *)((char *)boxMon->dataBlocks + offsets[pid][which]);
+    return (PokemonDataBlock *)((char *)boxMon->dataBlocks + offsets[ec][which]);
 }
 
 int ResolveMonForm(int species, int form) {
@@ -4257,12 +4296,13 @@ void Pokemon_ToBattleRecordMon(Pokemon *mon, struct BattleRecordMon *dest) {
         DECRYPT_BOX(&mon->box);
     }
     boxMon = Mon_GetBoxMon(mon);
-    dbA = &GetSubstruct(boxMon, boxMon->personality, 0)->blockA;
-    dbB = &GetSubstruct(boxMon, boxMon->personality, 1)->blockB;
-    dbC = &GetSubstruct(boxMon, boxMon->personality, 2)->blockC;
-    dbD = &GetSubstruct(boxMon, boxMon->personality, 3)->blockD;
+    dbA = &GetSubstruct(boxMon, boxMon->encryption_constant, 0)->blockA;
+    dbB = &GetSubstruct(boxMon, boxMon->encryption_constant, 1)->blockB;
+    dbC = &GetSubstruct(boxMon, boxMon->encryption_constant, 2)->blockC;
+    dbD = &GetSubstruct(boxMon, boxMon->encryption_constant, 3)->blockD;
 
     dest->personality = boxMon->personality;
+    dest->encryption_constant = boxMon->encryption_constant;
     dest->partyDecrypted = FALSE;
     dest->boxDecrypted = FALSE;
     dest->checksumFailed = boxMon->checksumFailed;
@@ -4297,6 +4337,7 @@ void Pokemon_ToBattleRecordMon(Pokemon *mon, struct BattleRecordMon *dest) {
     dest->fatefulEncounter = dbB->fatefulEncounter;
     dest->gender = dbB->gender;
     dest->form = dbB->form;
+    dest->nature = (u8)dbB->nature;
 
     for (i = 0; i < POKEMON_NAME_LENGTH + 1; i++) {
         dest->nickname[i] = dbC->nickname[i];
@@ -4334,12 +4375,13 @@ void Pokemon_FromBattleRecordMon(const struct BattleRecordMon *src, Pokemon *mon
 
     MI_CpuClearFast(mon, sizeof(Pokemon));
     boxMon = Mon_GetBoxMon(mon);
-    dbA = &GetSubstruct(boxMon, src->personality, 0)->blockA;
-    dbB = &GetSubstruct(boxMon, src->personality, 1)->blockB;
-    dbC = &GetSubstruct(boxMon, src->personality, 2)->blockC;
-    dbD = &GetSubstruct(boxMon, src->personality, 3)->blockD;
+    dbA = &GetSubstruct(boxMon, src->encryption_constant, 0)->blockA;
+    dbB = &GetSubstruct(boxMon, src->encryption_constant, 1)->blockB;
+    dbC = &GetSubstruct(boxMon, src->encryption_constant, 2)->blockC;
+    dbD = &GetSubstruct(boxMon, src->encryption_constant, 3)->blockD;
 
     boxMon->personality = src->personality;
+    boxMon->encryption_constant = src->encryption_constant;
     boxMon->partyDecrypted = FALSE;
     boxMon->boxDecrypted = FALSE;
     boxMon->checksumFailed = src->checksumFailed;
@@ -4373,6 +4415,7 @@ void Pokemon_FromBattleRecordMon(const struct BattleRecordMon *src, Pokemon *mon
     dbB->hasNickname = src->hasNickname;
     dbB->fatefulEncounter = src->fatefulEncounter;
     dbB->gender = src->gender;
+    dbB->nature = src->nature; // the record stores the nature now, no personality derivation
     dbB->form = src->form;
 
     for (i = 0; i < POKEMON_NAME_LENGTH + 1; i++) {

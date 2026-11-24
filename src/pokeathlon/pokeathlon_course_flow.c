@@ -166,7 +166,7 @@ void PokeathlonCourse_GetMonInfo(PokeathlonCourseData *course, int participant, 
     info->form = mon->form;
     info->gender = mon->gender;
     info->participant = participant;
-    info->personality = mon->personality;
+    info->spotSeed = mon->encryption_constant != 0 ? mon->encryption_constant : mon->personality;
     GF_ASSERT(info->species != SPECIES_NONE);
     if (info->species == SPECIES_NONE) {
         info->species = SPECIES_BULBASAUR;
@@ -1146,6 +1146,7 @@ static void PokeathlonCourse_SaveSoloEventRecords(PokeathlonCourseData *course, 
             top[j].score = record->top[j].score;
             for (u8 k = 0; k < POKEATHLON_TEAM_SIZE; k++) {
                 top[j].mons[k] = record->top[j].team.mons[k];
+                top[j].encryption_constant[k] = record->top[j].encryption_constant[k];
             }
         }
         entry.score = course->results.eventScores[(u8)PokeathlonCourse_GetNetId(course)][i];
@@ -1153,6 +1154,7 @@ static void PokeathlonCourse_SaveSoloEventRecords(PokeathlonCourseData *course, 
         PokeathlonCourseMon *mons = course->participants[netId].mons;
         for (u8 j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
             entry.mons[j] = (mons[j].form << 10) + mons[j].species;
+            entry.encryption_constant[j] = mons[j].encryption_constant;
         }
         PokeathlonCourse_InsertRankEntry(order, &entry, top);
         PokeathlonCourse_CopySoloRanking(course, record, top);
@@ -1187,6 +1189,7 @@ static void PokeathlonCourse_SaveLinkEventRecords(PokeathlonCourseData *course, 
             top[j].score = record->top[j].score;
             for (k = 0; k < POKEATHLON_TEAM_SIZE; k++) {
                 top[j].mons[k] = record->top[j].team.mons[k];
+                top[j].encryption_constant[k] = record->top[j].encryption_constant[k];
             }
             CopyRankEntryTrainer(&top[j], record, j);
         }
@@ -1198,6 +1201,7 @@ static void PokeathlonCourse_SaveLinkEventRecords(PokeathlonCourseData *course, 
             mons = course->participants[netId].mons;
             for (k = 0; k < POKEATHLON_TEAM_SIZE; k++) {
                 entry.mons[k] = (mons[k].form << 10) + mons[k].species;
+                entry.encryption_constant[k] = mons[k].encryption_constant;
             }
             profile = PokeathlonCourse_GetPlayerProfileFromData(course, netId);
             entry.trainerId = PlayerProfile_GetTrainerID(profile);
@@ -1253,6 +1257,7 @@ static void PokeathlonCourse_CopySoloRanking(PokeathlonCourseData *course, Pokea
         record->top[i].score = top[i].score;
         for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
             record->top[i].team.mons[j] = top[i].mons[j];
+            record->top[i].encryption_constant[j] = top[i].encryption_constant[j];
         }
     }
 }
@@ -1264,6 +1269,7 @@ static void PokeathlonCourse_CopyLinkRanking(PokeathlonCourseData *course, Pokea
         record->top[i].score = top[i].score;
         for (j = 0; j < POKEATHLON_TEAM_SIZE; j++) {
             record->top[i].team.mons[j] = top[i].mons[j];
+            record->top[i].encryption_constant[j] = top[i].encryption_constant[j];
         }
         record->trainers[i].trainerId = top[i].trainerId;
         {
@@ -1692,6 +1698,8 @@ void PokeathlonCourse_SetupNpcParticipants(PokeathlonCourseData *course, int cou
             participant->mons[k].form = 0;
             participant->mons[k].isShiny = FALSE;
             participant->mons[k].personality = 0;
+            // An NPC team has no identity of its own, so the picture seed stays 0.
+            participant->mons[k].encryption_constant = 0;
             switch ((u8)GetMonBaseStat(participant->mons[k].species, BASE_GENDER_RATIO)) {
             case MON_RATIO_MALE:
                 gender = MON_MALE;

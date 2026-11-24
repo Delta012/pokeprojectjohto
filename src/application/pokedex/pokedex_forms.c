@@ -540,16 +540,18 @@ void PokedexApp_LoadMonPicToBg(PokedexAppData *pokedexApp, u16 species, u8 form,
     PokepicTemplate pokepic;
     TileRect rect = gPokedexMonPicBgRect;
     u8 *buffer = Heap_AllocAtEnd(HEAP_ID_POKEDEX_APP, 3200);
-    u32 personality;
+    u32 spotSeed;
     u8 *converted;
 
+    // The Pokedex remembers the encryption constant of the Spinda it first saw;
+    // every Pokedex picture of Spinda is drawn from that stored constant.
     if (species == SPECIES_SPINDA) {
-        personality = Pokedex_GetSeenSpindaPersonality(pokedexApp->args->pokedex, 0);
+        spotSeed = Pokedex_GetSeenSpindaPersonality(pokedexApp->args->pokedex, 0);
     } else {
-        personality = 0;
+        spotSeed = 0;
     }
-    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, species, gender, facing, 0, form, personality);
-    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_POKEDEX_APP, &rect, buffer, personality, FALSE, 2, species);
+    GetMonSpriteCharAndPlttNarcIdsEx(&pokepic, species, gender, facing, 0, form, spotSeed);
+    CharTiles_LoadMonRectAsObjFromNarc((NarcId)pokepic.narcID, pokepic.charDataID, HEAP_ID_POKEDEX_APP, &rect, buffer, spotSeed, FALSE, 2, species);
     converted = Convert4bppTo8bpp(buffer, 3200, 15, HEAP_ID_POKEDEX_APP);
     BG_LoadCharTilesData(pokedexApp->bgConfig, GF_BG_LYR_SUB_3, converted, 6400, 1);
     Heap_Free(converted);

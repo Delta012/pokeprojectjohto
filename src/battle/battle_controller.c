@@ -152,6 +152,8 @@ void BattleController_EmitPokemonEncounter(BattleSystem *battleSystem, int battl
     packet.shiny = battleSystem->ctx->battleMons[battlerId].shiny;
     packet.species = battleSystem->ctx->battleMons[battlerId].species;
     packet.personality = battleSystem->ctx->battleMons[battlerId].personality;
+    packet.nature = battleSystem->ctx->battleMons[battlerId].nature;
+    packet.encryption_constant = battleSystem->ctx->battleMons[battlerId].encryption_constant;
     packet.cryParam = BattleContext_GetLowHpOrStatusCode(battleSystem->ctx, battlerId, BattleSystem_GetBattlerType(battleSystem, battlerId), TRUE);
     packet.form = battleSystem->ctx->battleMons[battlerId].form;
     for (i = 0; i < MAX_MON_MOVES; i++) {
@@ -172,6 +174,8 @@ void BattleController_EmitPokemonSlideIn(BattleSystem *battleSystem, int battler
     packet.shiny = battleSystem->ctx->battleMons[battlerId].shiny;
     packet.species = battleSystem->ctx->battleMons[battlerId].species;
     packet.personality = battleSystem->ctx->battleMons[battlerId].personality;
+    packet.nature = battleSystem->ctx->battleMons[battlerId].nature;
+    packet.encryption_constant = battleSystem->ctx->battleMons[battlerId].encryption_constant;
     packet.cryParam = BattleContext_GetLowHpOrStatusCode(battleSystem->ctx, battlerId, BattleSystem_GetBattlerType(battleSystem, battlerId), TRUE);
     packet.selectedMonIndex = battleSystem->ctx->selectedMonIndex[battlerId];
     packet.form = battleSystem->ctx->battleMons[battlerId].form;
@@ -198,6 +202,10 @@ void BattleController_EmitPokemonSendOut(BattleSystem *battleSystem, int battler
         packet.gender = battleSystem->ctx->battleMons[battlerId].gender;
         packet.personality = battleSystem->ctx->battleMons[battlerId].personality;
     }
+    // Transform copies another mon's personality and gender for its looks, but
+    // the mon keeps its own nature, so the nature travels outside that choice.
+    packet.nature = battleSystem->ctx->battleMons[battlerId].nature;
+    packet.encryption_constant = battleSystem->ctx->battleMons[battlerId].encryption_constant;
     packet.shiny = battleSystem->ctx->battleMons[battlerId].shiny;
     packet.species = battleSystem->ctx->battleMons[battlerId].species;
     packet.cryParam = BattleContext_GetLowHpOrStatusCode(battleSystem->ctx, battlerId, BattleSystem_GetBattlerType(battleSystem, battlerId), FALSE);

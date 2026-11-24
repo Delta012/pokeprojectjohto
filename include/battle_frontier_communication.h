@@ -4,6 +4,12 @@
 #include "global.h"
 
 #include "communication_command.h"
+#include "pokemon.h"
+
+// Partner Pokemon travel as raw Pokemon structs in the big-data commands: the Hall sends 1, the Castle and
+// the Arcade 3, so a direction's buffer has to hold 3 mons - the old 0x200 could not.
+#define FRONTIER_LINK_MAX_MONS        3
+#define FRONTIER_LINK_MON_BUFFER_SIZE (sizeof(Pokemon) * FRONTIER_LINK_MAX_MONS)
 
 // Link command ids of the frontier commands, in the order of their handlers in FrontierLink_RegisterCommands
 // (they follow the communication core's own commands).

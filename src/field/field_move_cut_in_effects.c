@@ -234,7 +234,7 @@ void FieldMoveCutIn_GetMonPicIds(FieldMoveCutIn *cutIn, PokepicTemplate *templat
 void *FieldMoveCutIn_LoadMonChar(Pokemon *mon, PokepicTemplate *template, enum HeapID heapID) {
     void *buffer = Heap_Alloc(HEAP_ID_FIELD1, 0xc80);
     GF_ASSERT(buffer);
-    CharTiles_LoadMonPicAsObjFromNarc((NarcId) template->narcID, template->charDataID, heapID, buffer, GetMonData(mon, MON_DATA_PERSONALITY, NULL), FALSE, 2, template->species);
+    CharTiles_LoadMonPicAsObjFromNarc((NarcId) template->narcID, template->charDataID, heapID, buffer, GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL), FALSE, 2, template->species);
     return buffer;
 }
 

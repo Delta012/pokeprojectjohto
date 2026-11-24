@@ -15,14 +15,16 @@ typedef struct SaveFashionDataSub {
     u8 y;
     u8 form;
     u8 secondTextGender;
-    u8 padding_39[3];
+    u8 gender; // the dressed-up Pokemon's own gender byte
+    u8 padding_38[2];
+    u32 encryption_constant; // the mon's own constant; it seeds its picture
     u32 itemMask;
     MailMessage mailMessage;
     u8 items[10][4];
     u8 backdrop;
     u8 language;
-    u8 padding_72[2];
-} SaveFashionDataSub; // size=0x74
+    u8 padding_76[2];
+} SaveFashionDataSub; // size=0x78
 
 typedef struct SaveFashionDataSub3FC {
     u8 filler_00[0x98];

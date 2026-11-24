@@ -654,15 +654,17 @@ BOOL Pokedex_CheckMonSeenFlag(const Pokedex *pokedex, const u16 species) {
     }
 }
 
+// The name is kept because asm/include/overlay_99.inc calls this label.  It returns the constant stored for
+// the first Spinda ever seen - the seed of the Pokedex and Pokeathlon Spinda pictures.
 u32 Pokedex_GetSeenSpindaPersonality(Pokedex *pokedex, u32 arg) {
-    u32 personality;
+    u32 spotSeed;
     ASSERT_POKEDEX(pokedex);
     if (arg == 0) {
-        personality = pokedex->spindaPersonality;
+        spotSeed = pokedex->spindaEncryptionConstant;
     } else {
         GF_ASSERT(FALSE);
     }
-    return personality;
+    return spotSeed;
 }
 
 int Pokedex_SpeciesGetLastSeenGender(Pokedex *pokedex, u16 species, u32 idx) {
@@ -770,19 +772,19 @@ static u32 Pokedex_GetSeenFormNum_Deoxys(Pokedex *pokedex) {
 
 void Pokedex_SetMonSeenFlag(Pokedex *pokedex, Pokemon *mon) {
     u16 species;
-    u32 personality;
+    u32 ec;
     u32 gender;
     u8 seenGender;
 
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    ec = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     gender = GetMonGender(mon);
 
     ASSERT_POKEDEX(pokedex);
     if (!DexSpeciesIsInvalid(species)) {
         if (!CheckDexFlag((const u8 *)pokedex->seenSpecies, species)) {
             if (species == SPECIES_SPINDA) {
-                pokedex->spindaPersonality = personality;
+                pokedex->spindaEncryptionConstant = ec;
             }
             Pokedex_SetSeenGenderFlag(pokedex, gender, 0, species);
         } else {
@@ -799,20 +801,20 @@ void Pokedex_SetMonSeenFlag(Pokedex *pokedex, Pokemon *mon) {
 void Pokedex_SetMonCaughtFlag(Pokedex *pokedex, Pokemon *mon) {
     u16 species;
     u32 language;
-    u32 personality;
+    u32 ec;
     u32 gender;
     u32 gender_ct;
 
     species = GetMonData(mon, MON_DATA_SPECIES, NULL);
     language = GetMonData(mon, MON_DATA_LANGUAGE, NULL);
-    personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+    ec = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
     gender = GetMonGender(mon);
 
     ASSERT_POKEDEX(pokedex);
     if (!DexSpeciesIsInvalid(species)) {
         if (!CheckDexFlag((const u8 *)pokedex->seenSpecies, species)) {
             if (species == SPECIES_SPINDA) {
-                pokedex->spindaPersonality = personality;
+                pokedex->spindaEncryptionConstant = ec;
             }
             Pokedex_SetSeenGenderFlag(pokedex, gender, 0, species);
         } else {

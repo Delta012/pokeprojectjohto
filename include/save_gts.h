@@ -5,7 +5,7 @@
 #include "save.h"
 
 typedef struct GtsSave {
-    u8 storedMon[0xEC]; // the deposited Pokemon (party format), kept until it is traded or taken back
+    u8 storedMon[sizeof(Pokemon)]; // the deposited Pokemon (party format), kept until it is traded or taken back
     u16 hasStoredMon;
     u16 storedMonBox;
     u32 depositDate; // packed RTCDate: year << 24 | month << 16 | day << 8 | week

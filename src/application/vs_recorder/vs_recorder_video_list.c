@@ -373,7 +373,7 @@ BOOL VsRecorder_VideoListDownloadVideo(VsRecorderWork *work) {
             listWork->downloaded = TRUE;
             work->videoFlag = &work->net.videoList.flags[work->listWindow.cursor];
             listWork->downloadedVideo = work->net.downloadedVideo;
-            MI_CpuCopy8(listWork->downloadedVideo, work->net.videoBuffer, 0x1D4C);
+            MI_CpuCopy8(listWork->downloadedVideo, work->net.videoBuffer, sizeof(BattleRecord) - 4);
         }
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         OrbitCursor_SetRadius(work->orbitCursors[0], 0, 0);

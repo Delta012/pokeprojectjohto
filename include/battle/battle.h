@@ -239,7 +239,9 @@ typedef struct BattleMon {
     u32 friskFlag : 1;
     u32 moldBreakerFlag : 1;
     u32 pressureFlag : 1;
-    u32 unk28_B : 21;
+    u32 nature : 5; // the stored nature, read at send-out for flavor and animation
+    u32 unk28_D : 16;
+    u32 encryption_constant; // seeds cosmetic patterns (Spinda spots) on this mon's picture
     u8 movePPCur[MAX_MON_MOVES];
     u8 movePP[MAX_MON_MOVES];
     u8 level;

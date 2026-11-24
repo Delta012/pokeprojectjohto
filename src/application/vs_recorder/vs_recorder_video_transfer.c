@@ -28,7 +28,7 @@
 // VS Recorder video transfers: downloading a found video, the video number search and sending the own video.
 
 // flag byte of the video found by number (VsRecorderVideoList.flags of a listed video)
-#define NUMBER_SEARCH_VIDEO_FLAG(work) ((work)->net.videoBuffer[0x1D4C])
+#define NUMBER_SEARCH_VIDEO_FLAG(work) ((work)->net.videoBuffer[sizeof(BattleRecord) - 4])
 
 // VsRecorderVideoSearch substates of the video search (gVsRecorderVideoSearchSubStates)
 #define SEARCH_SHOW_CONDITIONS   2
@@ -295,7 +295,7 @@ BOOL VsRecorder_VideoSearchDownloadVideo(VsRecorderWork *work) {
             search->downloaded = TRUE;
             work->videoFlag = &work->net.videoList.flags[work->listWindow.cursor];
             search->foundVideo = work->net.downloadedVideo;
-            MI_CpuCopy8(search->foundVideo, work->net.videoBuffer, 0x1D4C);
+            MI_CpuCopy8(search->foundVideo, work->net.videoBuffer, sizeof(BattleRecord) - 4);
         }
         OrbitCursor_SetVisible(work->orbitCursors[0], FALSE);
         OrbitCursor_SetRadius(work->orbitCursors[0], 0, 0);
@@ -634,7 +634,7 @@ BOOL VsRecorder_NumberSearchDownloadVideo(VsRecorderWork *work) {
             PlaySE(SEQ_SE_PL_BREC12);
             work->videoFlag = &NUMBER_SEARCH_VIDEO_FLAG(work);
             search->foundVideo = work->net.downloadedVideo;
-            MI_CpuCopy8(search->foundVideo, work->net.videoBuffer, 0x1D4C);
+            MI_CpuCopy8(search->foundVideo, work->net.videoBuffer, sizeof(BattleRecord) - 4);
         }
         OrbitCursor_SetVisible(work->orbitCursors[1], FALSE);
         OrbitCursor_SetRadius(work->orbitCursors[1], 0, 0);

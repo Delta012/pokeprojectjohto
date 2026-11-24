@@ -307,6 +307,7 @@ typedef struct PCBoxMonInfo {
     u16 species;
     u16 heldItem;
     u32 personality;
+    u32 encryption_constant; // seeds the picture's Spinda spots
     u8 type1;
     u8 type2;
     u8 ability;

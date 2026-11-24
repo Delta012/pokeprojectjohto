@@ -10,16 +10,16 @@ typedef struct POKEWALKER {
     u16 strollState;
     u16 unk_002;
     BoxPokemon pokemon;
-    u8 filler_08C[0x6C];
+    u8 filler_090[0x6C];
     u16 course;
     u16 receivedStarfBerry;
     u32 irClock[10];
     u16 linkCount;
-    u8 filler_126[2];
+    u8 filler_12A[2];
     u32 steps;
     u32 watts;
     u32 unlockedCourses;
-} POKEWALKER; // size=0x134
+} POKEWALKER; // size=0x138
 
 void Pokewalker_UnlockCourse(POKEWALKER *pokeWalker, int courseNo);
 POKEWALKER *Save_Pokewalker_Get(SaveData *saveData);
