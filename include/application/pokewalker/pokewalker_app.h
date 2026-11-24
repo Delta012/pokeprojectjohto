@@ -315,7 +315,7 @@ int PokewalkerApp_HandleTwoChoiceMenu(PokewalkerApp *app);
 int PokewalkerApp_GetTouchedButton(int index);
 void PokewalkerApp_LoadSubBg1Tilemap(PokewalkerApp *app);
 void PokewalkerApp_ShowSubBg1(PokewalkerApp *app, BOOL show);
-void PokewalkerApp_DrawSpindaSpotsOnPicture(void *picture, const void *mask, u32 personality);
+void PokewalkerApp_DrawSpindaSpotsOnPicture(void *picture, const void *mask, u32 spotSeed);
 void PokewalkerApp_AddWindowBank(PokewalkerApp *app, int bank);
 void PokewalkerApp_RemoveWindowBank(PokewalkerApp *app, int bank);
 void PokewalkerApp_OnModeChangeDummy(PokewalkerApp *app);

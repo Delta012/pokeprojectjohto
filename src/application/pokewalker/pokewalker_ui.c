@@ -239,33 +239,33 @@ static void PokewalkerApp_SetPixel2bpp(u8 *picture, int x, int y, int color) {
     }
 }
 
-// Draws Spinda's four spots: each personality byte places one spot (low nibble x, high nibble y, offset by -8),
+// Draws Spinda's four spots: each seed byte places one spot (low nibble x, high nibble y, offset by -8),
 // only where the mask picture has color 2.
-static void PokewalkerApp_DrawSpindaSpots(u8 *picture, const u8 *mask, u32 personality, int x, int y) {
+static void PokewalkerApp_DrawSpindaSpots(u8 *picture, const u8 *mask, u32 spotSeed, int x, int y) {
     int i;
     for (i = 0; i < 4; i++) {
         const PokewalkerSpotPixel *pixels = gSpindaSpotPixels[i];
         u8 j = 0;
         if (pixels[0].x != 0xFF) {
             do {
-                int px = (personality & 0xF) - 8 + (x + pixels[j].x);
-                int py = y + pixels[j].y + ((personality & 0xF0) >> 4) - 8;
+                int px = (spotSeed & 0xF) - 8 + (x + pixels[j].x);
+                int py = y + pixels[j].y + ((spotSeed & 0xF0) >> 4) - 8;
                 if (PokewalkerApp_GetPixel2bpp(mask, px, py) == 2) {
                     PokewalkerApp_SetPixel2bpp(picture, px, py, 1);
                 }
                 j++;
             } while (pixels[j].x != 0xFF);
         }
-        personality >>= 8;
+        spotSeed >>= 8;
     }
 }
 
 // Draws Spinda's spots on both frames of its Pokewalker picture.
-void PokewalkerApp_DrawSpindaSpotsOnPicture(void *picture, const void *mask, u32 personality) {
+void PokewalkerApp_DrawSpindaSpotsOnPicture(void *picture, const void *mask, u32 spotSeed) {
     int y;
     int x;
-    PokewalkerApp_DrawSpindaSpots(picture, mask, personality, -8, -14);
-    PokewalkerApp_DrawSpindaSpots((u8 *)picture + 0x300, (const u8 *)mask + 0x300, personality, -22, -14);
+    PokewalkerApp_DrawSpindaSpots(picture, mask, spotSeed, -8, -14);
+    PokewalkerApp_DrawSpindaSpots((u8 *)picture + 0x300, (const u8 *)mask + 0x300, spotSeed, -22, -14);
     for (y = 0; y < 48; y++) {
         for (x = 0; x < 64; x++) {
             PokewalkerApp_GetPixel2bpp(picture, x, y);

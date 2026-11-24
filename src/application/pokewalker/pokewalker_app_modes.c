@@ -468,6 +468,7 @@ static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, void *arg) {
             u8 i;
             s32 markings;
             info.personality = GetMonData(mon, MON_DATA_PERSONALITY, NULL);
+            info.encryption_constant = GetMonData(mon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
             info.species = GetMonData(mon, MON_DATA_SPECIES, NULL);
             info.form = GetMonData(mon, MON_DATA_FORM, NULL);
             GetMonData(mon, MON_DATA_NICKNAME, info.nickname);
@@ -489,8 +490,11 @@ static void PokewalkerApp_SelectMon_ShowMonInfo(int box, int slot, void *arg) {
             s32 markings;
             u8 i;
             PokewalkerBoxMon boxMonInfo;
-            PokewalkerApp_SelectMon_GetBoxMon(SaveArray_PCStorage_Get(app->saveData), box, slot, &boxMonInfo);
+            PCStorage *storage = SaveArray_PCStorage_Get(app->saveData);
+            BoxPokemon *boxMon = PCStorage_GetMonByIndexPair(storage, box, slot);
+            PokewalkerApp_SelectMon_GetBoxMon(storage, box, slot, &boxMonInfo);
             info.personality = boxMonInfo.personality;
+            info.encryption_constant = GetBoxMonData(boxMon, MON_DATA_ENCRYPTION_CONSTANT, NULL);
             info.species = boxMonInfo.species;
             info.form = boxMonInfo.form;
             CopyU16StringArrayN(info.nickname, boxMonInfo.nickname, POKEMON_NAME_LENGTH + 1);

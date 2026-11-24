@@ -26,6 +26,7 @@ typedef struct PokewalkerBoxMon {
 // What the box selector shows about the Pokemon under the cursor (ov112_021F04DC).
 typedef struct PokewalkerSelectMonInfo {
     u32 personality;
+    u32 encryption_constant; // what its picture seeds from (see the seed rule in src/pokepic.c)
     u16 species;
     u8 isShiny;
     u8 form;
