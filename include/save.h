@@ -60,6 +60,7 @@ struct AsyncWriteManager {
     u32 count;
     BOOL waitingAsync;
     u32 state_sub;
+    u32 curSegment;
 };
 
 typedef struct SaveData {

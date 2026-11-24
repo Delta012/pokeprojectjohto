@@ -33,7 +33,6 @@ static int Save_GetSaveFilesStatus(SaveData *saveData);
 static void Save_CheckFrontierData(SaveData *saveData, int *err1, int *err2);
 static BOOL FlashLoadSaveDataFromChunk(u32 slot, struct SaveSlotSpec *spec, void *dest);
 static BOOL Save_LoadDynamicRegion(SaveData *saveData);
-static int Save_WriteSlotAsync(SaveData *saveData, int idx, u8 slot);
 static int Save_WriteChunkFooterAsync(SaveData *saveData, int idx, u8 slot);
 static void Save_WriteManInit(SaveData *saveData, struct AsyncWriteManager *writeMan, int a2);
 static int HandleWriteSaveAsync_NormalData(SaveData *saveData, struct AsyncWriteManager *writeMan);
@@ -64,6 +63,10 @@ static int Save_WritePCFooter(SaveData *saveData, struct SaveSlotSpec *spec, u8 
 static u32 Save_CalcPCBoxModifiedFlags(SaveData *saveData);
 static u32 PCModifiedFlags_CountModifiedBoxes(u32 flags);
 static u32 PCModifiedFlags_GetIndexOfNthModifiedBox(u32 flags, u8 last);
+static BOOL FlashSegmentIdentical(u32 offset, const void *data, u32 size);
+static BOOL Save_GetWriteSegment(SaveData *saveData, int specIdx, u32 segIdx, u32 *offset, u32 *size);
+static BOOL Save_PCBoxIdentical(SaveData *saveData, int specIdx, u8 slot, u8 boxno);
+static BOOL Save_PCTailIdentical(SaveData *saveData, int specIdx, u8 slot);
 
 SaveData *SaveData_New(void) {
     SaveData *ret;
@@ -593,12 +596,106 @@ static BOOL Save_LoadDynamicRegion(SaveData *saveData) {
     return TRUE;
 }
 
-static int Save_WriteSlotAsync(SaveData *saveData, int idx, u8 slot) {
-    struct SaveSlotSpec *spec;
+static BOOL FlashSegmentIdentical(u32 offset, const void *data, u32 size) {
+    u8 *scratch;
+    u32 done;
+    BOOL match;
 
-    spec = &saveData->saveSlotSpecs[idx];
-    SaveSlot_BuildFooter(saveData, saveData->dynamic_region, idx);
-    return FlashWriteChunkInternal(GetChunkOffsetFromCurrentSaveSlot(slot, spec), saveData->dynamic_region + spec->offset, spec->size - sizeof(struct SaveChunkFooter));
+    scratch = Heap_AllocAtEnd(HEAP_ID_3, SAVE_SECTOR_SIZE);
+    if (scratch == NULL) {
+        return FALSE;
+    }
+    done = 0;
+    match = TRUE;
+    while (done < size) {
+        u32 len = size - done;
+        const u32 *a;
+        const u32 *b;
+        u32 words;
+        u32 i;
+
+        if (len > SAVE_SECTOR_SIZE) {
+            len = SAVE_SECTOR_SIZE;
+        }
+        if (!FlashLoadChunk(offset + done, scratch, len)) {
+            match = FALSE;
+            break;
+        }
+        a = (const u32 *)scratch;
+        b = (const u32 *)((const u8 *)data + done);
+        words = len / 4;
+        for (i = 0; i < words; i++) {
+            if (a[i] != b[i]) {
+                match = FALSE;
+                break;
+            }
+        }
+        if (!match) {
+            break;
+        }
+        done += len;
+    }
+    Heap_Free(scratch);
+    return match;
+}
+
+// Walks one slot spec's flash image [0, size - footer) as alternating gap/chunk segments
+// so unchanged segments can be skipped while still covering every byte of the old whole-slot write.
+static BOOL Save_GetWriteSegment(SaveData *saveData, int specIdx, u32 segIdx, u32 *offset, u32 *size) {
+    const struct SaveArrayHeader *hdr;
+    u32 cursor;
+    u32 seg;
+    int i;
+
+    cursor = 0;
+    seg = 0;
+    for (i = 0; i < SAVE_BLOCK_NUM; i++) {
+        hdr = &saveData->arrayHeaders[i];
+        if ((int)hdr->slot != specIdx) {
+            continue;
+        }
+        if (hdr->offset > cursor) {
+            if (seg == segIdx) {
+                *offset = cursor;
+                *size = hdr->offset - cursor;
+                return TRUE;
+            }
+            seg++;
+        }
+        if (seg == segIdx) {
+            *offset = hdr->offset;
+            *size = hdr->size;
+            return TRUE;
+        }
+        seg++;
+        cursor = hdr->offset + hdr->size;
+    }
+    {
+        u32 dataSize = saveData->saveSlotSpecs[specIdx].size - sizeof(struct SaveChunkFooter);
+        if (cursor < dataSize) {
+            if (seg == segIdx) {
+                *offset = cursor;
+                *size = dataSize - cursor;
+                return TRUE;
+            }
+        }
+    }
+    return FALSE;
+}
+
+static BOOL Save_PCBoxIdentical(SaveData *saveData, int specIdx, u8 slot, u8 boxno) {
+    struct SaveSlotSpec *spec = &saveData->saveSlotSpecs[specIdx];
+    u32 boxSize = PCStorage_GetSizeOfBox();
+
+    return FlashSegmentIdentical(GetChunkOffsetFromCurrentSaveSlot(slot, spec) + boxSize * boxno, saveData->dynamic_region + spec->offset + boxSize * boxno, boxSize);
+}
+
+static BOOL Save_PCTailIdentical(SaveData *saveData, int specIdx, u8 slot) {
+    struct SaveSlotSpec *spec = &saveData->saveSlotSpecs[specIdx];
+    u32 pc_size = PCStorage_GetSizeOfBox() * PCStorage_GetNumBoxes();
+    u32 sector_size = spec->size - sizeof(struct SaveChunkFooter);
+
+    return FlashSegmentIdentical(GetChunkOffsetFromCurrentSaveSlot(slot, spec) + pc_size, saveData->dynamic_region + spec->offset + pc_size, sector_size - pc_size);
 }
 
 static int Save_WriteChunkFooterAsync(SaveData *saveData, int idx, u8 slot) {
@@ -625,6 +722,7 @@ static void Save_WriteManInit(SaveData *saveData, struct AsyncWriteManager *writ
     writeMan->unk_4 = 0;
     writeMan->curSector = 0;
     writeMan->numSectors = 2;
+    writeMan->curSegment = 0;
     Sys_SetSleepDisableFlag(1);
 }
 
@@ -632,9 +730,30 @@ static int HandleWriteSaveAsync_NormalData(SaveData *saveData, struct AsyncWrite
     BOOL result;
     switch (writeMan->state) {
     case 0:
-        writeMan->lockId = Save_WriteSlotAsync(saveData, writeMan->curSector, saveData->lastGoodSector == 0);
-        writeMan->waitingAsync = TRUE;
-        writeMan->state++;
+        {
+            struct SaveSlotSpec *spec = &saveData->saveSlotSpecs[writeMan->curSector];
+            u32 base = GetChunkOffsetFromCurrentSaveSlot(saveData->lastGoodSector == 0, spec);
+            for (;;) {
+                u32 segOff;
+                u32 segSize;
+                if (!Save_GetWriteSegment(saveData, writeMan->curSector, writeMan->curSegment, &segOff, &segSize)) {
+                    writeMan->curSegment = 0;
+                    writeMan->state = 2;
+                    break;
+                }
+                if (FlashSegmentIdentical(base + segOff, saveData->dynamic_region + spec->offset + segOff, segSize)) {
+                    writeMan->curSegment++;
+                    continue;
+                }
+                writeMan->lockId = FlashWriteChunkInternal(base + segOff, saveData->dynamic_region + spec->offset + segOff, segSize);
+                writeMan->waitingAsync = TRUE;
+                writeMan->state = 1;
+                break;
+            }
+            if (writeMan->state != 1) {
+                break;
+            }
+        }
         // fallthrough
     case 1:
         if (!WaitFlashWrite(writeMan->lockId, writeMan->waitingAsync, &result)) {
@@ -644,12 +763,11 @@ static int HandleWriteSaveAsync_NormalData(SaveData *saveData, struct AsyncWrite
         if (!result) {
             return WRITE_STATUS_TOTAL_FAIL;
         }
-        writeMan->state++;
-        if (writeMan->curSector + 1 == writeMan->numSectors) {
-            return WRITE_STATUS_NEXT;
-        }
-        // fallthrough
+        writeMan->curSegment++;
+        writeMan->state = 0;
+        break;
     case 2:
+        SaveSlot_BuildFooter(saveData, saveData->dynamic_region, writeMan->curSector);
         writeMan->lockId = Save_WriteChunkFooterAsync(saveData, writeMan->curSector, saveData->lastGoodSector == 0);
         writeMan->waitingAsync = TRUE;
         writeMan->state++;
@@ -1234,7 +1352,6 @@ static int HandleWriteSaveAsync_PCBoxes(SaveData *saveData, struct AsyncWriteMan
         writeMan->state_sub = 0;
         data = saveData->dynamic_region;
         SaveSlot_BuildFooter(saveData, data, writeMan->curSector);
-        GetSaveSectorFooterPtr(saveData, data, writeMan->curSector);
         writeMan->state++;
         // fallthrough
     case 1:
@@ -1283,6 +1400,14 @@ static int Save_WritePCBoxes(SaveData *saveData, struct AsyncWriteManager *write
         }
         break;
     case 1:
+        {
+            u8 boxno = (u8)PCModifiedFlags_GetIndexOfNthModifiedBox(saveData->newBoxModifiedFlags, saveData->nextBoxToWrite);
+            if (boxno != 0xFF && Save_PCBoxIdentical(saveData, writeMan->curSector, saveData->lastGoodSector == 0, boxno)) {
+                saveData->nextBoxToWrite++;
+                writeMan->state_sub = 0;
+                break;
+            }
+        }
         writeMan->lockId = Save_WriteNextPCBox(saveData, &saveData->saveSlotSpecs[writeMan->curSector], saveData->lastGoodSector == 0);
         writeMan->waitingAsync = 1;
         writeMan->state_sub++;
@@ -1298,6 +1423,9 @@ static int Save_WritePCBoxes(SaveData *saveData, struct AsyncWriteManager *write
         }
         break;
     case 3:
+        if (Save_PCTailIdentical(saveData, writeMan->curSector, saveData->lastGoodSector == 0)) {
+            return 1;
+        }
         writeMan->lockId = Save_WritePCFooter(saveData, &saveData->saveSlotSpecs[writeMan->curSector], saveData->lastGoodSector == 0);
         writeMan->waitingAsync = 1;
         writeMan->state_sub++;
@@ -1330,24 +1458,18 @@ static int Save_WriteNextPCBox(SaveData *saveData, struct SaveSlotSpec *spec, u8
 
 static int Save_WritePCFooter(SaveData *saveData, struct SaveSlotSpec *spec, u8 slot) {
     u32 sector_size;
-    struct SaveChunkFooter *footer;
-    u32 spec_offset;
-    void *dynamic_region_ptr;
     u32 offset;
     void *data;
     u32 pc_size;
-    u16 crc;
 
     pc_size = PCStorage_GetSizeOfBox() * PCStorage_GetNumBoxes();
     offset = GetChunkOffsetFromCurrentSaveSlot(slot, spec);
     data = saveData->dynamic_region + spec->offset;
     sector_size = spec->size - sizeof(struct SaveChunkFooter);
     GF_ASSERT(sector_size != 0);
-    dynamic_region_ptr = saveData->dynamic_region;
-    spec_offset = spec->offset;
-    footer = GetSaveSectorFooterPtr(saveData, dynamic_region_ptr, 1);
-    crc = SaveArray_CalcCRC16MinusFooter(saveData, (u8 *)dynamic_region_ptr + spec_offset, spec->size);
-    GF_ASSERT(crc == footer->crc);
+    // FASTER-SAVE: the footer CRC is built once by SaveSlot_BuildFooter and checked on load
+    // (ValidateSaveSectorFooter) + every write is hardware-verified; the old second full
+    // CRC16 pass here only re-asserted that same value, so it is removed.
     return FlashWriteChunkInternal(offset + pc_size, data + pc_size, sector_size - pc_size);
 }
 

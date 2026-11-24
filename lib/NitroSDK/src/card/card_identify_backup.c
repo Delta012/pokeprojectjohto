@@ -67,7 +67,7 @@ void CARDi_IdentifyBackupCore(CARDBackupType type) {
         case 0x40000:
         case 0x80000:
         case 0x100000:
-            p->program = 25;
+            p->program = 3; // FASTER-SAVE NEW: was 25. Page program needs <=~3 ms; the busy-bit poll up to programmax and the per-page verify are unchanged, so correctness is unchanged, only the fixed margin shrank.
             p->programmax = 300;
             p->max = 300;
             p->sectorerase = 5000;

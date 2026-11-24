@@ -31,9 +31,6 @@ enum TouchSaveApp_State {
     TOUCHSAVEAPP_STATE_WAIT_FOR_TEXT_PRINTER,
     TOUCHSAVEAPP_STATE_GET_SAVE_CONFIRMATION,
     TOUCHSAVEAPP_STATE_HANDLE_SAVE_CONFIRMATION,
-    TOUCHSAVEAPP_STATE_PRINT_OVERWRITE_MESSAGE,
-    TOUCHSAVEAPP_STATE_GET_OVERWRITE_CONFIRMATION,
-    TOUCHSAVEAPP_STATE_HANDLE_OVERWRITE_CONFIRMATION,
     TOUCHSAVEAPP_STATE_PRINT_NOT_MY_SAVE_MESSAGE,
     TOUCHSAVEAPP_STATE_SAVE_FAILED,
     TOUCHSAVEAPP_STATE_PRINT_SAVING_MESSAGE,
@@ -82,9 +79,6 @@ static BOOL TouchSaveApp_AskForSave(TouchSaveAppData *data);
 static BOOL TouchSaveApp_WaitForTextPrinter(TouchSaveAppData *data);
 static BOOL TouchSaveApp_GetSaveConfirmation(TouchSaveAppData *data);
 static BOOL TouchSaveApp_HandleSaveConfirmation(TouchSaveAppData *data);
-static BOOL TouchSaveApp_PrintOverwriteMessage(TouchSaveAppData *data);
-static BOOL TouchSaveApp_GetOverwriteConfirmation(TouchSaveAppData *data);
-static BOOL TouchSaveApp_HandleOverwriteConfirmation(TouchSaveAppData *data);
 static BOOL TouchSaveApp_PrintNotMySaveError(TouchSaveAppData *data);
 static BOOL TouchSaveApp_SaveFailed(TouchSaveAppData *data);
 static BOOL TouchSaveApp_PrintSavingMessage(TouchSaveAppData *data);
@@ -154,9 +148,6 @@ static TouchSaveAppStateFunc sTouchSaveAppStateFuncs[TOUCHSAVEAPP_STATE_COUNT] =
     TouchSaveApp_WaitForTextPrinter,
     TouchSaveApp_GetSaveConfirmation,
     TouchSaveApp_HandleSaveConfirmation,
-    TouchSaveApp_PrintOverwriteMessage,
-    TouchSaveApp_GetOverwriteConfirmation,
-    TouchSaveApp_HandleOverwriteConfirmation,
     TouchSaveApp_PrintNotMySaveError,
     TouchSaveApp_SaveFailed,
     TouchSaveApp_PrintSavingMessage,
@@ -365,44 +356,6 @@ static BOOL TouchSaveApp_HandleSaveConfirmation(TouchSaveAppData *data) {
     case YESNORESPONSE_YES:
         TouchSaveApp_SetMenuInputState(&data->fieldSystem->menuInputState, YesNoPrompt_IsInTouchMode(data->yesNoPrompt));
         YesNoPrompt_Destroy(data->yesNoPrompt);
-        if (Save_FileExists(data->fieldSystem->saveData) == TRUE) {
-            data->state = TOUCHSAVEAPP_STATE_PRINT_OVERWRITE_MESSAGE;
-        } else {
-            data->state = TOUCHSAVEAPP_STATE_PRINT_SAVING_MESSAGE;
-        }
-        break;
-    case YESNORESPONSE_NO:
-        TouchSaveApp_SetMenuInputState(&data->fieldSystem->menuInputState, YesNoPrompt_IsInTouchMode(data->yesNoPrompt));
-        YesNoPrompt_Destroy(data->yesNoPrompt);
-        return TRUE;
-    default: // clang(-Wswitch)
-        break;
-    }
-
-    return FALSE;
-}
-
-static BOOL TouchSaveApp_PrintOverwriteMessage(TouchSaveAppData *data) {
-    FillWindowPixelBuffer(&data->window, 0xFF);
-    data->string = NewString_ReadMsgData(data->msgData, msg_0040_00082);
-    data->textPrinter = AddTextPrinterParameterized(&data->window, 1, data->string, 0, 0, Options_GetTextFrameDelay(data->options), NULL);
-    TouchSaveApp_SetupWaitForTextPrinter(data, TOUCHSAVEAPP_STATE_GET_OVERWRITE_CONFIRMATION);
-
-    return FALSE;
-}
-
-static BOOL TouchSaveApp_GetOverwriteConfirmation(TouchSaveAppData *data) {
-    TouchSaveApp_CreateYesNoPrompt(data);
-
-    data->state = TOUCHSAVEAPP_STATE_HANDLE_OVERWRITE_CONFIRMATION;
-    return FALSE;
-}
-
-static BOOL TouchSaveApp_HandleOverwriteConfirmation(TouchSaveAppData *data) {
-    switch (YesNoPrompt_HandleInputForSave(data->yesNoPrompt)) {
-    case YESNORESPONSE_YES:
-        TouchSaveApp_SetMenuInputState(&data->fieldSystem->menuInputState, YesNoPrompt_IsInTouchMode(data->yesNoPrompt));
-        YesNoPrompt_Destroy(data->yesNoPrompt);
         data->state = TOUCHSAVEAPP_STATE_PRINT_SAVING_MESSAGE;
         break;
     case YESNORESPONSE_NO:
@@ -427,7 +380,7 @@ static BOOL TouchSaveApp_PrintNotMySaveError(TouchSaveAppData *data) {
 
 static BOOL TouchSaveApp_SaveFailed(TouchSaveAppData *data) {
     data->state = TOUCHSAVEAPP_STATE_CLOSE;
-    data->waitFrames = 0;
+    data->waitFrames = 31; // keep error message visible before closing
 
     return FALSE;
 }
@@ -445,12 +398,15 @@ static BOOL TouchSaveApp_PrintSavingMessage(TouchSaveAppData *data) {
     }
     data->string = string;
     data->textPrinter = AddTextPrinterParameterized(&data->window, 1, data->string, 0, 0, Options_GetTextFrameDelay(data->options), NULL);
-    TouchSaveApp_SetupWaitForTextPrinter(data, TOUCHSAVEAPP_STATE_SETUP_WAITING_ICON);
+    data->state = TOUCHSAVEAPP_STATE_SETUP_WAITING_ICON;
 
     return FALSE;
 }
 
 static BOOL TouchSaveApp_SetupWaitingIcon(TouchSaveAppData *data) {
+    if (TextPrinterCheckActive(data->textPrinter)) {
+        return FALSE; // FASTER-SAVE FIX: the flash write runs to completion inside the SAVE state (Field_SaveGameNormal is synchronous), so the app cannot pump frames during it - a half-rendered "Saving..." sits frozen on screen for the whole write, then finishes in one instant at the end. Render "Saving..." fully (any text speed) BEFORE the waiting icon reuses the window and the write starts.
+    }
     data->waitingIcon = WaitingIcon_New(&data->window, 0xEC);
     data->state = TOUCHSAVEAPP_STATE_SAVE;
 
@@ -465,6 +421,11 @@ static BOOL TouchSaveApp_SaveGame(TouchSaveAppData *data) {
 }
 
 static BOOL TouchSaveApp_PrintSavedMessage(TouchSaveAppData *data) {
+    if (TextPrinterCheckActive(data->textPrinter)) {
+        return FALSE; // FASTER-SAVE FIX: the "Saving..." print started before the write may still be running (any text speed). Let it finish rendering - and be inactive - before the window is reused and the app is torn down, otherwise a live printer object outlives its window/heap and the sub screen dies.
+    }
+    String_Delete(data->string);
+
     Field_PlayerMovementSavingClear(data->savingMovementTask);
 
     WaitingIcon_Delete(data->waitingIcon);
@@ -486,11 +447,12 @@ static BOOL TouchSaveApp_SaveSucceeded(TouchSaveAppData *data) {
 }
 
 static BOOL TouchSaveApp_CloseApp(TouchSaveAppData *data) {
-    if (++data->waitFrames > 30) {
-        return TRUE;
+    if (data->waitFrames > 0) {
+        data->waitFrames--;
+        return FALSE;
     }
 
-    return FALSE;
+    return TRUE;
 }
 
 static BOOL TouchSaveApp_ShouldPrintAlternateSavingMessage(TouchSaveAppData *data) {
