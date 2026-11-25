@@ -4,7 +4,6 @@
 
 #include "font.h"
 #include "gf_gfx_loader.h"
-#include "constants/charcode.h"
 #include "sys_task.h"
 
 static const struct FontInfo *sFonts;
@@ -196,7 +195,6 @@ static u8 AddTextPrinter(TextPrinterTemplate *template, u32 speed, PrinterCallba
     }
 
     u32 i = 0;
-    BOOL finished = FALSE;
 
     printer->textSpeedBottom = 0;
     printer->textSpeedTop = 0;
@@ -205,40 +203,8 @@ static u8 AddTextPrinter(TextPrinterTemplate *template, u32 speed, PrinterCallba
 
     for (; i < 0x400; i++) {
         if (RenderFont(printer) == RENDER_FINISH) {
-            finished = TRUE;
             break;
         }
-        if (printer->callback != NULL && printer->callbackParam != 0) {
-            // a {WAIT n} code armed the callback: run it now so its side
-            // effects (sounds, fanfares) still fire
-            printer->callbackResult = printer->callback(&printer->template, printer->callbackParam);
-        }
-        if (printer->state == 2 || printer->state == 3 || printer->state == 7 || printer->state == 8) {
-            // page code at the end of the string: the text is complete
-            if (*printer->template.currentChar.raw == EOS) {
-                finished = TRUE;
-                break;
-            }
-            // page break mid-string: the per-frame path prints the
-            // remaining pages, waiting for a button press between them
-            break;
-        }
-        if (printer->callbackResult != 0) {
-            // a {WAIT} is still gated on a sound: the per-frame path
-            // finishes, waiting for it like any other speed does
-            break;
-        }
-    }
-
-    if (!finished) {
-        // resume on the per-frame path, one character per step
-        printer->textSpeedTop = 1;
-        printer->textSpeedBottom = 0;
-        if (speed != TEXT_SPEED_NOTRANSFER) {
-            CopyWindowToVram(printer->template.window);
-        }
-        printer->id = CreateTextPrinterSysTask((SysTaskFunc)RunTextPrinter, printer, 1);
-        return printer->id;
     }
 
     if (speed != TEXT_SPEED_NOTRANSFER) {
