@@ -11,6 +11,7 @@
 #include "render_text.h"
 #include "task.h"
 #include "text.h"
+#include "options.h"
 #include "sound_playback.h"
 #include "communication_player_state.h"
 #include "comm_wireless.h"
@@ -494,7 +495,7 @@ static void CommClub_AskForRegistration(void *task, CommClubManager *commClubMan
         TextFlags_SetCanABSpeedUpPrint(TRUE);
         TextFlags_SetAutoScrollParam(0);
         TextFlags_SetCanTouchSpeedUpPrint(FALSE);
-        sCommClubManager->printerID = AddTextPrinterParameterized(&sCommClubManager->windows[2], 1, sCommClubManager->string[5], 0, 0, 1, NULL);
+        sCommClubManager->printerID = AddTextPrinterParameterized(&sCommClubManager->windows[2], 1, sCommClubManager->string[5], 0, 0, Options_GetTextFrameDelay(Save_PlayerData_GetOptionsAddr(sCommClubManager->fieldSystem->saveData)), NULL);
     }
     sCommClubManager->buttonsShown = 0;
     sCommClubManager->buttonCloseRequest = 1;

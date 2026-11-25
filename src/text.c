@@ -4,6 +4,7 @@
 
 #include "font.h"
 #include "gf_gfx_loader.h"
+#include "constants/charcode.h"
 #include "sys_task.h"
 
 static const struct FontInfo *sFonts;
@@ -43,6 +44,11 @@ static u8 CreateTextPrinterSysTask(SysTaskFunc taskFunc, TextPrinter *printer, u
 }
 
 static void DestroyTextPrinterSysTask(u8 printerId) {
+    // instant prints return MAX_TEXT_PRINTERS as their id; there is no SysTask to destroy
+    if (printerId >= MAX_TEXT_PRINTERS) {
+        return;
+    }
+
     GF_ASSERT(printerId < MAX_TEXT_PRINTERS);
     GF_ASSERT(sTextPrinterTasks[printerId] != NULL);
     if (printerId >= MAX_TEXT_PRINTERS || sTextPrinterTasks[printerId] == NULL) {
@@ -60,7 +66,8 @@ static void DestroyTextPrinterSysTask(u8 printerId) {
 }
 
 static BOOL TextPrinterSysTaskIsActive(u8 printerId) {
-    return sTextPrinterTasks[printerId] != NULL;
+    // id == MAX_TEXT_PRINTERS marks a print that already finished in-call
+    return printerId < MAX_TEXT_PRINTERS && sTextPrinterTasks[printerId] != NULL;
 }
 
 void ResetAllTextPrinters(void) {
@@ -161,6 +168,7 @@ static u8 AddTextPrinter(TextPrinterTemplate *template, u32 speed, PrinterCallba
     for (int i = 0; i < 7; i++) {
         printer->subStructFields[i] = 0;
     }
+    printer->glyphsPerTick = 1;
     printer->template = *template;
     printer->template.currentChar.raw = String_cstr(printer->template.currentChar.wrapped);
     printer->callback = callback;
@@ -168,14 +176,27 @@ static u8 AddTextPrinter(TextPrinterTemplate *template, u32 speed, PrinterCallba
 
     TextPrinter_InitFocusIndicatorGfx(printer);
 
+    // INSTANT and NOTRANSFER finish printing inside this call; every other
+    // speed prints over several frames as a per-frame task. VERY FAST and
+    // ULTRA FAST are ordinary per-frame tasks that draw more than one
+    // character per step (see RunTextPrinter).
     if (speed != TEXT_SPEED_NOTRANSFER && speed != TEXT_SPEED_INSTANT) {
-        printer->textSpeedBottom--;
+        if (speed == TEXT_SPEED_VERYFAST) {
+            printer->glyphsPerTick = 2;
+            printer->textSpeedBottom = 0;
+        } else if (speed == TEXT_SPEED_ULTRAFAST) {
+            printer->glyphsPerTick = 4;
+            printer->textSpeedBottom = 0;
+        } else {
+            printer->textSpeedBottom--;
+        }
         printer->textSpeedTop = 1;
         printer->id = CreateTextPrinterSysTask((SysTaskFunc)RunTextPrinter, printer, 1);
         return printer->id;
     }
 
     u32 i = 0;
+    BOOL finished = FALSE;
 
     printer->textSpeedBottom = 0;
     printer->textSpeedTop = 0;
@@ -184,8 +205,40 @@ static u8 AddTextPrinter(TextPrinterTemplate *template, u32 speed, PrinterCallba
 
     for (; i < 0x400; i++) {
         if (RenderFont(printer) == RENDER_FINISH) {
+            finished = TRUE;
             break;
         }
+        if (printer->callback != NULL && printer->callbackParam != 0) {
+            // a {WAIT n} code armed the callback: run it now so its side
+            // effects (sounds, fanfares) still fire
+            printer->callbackResult = printer->callback(&printer->template, printer->callbackParam);
+        }
+        if (printer->state == 2 || printer->state == 3 || printer->state == 7 || printer->state == 8) {
+            // page code at the end of the string: the text is complete
+            if (*printer->template.currentChar.raw == EOS) {
+                finished = TRUE;
+                break;
+            }
+            // page break mid-string: the per-frame path prints the
+            // remaining pages, waiting for a button press between them
+            break;
+        }
+        if (printer->callbackResult != 0) {
+            // a {WAIT} is still gated on a sound: the per-frame path
+            // finishes, waiting for it like any other speed does
+            break;
+        }
+    }
+
+    if (!finished) {
+        // resume on the per-frame path, one character per step
+        printer->textSpeedTop = 1;
+        printer->textSpeedBottom = 0;
+        if (speed != TEXT_SPEED_NOTRANSFER) {
+            CopyWindowToVram(printer->template.window);
+        }
+        printer->id = CreateTextPrinterSysTask((SysTaskFunc)RunTextPrinter, printer, 1);
+        return printer->id;
     }
 
     if (speed != TEXT_SPEED_NOTRANSFER) {
@@ -199,13 +252,25 @@ static u8 AddTextPrinter(TextPrinterTemplate *template, u32 speed, PrinterCallba
 }
 
 static void RunTextPrinter(SysTask *task, TextPrinter *printer) {
+    u32 i;
+
     if (_021D1F6C != 0) {
         return;
     }
 
-    if (printer->callbackResult == 0) {
-        printer->callbackParam = 0;
+    // One step draws one glyph; tasks tick once per frame, so the fast
+    // tiers simply repeat the step inside a frame (VERY FAST: 2, ULTRA
+    // FAST: 4 characters). Every step commits the window and checks the
+    // callback like the one-glyph-per-frame tiers; a {WAIT n} gated on a
+    // sound ends the frame's remaining steps and the callback is retried
+    // on the following frames until the sound is over.
+    for (i = 0; i < printer->glyphsPerTick; i++) {
+        if (printer->callbackResult != 0) {
+            printer->callbackResult = printer->callback(&printer->template, printer->callbackParam);
+            break;
+        }
 
+        printer->callbackParam = 0;
         GenerateFontHalfRowLookupTable(printer->template.fgColor, printer->template.bgColor, printer->template.shadowColor);
 
         switch (RenderFont(printer)) {
@@ -216,13 +281,15 @@ static void RunTextPrinter(SysTask *task, TextPrinter *printer) {
             if (printer->callback != NULL) {
                 printer->callbackResult = printer->callback(&printer->template, printer->callbackParam);
             }
-            return;
+            break;
         case RENDER_FINISH:
             DestroyTextPrinterSysTask(printer->id);
             return;
         }
-    } else {
-        printer->callbackResult = printer->callback(&printer->template, printer->callbackParam);
+
+        if (printer->callbackResult != 0) {
+            break;
+        }
     }
 }
 

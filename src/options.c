@@ -18,7 +18,7 @@ void Options_Copy(Options *src, Options *dest) {
 void Options_Init(Options *options) {
     MI_CpuClear8(options, sizeof(Options));
 
-    options->textSpeed = 1;   // mid speed
+    options->textSpeed = 1;   // medium speed
     options->soundMethod = 0; // stereo
     options->battleStyle = 0; // shift
     options->battleScene = 0; // on
@@ -51,17 +51,20 @@ void Options_SetTextSpeed(Options *options, u32 textSpeed) {
 }
 
 u8 Options_GetTextFrameDelay(Options *options) {
-    u32 textSpeed = Options_GetTextSpeed(options);
-
-    if (textSpeed == 0) {
-        return 8;
-    }
-
-    if (textSpeed == 1) {
+    switch (Options_GetTextSpeed(options)) {
+    case 0: // slow: 4 frames/char
         return 4;
+    case 1: // medium: 2 frames/char
+        return 2;
+    case 2: // fast: 1 frame/char (stock fast)
+        return 1;
+    case 3: // very slow: 8 frames/char
+        return 8;
+    case 4: // very fast: 2 characters per frame
+        return 0xFE;
+    default: // ultra fast: 4 characters per frame
+        return 0xFD;
     }
-
-    return 1;
 }
 
 u32 Options_GetSoundMethod(Options *options) {

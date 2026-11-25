@@ -18,6 +18,7 @@
 #include "sys_task.h"
 #include "sys_task_api.h"
 #include "systask_environment.h"
+#include "system.h"
 #include "task.h"
 #include "text.h"
 #include "sound_playback.h"
@@ -38,6 +39,7 @@ enum TouchSaveApp_State {
     TOUCHSAVEAPP_STATE_SAVE,
     TOUCHSAVEAPP_STATE_PRINT_SAVED_MESSAGE,
     TOUCHSAVEAPP_STATE_SAVE_SUCCEEDED,
+    TOUCHSAVEAPP_STATE_WAIT_FOR_SAVED_MESSAGE_INPUT,
     TOUCHSAVEAPP_STATE_CLOSE,
 
     TOUCHSAVEAPP_STATE_COUNT,
@@ -86,6 +88,7 @@ static BOOL TouchSaveApp_SetupWaitingIcon(TouchSaveAppData *data);
 static BOOL TouchSaveApp_SaveGame(TouchSaveAppData *data);
 static BOOL TouchSaveApp_PrintSavedMessage(TouchSaveAppData *data);
 static BOOL TouchSaveApp_SaveSucceeded(TouchSaveAppData *data);
+static BOOL TouchSaveApp_WaitForSavedMessageInput(TouchSaveAppData *data);
 static BOOL TouchSaveApp_CloseApp(TouchSaveAppData *data);
 static BOOL TouchSaveApp_ShouldPrintAlternateSavingMessage(TouchSaveAppData *data);
 static void TouchSaveApp_SetMenuInputState(MenuInputStateMgr *stateMgr, MenuInputState state);
@@ -155,6 +158,7 @@ static TouchSaveAppStateFunc sTouchSaveAppStateFuncs[TOUCHSAVEAPP_STATE_COUNT] =
     TouchSaveApp_SaveGame,
     TouchSaveApp_PrintSavedMessage,
     TouchSaveApp_SaveSucceeded,
+    TouchSaveApp_WaitForSavedMessageInput,
     TouchSaveApp_CloseApp,
 };
 
@@ -440,8 +444,19 @@ static BOOL TouchSaveApp_PrintSavedMessage(TouchSaveAppData *data) {
 
 static BOOL TouchSaveApp_SaveSucceeded(TouchSaveAppData *data) {
     PlaySE(SEQ_SE_DP_SAVE);
-    data->state = TOUCHSAVEAPP_STATE_CLOSE;
-    data->waitFrames = 0;
+    data->state = TOUCHSAVEAPP_STATE_WAIT_FOR_SAVED_MESSAGE_INPUT;
+
+    return FALSE;
+}
+
+static BOOL TouchSaveApp_WaitForSavedMessageInput(TouchSaveAppData *data) {
+    if (gSystem.newKeys & (PAD_BUTTON_A | PAD_BUTTON_B)) {
+        return TRUE; // close the app only once the player acknowledges the saved message
+    }
+
+    if (gSystem.touchNew) {
+        return TRUE; // a screen tap acknowledges it too
+    }
 
     return FALSE;
 }

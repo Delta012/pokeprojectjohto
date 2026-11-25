@@ -11,6 +11,8 @@
 
 #define TEXT_SPEED_INSTANT    0    // Transfers to VRAM
 #define TEXT_SPEED_NOTRANSFER 0xFF // Defers VRAM transfer
+#define TEXT_SPEED_VERYFAST   0xFE // the VERY FAST option: prints 2 characters per frame
+#define TEXT_SPEED_ULTRAFAST  0xFD // the ULTRA FAST option: prints 4 characters per frame
 
 #define MAX_TEXT_PRINTERS 8
 

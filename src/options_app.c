@@ -84,7 +84,7 @@ typedef struct OptionsApp_Data {
     OptionsApp_MenuEntry menuEntries[MENU_ENTRY_COUNT];
     SpriteSystem *spriteRenderer;
     SpriteManager *spriteGfxHandler;
-    Sprite *sprites[9];
+    Sprite *sprites[11];
     u8 filler2FC[36];
     u32 menuInputState;
     String *frameNumText;
@@ -110,7 +110,7 @@ static const u32 sOptionsAppBgLayers[5] = {
 };
 
 static const int sNumChoicesPerMenuEntry[MENU_ENTRY_COUNT] = {
-    3, 2, 2, 2, 2, 20, 2
+    6, 2, 2, 2, 2, 20, 2
 };
 
 static const int sMenuEntryBorderYCoords[MENU_ENTRY_COUNT] = {
@@ -118,7 +118,7 @@ static const int sMenuEntryBorderYCoords[MENU_ENTRY_COUNT] = {
 };
 
 static const u16 sOptionChoiceLabelXCoords[MENU_ENTRY_COUNT][3] = {
-    { 124, 172, 220 },
+    { 172, 0,   0   },
     { 124, 172, 0   },
     { 132, 212, 0   },
     { 132, 212, 0   },
@@ -127,13 +127,28 @@ static const u16 sOptionChoiceLabelXCoords[MENU_ENTRY_COUNT][3] = {
     { 0,   0,   0   },
 };
 
-static const int sActiveButtonXCoords[5][3] = {
-    { 112, 160, 208 },
-    { 112, 160, 208 },
-    { 112, 192, 0   },
-    { 112, 192, 0   },
-    { 112, 192, 0   },
+static const int sActiveButtonXCoords[5][6] = {
+    { 0,   0,   0,   0,   0,   0 },
+    { 112, 160, 208, 0,   0,   0   },
+    { 112, 192, 0,   0,   0,   0   },
+    { 112, 192, 0,   0,   0,   0   },
+    { 112, 192, 0,   0,   0,   0   },
 };
+
+// Text Speed is a carousel (like FRAME): one label shown at a time, cycled with
+// left/right. Carousel slot order is display order; the stored option value
+// keeps the stock meanings (0 = slow, 1 = medium, 2 = fast) so old saves load
+// unchanged, with 3 = very slow, 4 = very fast and 5 = ultra fast added.
+static const u16 sTextSpeedChoiceMsgIds[6] = {
+    msg_0045_00060, // VERY SLOW
+    msg_0045_00009, // SLOW
+    msg_0045_00010, // MEDIUM
+    msg_0045_00011, // FAST
+    msg_0045_00061, // VERY FAST
+    msg_0045_00062, // ULTRA FAST
+};
+static const u8 sTextSpeedChoiceRawValues[6] = { 3, 0, 1, 2, 4, 5 };
+static const u8 sTextSpeedRawToChoice[6] = { 1, 2, 3, 0, 4, 5 };
 
 static const TouchscreenHitbox sOptionsAppTouchscreenHitboxes[16] = {
     { .rect = { .top = 26, .bottom = 46, .left = 112, .right = 151 } },
@@ -155,9 +170,9 @@ static const TouchscreenHitbox sOptionsAppTouchscreenHitboxes[16] = {
 };
 
 static const u32 sOptionsAppHitboxEntryValues[15][2] = {
-    { MENU_ENTRY_TEXT_SPEED,   0 },
-    { MENU_ENTRY_TEXT_SPEED,   1 },
-    { MENU_ENTRY_TEXT_SPEED,   2 },
+    { MENU_ENTRY_TEXT_SPEED,   3 },
+    { MENU_ENTRY_TEXT_SPEED,   4 },
+    { MENU_ENTRY_TEXT_SPEED,   4 },
     { MENU_ENTRY_BATTLE_SCENE, 0 },
     { MENU_ENTRY_BATTLE_SCENE, 1 },
     { MENU_ENTRY_BATTLE_STYLE, 0 },
@@ -172,7 +187,7 @@ static const u32 sOptionsAppHitboxEntryValues[15][2] = {
     { MENU_ENTRY_6,            6 },
 };
 
-static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[9] = {
+static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
     {
      .resourceSet = 0,
      .x = 112,
@@ -298,7 +313,35 @@ static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[9] = {
      .unk_1C = 0,
      .unk_20 = 0,
      .unk_24 = 0,
-     },
+    },
+    {
+     .resourceSet = 1,
+     .x = 115,
+     .y = 24,
+     .z = 0,
+     .animation = 0,
+     .drawPriority = 1,
+     .pal = 0,
+     .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
+     .paletteMode = 0,
+     .unk_1C = 0,
+     .unk_20 = 0,
+     .unk_24 = 0,
+    },
+    {
+     .resourceSet = 2,
+     .x = 213,
+     .y = 24,
+     .z = 0,
+     .animation = 0,
+     .drawPriority = 1,
+     .pal = 0,
+     .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
+     .paletteMode = 0,
+     .unk_1C = 0,
+     .unk_20 = 0,
+     .unk_24 = 0,
+    },
 };
 
 static void OptionsApp_SetupGraphicsBanks(void);
@@ -311,7 +354,7 @@ static void OptionsApp_SetupGraphicsData(OptionsApp_Data *data);
 static void OptionsApp_FreeGraphicsDummy(OptionsApp_Data *data);
 static void OptionsApp_SetupWindows(OptionsApp_Data *data);
 static void OptionsApp_FreeWindows(OptionsApp_Data *data);
-static void OptionsApp_PrintTextFrameString(OptionsApp_Data *data, String *frameNumText, BOOL instantTextSpeed);
+static void OptionsApp_PrintTextFrameString(OptionsApp_Data *data, String *frameNumText, BOOL instant);
 static void OptionsApp_SetupInterfaceText(OptionsApp_Data *data);
 static void OptionsApp_LoadMenuEntriesData(OptionsApp_Data *data);
 static void OptionsApp_UpdateMenuEntry(OptionsApp_Data *data, u16 menuEntryId);
@@ -360,7 +403,7 @@ BOOL OptionsMenu_Exit(OverlayManager *manager, int *state) {
     OptionsApp_Data *data = OverlayManager_GetData(manager);
 
     if (data->exitChoice == 1) {
-        data->options.textSpeed = data->menuEntries[MENU_ENTRY_TEXT_SPEED].value;
+        data->options.textSpeed = sTextSpeedChoiceRawValues[data->menuEntries[MENU_ENTRY_TEXT_SPEED].value];
         data->options.battleScene = data->menuEntries[MENU_ENTRY_BATTLE_SCENE].value;
         data->options.battleStyle = data->menuEntries[MENU_ENTRY_BATTLE_STYLE].value;
         data->options.soundMethod = data->menuEntries[MENU_ENTRY_SOUND_METHOD].value;
@@ -702,7 +745,7 @@ static void OptionsApp_FreeWindows(OptionsApp_Data *data) {
     }
 }
 
-static void OptionsApp_PrintTextFrameString(OptionsApp_Data *data, String *frameNumText, BOOL instantTextSpeed) {
+static void OptionsApp_PrintTextFrameString(OptionsApp_Data *data, String *frameNumText, BOOL instant) {
     u32 textFrameDelay = Options_GetTextFrameDelay(data->playerOptions);
 
     if (TextPrinterCheckActive(data->textPrinter)) {
@@ -713,9 +756,10 @@ static void OptionsApp_PrintTextFrameString(OptionsApp_Data *data, String *frame
 
     FillWindowPixelBuffer(&data->windows.frameAndTextSpeedTest, 0xFF);
 
-    if (instantTextSpeed) {
+    if (instant) {
         AddTextPrinterParameterizedWithColor(&data->windows.frameAndTextSpeedTest, 1, frameNumText, 4, 0, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(1, 2, 15), NULL);
     } else {
+        // the sample line types itself at the currently selected text speed
         data->textPrinter = AddTextPrinterParameterizedWithColor(&data->windows.frameAndTextSpeedTest, 1, frameNumText, 4, 0, textFrameDelay, MAKE_TEXT_COLOR(1, 2, 15), NULL);
     }
 }
@@ -758,15 +802,19 @@ static void OptionsApp_SetupInterfaceText(OptionsApp_Data *data) {
 
 static void OptionsApp_LoadMenuEntriesData(OptionsApp_Data *data) {
     u16 i, j;
-    u16 msgNum = 0;
+    u16 msgNum = 3; // TEXT_SPEED labels come from sTextSpeedChoiceMsgIds; the shared pool continues after its 3 stock rows
     for (i = 0; i < MENU_ENTRY_COUNT - 1; i++) {
         data->menuEntries[i].numStrings = sNumChoicesPerMenuEntry[i];
         for (j = 0; j < sNumChoicesPerMenuEntry[i]; j++) {
-            data->menuEntries[i].strings[j] = NewString_ReadMsgData(data->msgData, msg_0045_00009 + msgNum++); // Option values
+            if (i == MENU_ENTRY_TEXT_SPEED) {
+                data->menuEntries[i].strings[j] = NewString_ReadMsgData(data->msgData, sTextSpeedChoiceMsgIds[j]);
+            } else {
+                data->menuEntries[i].strings[j] = NewString_ReadMsgData(data->msgData, msg_0045_00009 + msgNum++); // Option values
+            }
         }
     }
 
-    data->menuEntries[MENU_ENTRY_TEXT_SPEED].value = data->options.textSpeed;
+    data->menuEntries[MENU_ENTRY_TEXT_SPEED].value = (data->options.textSpeed < NELEMS(sTextSpeedRawToChoice)) ? sTextSpeedRawToChoice[data->options.textSpeed] : 2;
     data->menuEntries[MENU_ENTRY_BATTLE_SCENE].value = data->options.battleScene;
     data->menuEntries[MENU_ENTRY_BATTLE_STYLE].value = data->options.battleStyle;
     data->menuEntries[MENU_ENTRY_SOUND_METHOD].value = data->options.soundMethod;
@@ -792,15 +840,28 @@ static void OptionsApp_UpdateMenuEntry(OptionsApp_Data *data, u16 menuEntryId) {
         OptionsApp_PrintTextFrameString(data, data->frameNumText, TRUE);
         data->reloadFrameGfx = TRUE;
         return;
+    case MENU_ENTRY_TEXT_SPEED: {
+        // Carousel like FRAME. Under-the-hood: the static options backdrop
+        // (NARC_a_0_7_2 member 17 -> GF_BG_LYR_MAIN_2, src/options_app.c:699)
+        // bakes one 3-tile-row band per menu row; its row-0 cell held the stock
+        // 3-choice pills. That cell (tile rows 3-5) was replaced with FRAME's
+        // row cell (tile rows 18-20: dark panel + rounded white band), so this
+        // row now renders FRAME's exact art from the real BG layer — no imitated
+        // pixel fills. Arrows are the sprite templates at x=115/213, and the
+        // centered label prints through the same window call FRAME uses.
+        String *choice = data->menuEntries[menuEntryId].strings[data->menuEntries[menuEntryId].value];
+        x = sOptionChoiceLabelXCoords[menuEntryId][0] - FontID_String_GetWidth(0, choice, 0) / 2;
+        AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, choice, x, menuEntryId * 24 + 5, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
+        CopyWindowToVram(&data->windows.selectedOption);
+        Options_SetTextSpeed(data->playerOptions, sTextSpeedChoiceRawValues[data->menuEntries[menuEntryId].value]);
+        OptionsApp_PrintTextFrameString(data, data->frameNumText, FALSE);
+        return;
+    }
     case MENU_ENTRY_SOUND_METHOD:
         GF_SndSetMonoFlag(data->menuEntries[menuEntryId].value);
         break;
     case MENU_ENTRY_BUTTON_MODE:
         Options_SetButtonModeOnMain(NULL, data->menuEntries[menuEntryId].value);
-        break;
-    case MENU_ENTRY_TEXT_SPEED:
-        Options_SetTextSpeed(data->playerOptions, data->menuEntries[menuEntryId].value);
-        OptionsApp_PrintTextFrameString(data, data->frameNumText, FALSE);
         break;
     }
 
@@ -830,6 +891,12 @@ static void OptionsApp_UpdateMenuEntryCarousel(OptionsApp_Data *data, u32 menuEn
             Sprite_SetAnimCtrlSeq(data->sprites[5], 1);
         } else if (offset == 1) {
             Sprite_SetAnimCtrlSeq(data->sprites[6], 1);
+        }
+    } else if (menuEntryId == MENU_ENTRY_TEXT_SPEED) {
+        if (offset == -1) {
+            Sprite_SetAnimCtrlSeq(data->sprites[9], 1);
+        } else if (offset == 1) {
+            Sprite_SetAnimCtrlSeq(data->sprites[10], 1);
         }
     }
 
@@ -1008,7 +1075,7 @@ static void OptionsApp_SetupSpriteRenderer(OptionsApp_Data *data) {
         .charModeSub = GX_OBJVRAMMODE_CHAR_1D_32K,
     };
     SpriteSystem_Init(data->spriteRenderer, &oamManagerParam, &oamTransferParam, 32);
-    SpriteSystem_InitSprites(data->spriteRenderer, data->spriteGfxHandler, 9);
+    SpriteSystem_InitSprites(data->spriteRenderer, data->spriteGfxHandler, 11);
 
     ResdatIdList fileIdList = {
         .charRes = NARC_resdat_resdat_00000022_bin,
@@ -1032,6 +1099,12 @@ static void OptionsApp_FreeSpriteRenderer(OptionsApp_Data *data) {
 
 static void OptionsApp_SetupSprites(OptionsApp_Data *data) {
     for (u16 i = 0; i < NELEMS(data->sprites); i++) {
+        // TEXT_SPEED is a carousel like FRAME, and the FRAME row has no cursor
+        // button: skip creating sprite 0 entirely so nothing can ever redraw it.
+        if (i == 0) {
+            data->sprites[i] = NULL;
+            continue;
+        }
         data->sprites[i] = SpriteSystem_CreateSpriteFromResourceHeader(data->spriteRenderer, data->spriteGfxHandler, &sOptionsAppSpriteTemplates[i]);
         thunk_Sprite_SetPriority(data->sprites[i], 2);
         Sprite_SetAnimActiveFlag(data->sprites[i], TRUE);
@@ -1042,6 +1115,9 @@ static void OptionsApp_SetupSprites(OptionsApp_Data *data) {
 
 static void OptionsApp_SetActiveButtonsXPosition(OptionsApp_Data *data) {
     for (int i = 0; i < 5; i++) {
+        if (i == 0) {
+            continue;  // carousel row, no cursor button (see SetupSprites)
+        }
         s16 x, y;
         Sprite_GetPositionXY(data->sprites[i], &x, &y);
         x = sActiveButtonXCoords[i][data->menuEntries[i].value];

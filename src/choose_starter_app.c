@@ -263,7 +263,7 @@ BOOL ChooseStarter_Init(OverlayManager *ovy, int *state_p) {
     for (i = 0; i < 3; i++) {
         work->choices[i] = &args->starters[i];
     }
-    work->textSpeed = 1;
+    work->textSpeed = Options_GetTextFrameDelay(args->options);
     Main_SetVBlankIntrCB((GFIntrCB)vBlankCB, work);
     HBlankInterruptDisable();
     setGxBanks();

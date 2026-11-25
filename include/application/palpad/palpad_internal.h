@@ -126,6 +126,7 @@ typedef struct PalPadGfx {
     String *pageText;
     String *pageBuffer;
     u32 titlePrinterId;
+    u8 textSpeed;
     SpriteResourcesHeader spriteHeader;
     SpriteResource *spriteResources[4];
     G2dRenderer renderer;

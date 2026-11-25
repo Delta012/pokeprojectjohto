@@ -61,6 +61,7 @@ typedef struct TextPrinter {
     u8 callbackResult;
     u16 callbackParam;
     u16 *focusIndicatorGfx;
+    u8 glyphsPerTick; // characters drawn per frame (VERY FAST: 2, ULTRA FAST: 4)
 } TextPrinter;
 
 typedef enum RenderResult {

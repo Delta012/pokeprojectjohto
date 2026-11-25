@@ -757,10 +757,11 @@ u32 BattleSystem_GetFrame(BattleSystem *battleSystem) {
 }
 
 u8 BattleSystem_GetTextFrameDelay(BattleSystem *battleSystem) {
-    if ((battleSystem->battleType & BATTLE_TYPE_LINK) && !(battleSystem->battleSpecial & BATTLE_SPECIAL_RECORDING)) {
-        return 1;
-    }
-    return Options_GetTextFrameDelay(battleSystem->options);
+    // Every battle print — message handlers, EXP/level-up getter, battle
+    // menus, INCLUDING link battles — always prints at ULTRA FAST, no
+    // matter what the Text Speed option says. Dialogue outside battle
+    // still follows the option.
+    return TEXT_SPEED_ULTRAFAST;
 }
 
 u32 BattleSystem_GetBattleStyle(BattleSystem *battleSystem) {

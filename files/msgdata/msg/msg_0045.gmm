@@ -42,7 +42,7 @@
 	</row>
 	<row id="msg_0045_00010" index="10">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">MID</language>
+		<language name="English">MEDIUM</language>
 	</row>
 	<row id="msg_0045_00011" index="11">
 		<attribute name="window_context_name">used</attribute>
@@ -239,5 +239,17 @@
 	<row id="msg_0045_00059" index="59">
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">WINDOW TYPE 20</language>
+	</row>
+	<row id="msg_0045_00060" index="60">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">VERY SLOW</language>
+	</row>
+	<row id="msg_0045_00061" index="61">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">VERY FAST</language>
+	</row>
+	<row id="msg_0045_00062" index="62">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">ULTRA FAST</language>
 	</row>
 </body>

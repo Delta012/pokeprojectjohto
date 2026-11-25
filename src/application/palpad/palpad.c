@@ -276,6 +276,7 @@ void PalPadShared_ReadFriendList(PalPadShared *shared) {
 static void PalPadGfx_Init(PalPadGfx *gfx, PalPadShared *shared, enum HeapID heapId) {
     gSystem.screensFlipped = TRUE;
     GfGfx_SwapDisplay();
+    gfx->textSpeed = shared->textSpeed;
     gfx->narc = NARC_New(NARC_a_0_8_5, heapId);
     PalPadGfx_SetVramBanks();
     PalPadGfx_InitBgs(gfx, heapId);
@@ -454,7 +455,7 @@ void PalPadGfx_PrintTitle(PalPadGfx *gfx, Window *window, int msgId) {
     ReadMsgDataIntoString(gfx->msgData, msgId, gfx->titleBuffer);
     StringExpandPlaceholders(gfx->msgFormat, gfx->titleText, gfx->titleBuffer);
     TextFlags_SetCanTouchSpeedUpPrint(TRUE);
-    gfx->titlePrinterId = AddTextPrinterParameterizedWithColor(window, 1, gfx->titleText, 0, 4, 2, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    gfx->titlePrinterId = AddTextPrinterParameterizedWithColor(window, 1, gfx->titleText, 0, 4, gfx->textSpeed, MAKE_TEXT_COLOR(15, 2, 0), NULL);
     ScheduleWindowCopyToVram(window);
 }
 
