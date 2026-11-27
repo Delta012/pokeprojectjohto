@@ -84,13 +84,16 @@ typedef struct OptionsApp_Data {
     OptionsApp_MenuEntry menuEntries[MENU_ENTRY_COUNT];
     SpriteSystem *spriteRenderer;
     SpriteManager *spriteGfxHandler;
-    Sprite *sprites[11];
-    u8 filler2FC[36];
+    Sprite *sprites[15];
+    u8 filler308[20];
     u32 menuInputState;
     String *frameNumText;
     u8 textPrinter;
 } OptionsApp_Data; // size: 0x32c
 
+// How far left each row's value erase band reaches, from the stock base x 108.
+// Labels are centred on 181 and start no earlier than x 140, so only Frame
+// still needs its wider stock band.
 static const s8 sOptionsApp_ClearRectXOffsets[MENU_ENTRY_COUNT] = {
     0,
     0,
@@ -117,27 +120,21 @@ static const int sMenuEntryBorderYCoords[MENU_ENTRY_COUNT] = {
     -8, -32, -56, -80, -104, -128, -156
 };
 
-static const u16 sOptionChoiceLabelXCoords[MENU_ENTRY_COUNT][3] = {
-    { 172, 0,   0   },
-    { 124, 172, 0   },
-    { 132, 212, 0   },
-    { 132, 212, 0   },
-    { 132, 212, 0   },
-    { 172, 0,   0   },
-    { 0,   0,   0   },
+// Centre of each row's carousel value label, in window-local pixels. The
+// backdrop's value slot is 114 px wide and centres on 180.75, so labels print
+// centred on 181 (whole pixels only). Each row is independent.
+static const u16 sOptionChoiceLabelXCoords[MENU_ENTRY_COUNT] = {
+    181, // Text Speed
+    181, // Battle Animations
+    181, // Battle Style
+    181, // Sound Output
+    181, // Button Mode
+    181, // Frame
+    0,   // Confirm / Quit, no value label
 };
 
-static const int sActiveButtonXCoords[5][6] = {
-    { 0,   0,   0,   0,   0,   0 },
-    { 112, 160, 208, 0,   0,   0   },
-    { 112, 192, 0,   0,   0,   0   },
-    { 112, 192, 0,   0,   0,   0   },
-    { 112, 192, 0,   0,   0,   0   },
-};
-
-// Text Speed is a carousel (like FRAME): one label shown at a time, cycled with
-// left/right. Carousel slot order is display order; the stored option value
-// keeps the stock meanings (0 = slow, 1 = medium, 2 = fast) so old saves load
+// Text Speed's carousel slots in display order. The stored option value keeps
+// the stock meanings (0 = slow, 1 = medium, 2 = fast) so old saves load
 // unchanged, with 3 = very slow, 4 = very fast and 5 = ultra fast added.
 static const u16 sTextSpeedChoiceMsgIds[6] = {
     msg_0045_00060, // VERY SLOW
@@ -155,13 +152,13 @@ static const TouchscreenHitbox sOptionsAppTouchscreenHitboxes[16] = {
     { .rect = { .top = 26, .bottom = 46, .left = 160, .right = 200 } },
     { .rect = { .top = 26, .bottom = 46, .left = 208, .right = 248 } },
     { .rect = { .top = 50, .bottom = 70, .left = 112, .right = 151 } },
-    { .rect = { .top = 50, .bottom = 70, .left = 160, .right = 200 } },
-    { .rect = { .top = 74, .bottom = 93, .left = 112, .right = 167 } },
-    { .rect = { .top = 74, .bottom = 93, .left = 192, .right = 247 } },
-    { .rect = { .top = 98, .bottom = 117, .left = 112, .right = 167 } },
-    { .rect = { .top = 98, .bottom = 117, .left = 192, .right = 247 } },
-    { .rect = { .top = 122, .bottom = 142, .left = 112, .right = 167 } },
-    { .rect = { .top = 122, .bottom = 142, .left = 192, .right = 247 } },
+    { .rect = { .top = 50, .bottom = 70, .left = 208, .right = 248 } },
+    { .rect = { .top = 74, .bottom = 93, .left = 112, .right = 151 } },
+    { .rect = { .top = 74, .bottom = 93, .left = 208, .right = 248 } },
+    { .rect = { .top = 98, .bottom = 117, .left = 112, .right = 151 } },
+    { .rect = { .top = 98, .bottom = 117, .left = 208, .right = 248 } },
+    { .rect = { .top = 122, .bottom = 142, .left = 112, .right = 151 } },
+    { .rect = { .top = 122, .bottom = 142, .left = 208, .right = 248 } },
     { .rect = { .top = 146, .bottom = 166, .left = 110, .right = 150 } },
     { .rect = { .top = 146, .bottom = 166, .left = 208, .right = 253 } },
     { .rect = { .top = 172, .bottom = 191, .left = 128, .right = 180 } },
@@ -173,21 +170,21 @@ static const u32 sOptionsAppHitboxEntryValues[15][2] = {
     { MENU_ENTRY_TEXT_SPEED,   3 },
     { MENU_ENTRY_TEXT_SPEED,   4 },
     { MENU_ENTRY_TEXT_SPEED,   4 },
-    { MENU_ENTRY_BATTLE_SCENE, 0 },
-    { MENU_ENTRY_BATTLE_SCENE, 1 },
-    { MENU_ENTRY_BATTLE_STYLE, 0 },
-    { MENU_ENTRY_BATTLE_STYLE, 1 },
-    { MENU_ENTRY_SOUND_METHOD, 0 },
-    { MENU_ENTRY_SOUND_METHOD, 1 },
-    { MENU_ENTRY_BUTTON_MODE,  0 },
-    { MENU_ENTRY_BUTTON_MODE,  1 },
+    { MENU_ENTRY_BATTLE_SCENE, 3 },
+    { MENU_ENTRY_BATTLE_SCENE, 4 },
+    { MENU_ENTRY_BATTLE_STYLE, 3 },
+    { MENU_ENTRY_BATTLE_STYLE, 4 },
+    { MENU_ENTRY_SOUND_METHOD, 3 },
+    { MENU_ENTRY_SOUND_METHOD, 4 },
+    { MENU_ENTRY_BUTTON_MODE,  3 },
+    { MENU_ENTRY_BUTTON_MODE,  4 },
     { MENU_ENTRY_FRAME,        3 },
     { MENU_ENTRY_FRAME,        4 },
     { MENU_ENTRY_6,            5 },
     { MENU_ENTRY_6,            6 },
 };
 
-static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
+static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[15] = {
     {
      .resourceSet = 0,
      .x = 112,
@@ -203,8 +200,8 @@ static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
      .unk_24 = 0,
      },
     {
-     .resourceSet = 0,
-     .x = 112,
+     .resourceSet = 1,
+     .x = 115,
      .y = 48,
      .z = 0,
      .animation = 0,
@@ -217,11 +214,11 @@ static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
      .unk_24 = 0,
      },
     {
-     .resourceSet = 0,
-     .x = 112,
+     .resourceSet = 1,
+     .x = 115,
      .y = 72,
      .z = 0,
-     .animation = 1,
+     .animation = 0,
      .drawPriority = 1,
      .pal = 0,
      .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
@@ -231,11 +228,11 @@ static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
      .unk_24 = 0,
      },
     {
-     .resourceSet = 0,
-     .x = 112,
+     .resourceSet = 1,
+     .x = 115,
      .y = 96,
      .z = 0,
-     .animation = 1,
+     .animation = 0,
      .drawPriority = 1,
      .pal = 0,
      .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
@@ -245,11 +242,11 @@ static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
      .unk_24 = 0,
      },
     {
-     .resourceSet = 0,
-     .x = 112,
+     .resourceSet = 1,
+     .x = 115,
      .y = 120,
      .z = 0,
-     .animation = 1,
+     .animation = 0,
      .drawPriority = 1,
      .pal = 0,
      .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
@@ -342,6 +339,73 @@ static const UnmanagedSpriteTemplate sOptionsAppSpriteTemplates[11] = {
      .unk_20 = 0,
      .unk_24 = 0,
     },
+    {
+     .resourceSet = 2,
+     .x = 213,
+     .y = 48,
+     .z = 0,
+     .animation = 0,
+     .drawPriority = 1,
+     .pal = 0,
+     .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
+     .paletteMode = 0,
+     .unk_1C = 0,
+     .unk_20 = 0,
+     .unk_24 = 0,
+    },
+    {
+     .resourceSet = 2,
+     .x = 213,
+     .y = 72,
+     .z = 0,
+     .animation = 0,
+     .drawPriority = 1,
+     .pal = 0,
+     .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
+     .paletteMode = 0,
+     .unk_1C = 0,
+     .unk_20 = 0,
+     .unk_24 = 0,
+    },
+    {
+     .resourceSet = 2,
+     .x = 213,
+     .y = 96,
+     .z = 0,
+     .animation = 0,
+     .drawPriority = 1,
+     .pal = 0,
+     .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
+     .paletteMode = 0,
+     .unk_1C = 0,
+     .unk_20 = 0,
+     .unk_24 = 0,
+    },
+    {
+     .resourceSet = 2,
+     .x = 213,
+     .y = 120,
+     .z = 0,
+     .animation = 0,
+     .drawPriority = 1,
+     .pal = 0,
+     .vram = NNS_G2D_VRAM_TYPE_2DMAIN,
+     .paletteMode = 0,
+     .unk_1C = 0,
+     .unk_20 = 0,
+     .unk_24 = 0,
+    },
+};
+
+// Sprite slots bumped when a row's carousel is cycled: {left, right}, -1 = none.
+static const s8 sCarouselArrowSprites[MENU_ENTRY_COUNT][2] = {
+    { 9,  10 }, // Text Speed
+    { 1,  11 }, // Battle Animations
+    { 2,  12 }, // Battle Style
+    { 3,  13 }, // Sound Output
+    { 4,  14 }, // Button Mode
+    { 5,  6 },  // Frame
+    { -1, -1 }, // Confirm / Quit
 };
 
 static void OptionsApp_SetupGraphicsBanks(void);
@@ -366,7 +430,6 @@ static void OptionsApp_HideBorderOnConfirmRow(OptionsApp_Data *data);
 static void OptionsApp_SetupSpriteRenderer(OptionsApp_Data *data);
 static void OptionsApp_FreeSpriteRenderer(OptionsApp_Data *data);
 static void OptionsApp_SetupSprites(OptionsApp_Data *data);
-static void OptionsApp_SetActiveButtonsXPosition(OptionsApp_Data *data);
 static BOOL OptionsApp_ConfirmAndQuitButtonsAreDoneAnimating(OptionsApp_Data *data);
 
 BOOL OptionsMenu_Init(OverlayManager *manager, int *state) {
@@ -443,7 +506,6 @@ BOOL OptionsMenu_Main(OverlayManager *manager, int *state) {
 
         data->fadeUnused = 0;
         BeginNormalPaletteFade(FADE_BOTH_SCREENS, FADE_TYPE_BRIGHTNESS_IN, FADE_TYPE_BRIGHTNESS_IN, RGB_BLACK, 6, 1, data->heapID);
-        OptionsApp_SetActiveButtonsXPosition(data);
         SpriteSystem_DrawSprites(data->spriteGfxHandler);
         break;
     case 1:
@@ -768,17 +830,31 @@ static void OptionsApp_SetupInterfaceText(OptionsApp_Data *data) {
     u16 i;
     String *tmpString = String_New(40, data->heapID);
 
-    ReadMsgDataIntoString(data->msgData, msg_0045_00000, tmpString); // OPTIONS
-    AddTextPrinterParameterizedWithColor(&data->windows.optionsTitle, 0, tmpString, 2, 5, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00000, tmpString); // Settings
+    AddTextPrinterParameterizedWithColor(&data->windows.optionsTitle, 0, tmpString, 0, 6, TEXT_SPEED_INSTANT, MAKE_TEXT_COLOR(15, 2, 0), NULL);
 
     String_SetEmpty(tmpString);
     OptionsApp_PrintTextFrameString(data, tmpString, TRUE);
 
-    for (i = 0; i < MENU_ENTRY_COUNT - 1; i++) {
-        String_SetEmpty(tmpString);
-        ReadMsgDataIntoString(data->msgData, msg_0045_00001 + i, tmpString); // Option names
-        AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 4, i * 24 + 5, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
-    }
+    // Setting Names; each row's x/y are independent literals
+    String_SetEmpty(tmpString);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00001, tmpString); // Text Speed
+    AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 0, 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    String_SetEmpty(tmpString);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00002, tmpString); // Battle Animations
+    AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 0, 28, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    String_SetEmpty(tmpString);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00003, tmpString); // Battle Style
+    AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 0, 52, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    String_SetEmpty(tmpString);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00004, tmpString); // Sound Output
+    AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 0, 76, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    String_SetEmpty(tmpString);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00005, tmpString); // Button Mode
+    AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 0, 100, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+    String_SetEmpty(tmpString);
+    ReadMsgDataIntoString(data->msgData, msg_0045_00006, tmpString); // Frame Type
+    AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, tmpString, 0, 124, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
 
     String_SetEmpty(tmpString);
     ReadMsgDataIntoString(data->msgData, msg_0045_00008, tmpString); // QUIT
@@ -824,39 +900,32 @@ static void OptionsApp_LoadMenuEntriesData(OptionsApp_Data *data) {
 }
 
 static void OptionsApp_UpdateMenuEntry(OptionsApp_Data *data, u16 menuEntryId) {
-    u32 selectedColor = MAKE_TEXT_COLOR(1, 2, 0);
-    u32 notSelectedColor = MAKE_TEXT_COLOR(15, 2, 0);
-    u32 color;
-    u16 i;
-    u8 frameDelay;
-    u16 x = 0;
-    FillWindowPixelRect(&data->windows.selectedOption, 0, 108 + sOptionsApp_ClearRectXOffsets[menuEntryId], menuEntryId * 24 + 5, 384, 24);
+    String *choice;
+    u16 x;
+
+    FillWindowPixelRect(&data->windows.selectedOption, 0, 108 + sOptionsApp_ClearRectXOffsets[menuEntryId], menuEntryId * 24 + 4, 384, 24);
+
+    // Every option row is a carousel: the options backdrop (NARC_a_0_7_2 member
+    // 17 -> GF_BG_LYR_MAIN_2) bakes one band per menu row, each drawn like
+    // FRAME's panel instead of the stock choice pills, so exactly one value
+    // prints, centred between the arrow sprites at x=115 and x=213. The
+    // Confirm/Quit row has no value label.
+    if (menuEntryId != MENU_ENTRY_6) {
+        choice = data->menuEntries[menuEntryId].strings[data->menuEntries[menuEntryId].value];
+        x = sOptionChoiceLabelXCoords[menuEntryId] - FontID_String_GetWidth(0, choice, 0) / 2;
+        AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, choice, x, menuEntryId * 24 + 4, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(15, 2, 0), NULL);
+        CopyWindowToVram(&data->windows.selectedOption);
+    }
 
     switch (menuEntryId) {
     case MENU_ENTRY_FRAME:
-        x = sOptionChoiceLabelXCoords[menuEntryId][0] - FontID_String_GetWidth(0, data->menuEntries[menuEntryId].strings[data->menuEntries[menuEntryId].value], 0) / 2;
-        AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, data->menuEntries[menuEntryId].strings[data->menuEntries[menuEntryId].value], x, menuEntryId * 24 + 5, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-        CopyWindowToVram(&data->windows.selectedOption);
         OptionsApp_PrintTextFrameString(data, data->frameNumText, TRUE);
         data->reloadFrameGfx = TRUE;
-        return;
-    case MENU_ENTRY_TEXT_SPEED: {
-        // Carousel like FRAME. Under-the-hood: the static options backdrop
-        // (NARC_a_0_7_2 member 17 -> GF_BG_LYR_MAIN_2, src/options_app.c:699)
-        // bakes one 3-tile-row band per menu row; its row-0 cell held the stock
-        // 3-choice pills. That cell (tile rows 3-5) was replaced with FRAME's
-        // row cell (tile rows 18-20: dark panel + rounded white band), so this
-        // row now renders FRAME's exact art from the real BG layer — no imitated
-        // pixel fills. Arrows are the sprite templates at x=115/213, and the
-        // centered label prints through the same window call FRAME uses.
-        String *choice = data->menuEntries[menuEntryId].strings[data->menuEntries[menuEntryId].value];
-        x = sOptionChoiceLabelXCoords[menuEntryId][0] - FontID_String_GetWidth(0, choice, 0) / 2;
-        AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, choice, x, menuEntryId * 24 + 5, TEXT_SPEED_NOTRANSFER, MAKE_TEXT_COLOR(1, 2, 0), NULL);
-        CopyWindowToVram(&data->windows.selectedOption);
+        break;
+    case MENU_ENTRY_TEXT_SPEED:
         Options_SetTextSpeed(data->playerOptions, sTextSpeedChoiceRawValues[data->menuEntries[menuEntryId].value]);
         OptionsApp_PrintTextFrameString(data, data->frameNumText, FALSE);
-        return;
-    }
+        break;
     case MENU_ENTRY_SOUND_METHOD:
         GF_SndSetMonoFlag(data->menuEntries[menuEntryId].value);
         break;
@@ -864,45 +933,21 @@ static void OptionsApp_UpdateMenuEntry(OptionsApp_Data *data, u16 menuEntryId) {
         Options_SetButtonModeOnMain(NULL, data->menuEntries[menuEntryId].value);
         break;
     }
-
-    x = 0;
-    for (i = 0; i < data->menuEntries[menuEntryId].numStrings; i++) {
-        if (i == data->menuEntries[menuEntryId].value) {
-            color = selectedColor;
-        } else {
-            color = notSelectedColor;
-        }
-        // required to match a double `bls` above
-        if (i == data->menuEntries[menuEntryId].numStrings - 1) {
-            frameDelay = TEXT_SPEED_NOTRANSFER;
-        } else {
-            frameDelay = TEXT_SPEED_NOTRANSFER;
-        }
-        x = sOptionChoiceLabelXCoords[menuEntryId][i] - (FontID_String_GetWidth(0, data->menuEntries[menuEntryId].strings[i], 0) / 2);
-        AddTextPrinterParameterizedWithColor(&data->windows.selectedOption, 0, data->menuEntries[menuEntryId].strings[i], x, menuEntryId * 24 + 5, frameDelay, color, NULL);
-    }
-
-    CopyWindowToVram(&data->windows.selectedOption);
 }
 
 static void OptionsApp_UpdateMenuEntryCarousel(OptionsApp_Data *data, u32 menuEntryId, OptionsApp_MenuEntry *menuEntry, s32 offset) {
-    if (menuEntryId == MENU_ENTRY_FRAME) {
-        if (offset == -1) {
-            Sprite_SetAnimCtrlSeq(data->sprites[5], 1);
-        } else if (offset == 1) {
-            Sprite_SetAnimCtrlSeq(data->sprites[6], 1);
-        }
-    } else if (menuEntryId == MENU_ENTRY_TEXT_SPEED) {
-        if (offset == -1) {
-            Sprite_SetAnimCtrlSeq(data->sprites[9], 1);
-        } else if (offset == 1) {
-            Sprite_SetAnimCtrlSeq(data->sprites[10], 1);
-        }
+    if (offset == 0) {
+        return;
+    }
+
+    s8 spriteId = sCarouselArrowSprites[menuEntryId][offset > 0];
+    if (spriteId >= 0) {
+        Sprite_SetAnimCtrlSeq(data->sprites[spriteId], 1);
     }
 
     if (offset > 0) {
         menuEntry->value = (menuEntry->value + offset) % menuEntry->numStrings;
-    } else if (offset < 0) {
+    } else {
         menuEntry->value = (menuEntry->value + menuEntry->numStrings - 1) % menuEntry->numStrings;
     }
 }
@@ -918,7 +963,6 @@ static void OptionsApp_HandleKeyInput(OptionsApp_Data *data, OptionsApp_MenuEntr
             OptionsApp_UpdateMenuEntry(data, data->currentMenuEntryId);
             PlaySE(SEQ_SE_DP_SELECT);
         }
-        OptionsApp_SetActiveButtonsXPosition(data);
     } else {
         if (gSystem.newKeys & PAD_KEY_LEFT) {
             if (data->menuEntries[data->currentMenuEntryId].value == 0) {
@@ -976,7 +1020,6 @@ static void OptionsApp_HandleInput(OptionsApp_Data *data) {
 
         case 13: // Confirm button
             data->currentMenuEntryId = sOptionsAppHitboxEntryValues[hitboxIndex][0];
-            OptionsApp_SetActiveButtonsXPosition(data);
             OptionsApp_HideBorderOnConfirmRow(data);
             data->exitChoice = 1;
             PlaySE(SEQ_SE_DP_SAVE);
@@ -989,7 +1032,6 @@ static void OptionsApp_HandleInput(OptionsApp_Data *data) {
 
         case 14: // Quit button
             data->currentMenuEntryId = sOptionsAppHitboxEntryValues[hitboxIndex][0];
-            OptionsApp_SetActiveButtonsXPosition(data);
             OptionsApp_HideBorderOnConfirmRow(data);
             data->exitChoice = 2;
             PlaySE(SEQ_SE_GS_GEARCANCEL);
@@ -1004,17 +1046,11 @@ static void OptionsApp_HandleInput(OptionsApp_Data *data) {
             data->currentMenuEntryId = sOptionsAppHitboxEntryValues[hitboxIndex][0];
             OptionsApp_MenuEntry *entry = &data->menuEntries[data->currentMenuEntryId];
 
+            // every remaining hitbox is a carousel arrow: 3 = left, 4 = right
             u32 value = sOptionsAppHitboxEntryValues[hitboxIndex][1];
-            if (value == 3) {
-                OptionsApp_UpdateMenuEntryCarousel(data, data->currentMenuEntryId, entry, -1);
-            } else if (value == 4) {
-                OptionsApp_UpdateMenuEntryCarousel(data, data->currentMenuEntryId, entry, 1);
-            } else {
-                entry->value = value;
-            }
+            OptionsApp_UpdateMenuEntryCarousel(data, data->currentMenuEntryId, entry, (value == 3) ? -1 : 1);
             OptionsApp_UpdateMenuEntry(data, data->currentMenuEntryId);
             OptionsApp_UpdateSelectionHighlight(data, data->currentMenuEntryId);
-            OptionsApp_SetActiveButtonsXPosition(data);
             OptionsApp_HideBorderOnConfirmRow(data);
             data->menuInputState = 1;
             PlaySE(SEQ_SE_DP_SELECT);
@@ -1075,7 +1111,7 @@ static void OptionsApp_SetupSpriteRenderer(OptionsApp_Data *data) {
         .charModeSub = GX_OBJVRAMMODE_CHAR_1D_32K,
     };
     SpriteSystem_Init(data->spriteRenderer, &oamManagerParam, &oamTransferParam, 32);
-    SpriteSystem_InitSprites(data->spriteRenderer, data->spriteGfxHandler, 11);
+    SpriteSystem_InitSprites(data->spriteRenderer, data->spriteGfxHandler, NELEMS(data->sprites));
 
     ResdatIdList fileIdList = {
         .charRes = NARC_resdat_resdat_00000022_bin,
@@ -1099,8 +1135,8 @@ static void OptionsApp_FreeSpriteRenderer(OptionsApp_Data *data) {
 
 static void OptionsApp_SetupSprites(OptionsApp_Data *data) {
     for (u16 i = 0; i < NELEMS(data->sprites); i++) {
-        // TEXT_SPEED is a carousel like FRAME, and the FRAME row has no cursor
-        // button: skip creating sprite 0 entirely so nothing can ever redraw it.
+        // Slot 0 is the retired Text Speed cursor button: every row is a
+        // carousel now, so it is never created and nothing can redraw it.
         if (i == 0) {
             data->sprites[i] = NULL;
             continue;
@@ -1111,18 +1147,6 @@ static void OptionsApp_SetupSprites(OptionsApp_Data *data) {
     }
 
     Sprite_SetDrawFlag(data->sprites[7], TRUE);
-}
-
-static void OptionsApp_SetActiveButtonsXPosition(OptionsApp_Data *data) {
-    for (int i = 0; i < 5; i++) {
-        if (i == 0) {
-            continue;  // carousel row, no cursor button (see SetupSprites)
-        }
-        s16 x, y;
-        Sprite_GetPositionXY(data->sprites[i], &x, &y);
-        x = sActiveButtonXCoords[i][data->menuEntries[i].value];
-        Sprite_SetPositionXY(data->sprites[i], x, y);
-    }
 }
 
 static BOOL OptionsApp_ConfirmAndQuitButtonsAreDoneAnimating(OptionsApp_Data *data) {

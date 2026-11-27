@@ -2,79 +2,79 @@
 <body language="English">
 	<row id="msg_0045_00000" index="0">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">OPTIONS</language>
+		<language name="English">Settings</language>
 	</row>
 	<row id="msg_0045_00001" index="1">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TEXT SPEED</language>
+		<language name="English">Text Speed</language>
 	</row>
 	<row id="msg_0045_00002" index="2">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">BATTLE SCENE</language>
+		<language name="English">Battle Animations</language>
 	</row>
 	<row id="msg_0045_00003" index="3">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">BATTLE STYLE</language>
+		<language name="English">Battle Style</language>
 	</row>
 	<row id="msg_0045_00004" index="4">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">SOUND</language>
+		<language name="English">Sound Output</language>
 	</row>
 	<row id="msg_0045_00005" index="5">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">BUTTON MODE</language>
+		<language name="English">Button Mode</language>
 	</row>
 	<row id="msg_0045_00006" index="6">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">FRAME</language>
+		<language name="English">Frame Type</language>
 	</row>
 	<row id="msg_0045_00007" index="7">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">{ALN_CENTER}CONFIRM</language>
+		<language name="English">{ALN_CENTER}Confirm</language>
 	</row>
 	<row id="msg_0045_00008" index="8">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">{ALN_CENTER}QUIT</language>
+		<language name="English">{ALN_CENTER}Quit</language>
 	</row>
 	<row id="msg_0045_00009" index="9">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">SLOW</language>
+		<language name="English">Slow</language>
 	</row>
 	<row id="msg_0045_00010" index="10">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">MEDIUM</language>
+		<language name="English">Medium</language>
 	</row>
 	<row id="msg_0045_00011" index="11">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">FAST</language>
+		<language name="English">Fast</language>
 	</row>
 	<row id="msg_0045_00012" index="12">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">ON</language>
+		<language name="English">On</language>
 	</row>
 	<row id="msg_0045_00013" index="13">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">OFF</language>
+		<language name="English">Off</language>
 	</row>
 	<row id="msg_0045_00014" index="14">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">SHIFT</language>
+		<language name="English">Shift</language>
 	</row>
 	<row id="msg_0045_00015" index="15">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">SET</language>
+		<language name="English">Set</language>
 	</row>
 	<row id="msg_0045_00016" index="16">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">STEREO</language>
+		<language name="English">Stereo</language>
 	</row>
 	<row id="msg_0045_00017" index="17">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">MONO</language>
+		<language name="English">Mono</language>
 	</row>
 	<row id="msg_0045_00018" index="18">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">NORMAL</language>
+		<language name="English">Normal</language>
 	</row>
 	<row id="msg_0045_00019" index="19">
 		<attribute name="window_context_name">used</attribute>
@@ -82,83 +82,83 @@
 	</row>
 	<row id="msg_0045_00020" index="20">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 1</language>
+		<language name="English">1</language>
 	</row>
 	<row id="msg_0045_00021" index="21">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 2</language>
+		<language name="English">2</language>
 	</row>
 	<row id="msg_0045_00022" index="22">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 3</language>
+		<language name="English">3</language>
 	</row>
 	<row id="msg_0045_00023" index="23">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 4</language>
+		<language name="English">4</language>
 	</row>
 	<row id="msg_0045_00024" index="24">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 5</language>
+		<language name="English">5</language>
 	</row>
 	<row id="msg_0045_00025" index="25">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 6</language>
+		<language name="English">6</language>
 	</row>
 	<row id="msg_0045_00026" index="26">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 7</language>
+		<language name="English">7</language>
 	</row>
 	<row id="msg_0045_00027" index="27">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 8</language>
+		<language name="English">8</language>
 	</row>
 	<row id="msg_0045_00028" index="28">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 9</language>
+		<language name="English">9</language>
 	</row>
 	<row id="msg_0045_00029" index="29">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 10</language>
+		<language name="English">10</language>
 	</row>
 	<row id="msg_0045_00030" index="30">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 11</language>
+		<language name="English">11</language>
 	</row>
 	<row id="msg_0045_00031" index="31">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 12</language>
+		<language name="English">12</language>
 	</row>
 	<row id="msg_0045_00032" index="32">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 13</language>
+		<language name="English">13</language>
 	</row>
 	<row id="msg_0045_00033" index="33">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 14</language>
+		<language name="English">14</language>
 	</row>
 	<row id="msg_0045_00034" index="34">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 15</language>
+		<language name="English">15</language>
 	</row>
 	<row id="msg_0045_00035" index="35">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 16</language>
+		<language name="English">16</language>
 	</row>
 	<row id="msg_0045_00036" index="36">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 17</language>
+		<language name="English">17</language>
 	</row>
 	<row id="msg_0045_00037" index="37">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 18</language>
+		<language name="English">18</language>
 	</row>
 	<row id="msg_0045_00038" index="38">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 19</language>
+		<language name="English">19</language>
 	</row>
 	<row id="msg_0045_00039" index="39">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">TYPE 20</language>
+		<language name="English">20</language>
 	</row>
 	<row id="msg_0045_00040" index="40">
 		<attribute name="window_context_name">used</attribute>
@@ -242,14 +242,14 @@
 	</row>
 	<row id="msg_0045_00060" index="60">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">VERY SLOW</language>
+		<language name="English">Very Slow</language>
 	</row>
 	<row id="msg_0045_00061" index="61">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">VERY FAST</language>
+		<language name="English">Very Fast</language>
 	</row>
 	<row id="msg_0045_00062" index="62">
 		<attribute name="window_context_name">used</attribute>
-		<language name="English">ULTRA FAST</language>
+		<language name="English">Ultra Fast</language>
 	</row>
 </body>
