@@ -252,4 +252,64 @@
 		<attribute name="window_context_name">used</attribute>
 		<language name="English">Ultra Fast</language>
 	</row>
+	<row id="msg_0045_00063" index="63">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">General</language>
+	</row>
+	<row id="msg_0045_00064" index="64">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Battle</language>
+	</row>
+	<row id="msg_0045_00065" index="65">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Audio</language>
+	</row>
+	<row id="msg_0045_00066" index="66">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">3D Camera</language>
+	</row>
+	<row id="msg_0045_00067" index="67">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Autosave</language>
+	</row>
+	<row id="msg_0045_00068" index="68">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Send to Boxes</language>
+	</row>
+	<row id="msg_0045_00069" index="69">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Give Nicknames</language>
+	</row>
+	<row id="msg_0045_00070" index="70">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Exp Share</language>
+	</row>
+	<row id="msg_0045_00071" index="71">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Exp Mode</language>
+	</row>
+	<row id="msg_0045_00072" index="72">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Background Music</language>
+	</row>
+	<row id="msg_0045_00073" index="73">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Sound Effects</language>
+	</row>
+	<row id="msg_0045_00074" index="74">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Pokémon Cries</language>
+	</row>
+	<row id="msg_0045_00075" index="75">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">Deferred</language>
+	</row>
+	<row id="msg_0045_00076" index="76">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">0</language>
+	</row>
+	<row id="msg_0045_00077" index="77">
+		<attribute name="window_context_name">used</attribute>
+		<language name="English">{ALN_CENTER}Reset</language>
+	</row>
 </body>

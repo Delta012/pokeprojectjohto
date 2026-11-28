@@ -20,10 +20,20 @@ void Options_Init(Options *options) {
 
     options->textSpeed = 1;   // medium speed
     options->soundMethod = 0; // stereo
-    options->battleStyle = 0; // shift
+    options->battleStyle = 1; // set
     options->battleScene = 0; // on
     options->buttonMode = 0;  // normal
     options->frame = 0;       // frame 1
+    // Added settings; On/Off flags use 0 = On (first menu carousel choice).
+    options->camera3D = 0;     // on
+    options->autosave = 0;     // on
+    options->sendToBoxes = 0;  // on
+    options->giveNicknames = 0; // on
+    options->expShare = 0;     // on
+    options->expMode = 1;      // deferred
+    options->bgmVolume = 10;   // 0-10
+    options->sfxVolume = 10;
+    options->criesVolume = 10;
 }
 
 void Options_SetButtonModeOnMain(SaveData *saveData, u32 buttonMode) {
@@ -105,4 +115,76 @@ u32 Options_GetFrame(Options *options) {
 
 void Options_SetFrame(Options *options, u32 frame) {
     options->frame = frame;
+}
+
+u32 Options_GetCamera3D(Options *options) {
+    return options->camera3D;
+}
+
+void Options_SetCamera3D(Options *options, u32 value) {
+    options->camera3D = value;
+}
+
+u32 Options_GetAutosave(Options *options) {
+    return options->autosave;
+}
+
+void Options_SetAutosave(Options *options, u32 value) {
+    options->autosave = value;
+}
+
+u32 Options_GetSendToBoxes(Options *options) {
+    return options->sendToBoxes;
+}
+
+void Options_SetSendToBoxes(Options *options, u32 value) {
+    options->sendToBoxes = value;
+}
+
+u32 Options_GetGiveNicknames(Options *options) {
+    return options->giveNicknames;
+}
+
+void Options_SetGiveNicknames(Options *options, u32 value) {
+    options->giveNicknames = value;
+}
+
+u32 Options_GetExpShare(Options *options) {
+    return options->expShare;
+}
+
+void Options_SetExpShare(Options *options, u32 value) {
+    options->expShare = value;
+}
+
+u32 Options_GetExpMode(Options *options) {
+    return options->expMode;
+}
+
+void Options_SetExpMode(Options *options, u32 value) {
+    options->expMode = value;
+}
+
+u32 Options_GetBgmVolume(Options *options) {
+    return options->bgmVolume;
+}
+
+void Options_SetBgmVolume(Options *options, u32 value) {
+    options->bgmVolume = value;
+}
+
+u32 Options_GetSfxVolume(Options *options) {
+    return options->sfxVolume;
+}
+
+void Options_SetSfxVolume(Options *options, u32 value) {
+    options->sfxVolume = value;
+}
+
+u32 Options_GetCriesVolume(Options *options) {
+    return options->criesVolume;
+}
+
+void Options_SetCriesVolume(Options *options, u32 value) {
+    options->criesVolume = value;
 }
