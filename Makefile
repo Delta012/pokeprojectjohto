@@ -86,6 +86,7 @@ all:
 	$(MAKE) tools
 	$(MAKE) patch_mwasmarm
 	$(MAKE) $(ROM)
+	@find . -name '*:Zone.Identifier' -delete
 
 tidy:
 	@$(MAKE) -C lib/dsprot tidy

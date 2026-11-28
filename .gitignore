@@ -83,6 +83,10 @@ cmake-build-*
 # MacOS garbage
 .DS_Store
 
+# Windows NTFS provenance stubs ("file:Zone.Identifier") left next to
+# downloaded files
+*:Zone.Identifier
+
 # Depfiles
 *.d
 
